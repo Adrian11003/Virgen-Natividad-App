@@ -21,7 +21,7 @@
       }
     },
     "web": {
-      "favicon": "./src/assets/icons/favicon.ico"
+      "favicon": "./src/assets/icons/favicon.png"
     }
   }
 }
