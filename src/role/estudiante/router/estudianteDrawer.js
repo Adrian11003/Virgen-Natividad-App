@@ -6,37 +6,55 @@ import { Notas } from '../screens/notas/index';
 import { Pagos } from '../screens/pagos/index';
 import { Perfil } from '../screens/perfil/index';
 import { Tareas } from '../screens/tareas/index';
+import Ionicons from '@expo/vector-icons/Ionicons';
+
+
+import CustomStudentDrawer from '../../../shared/components/drawer';
 
 const Drawer = createDrawerNavigator();
 
 export const EstudianteDrawer = () => {
   return (
-    <Drawer.Navigator initialRouteName="Home">
-      <Drawer.Screen 
+    <Drawer.Navigator drawerContent={props =><CustomStudentDrawer{...props} />}initialRouteName="Home">
+      <Drawer.Screen options= {{drawerIcon: () => (
+        <Ionicons name="home-outline" size={22} />
+      )}}
         name="Home" 
         component={Home} 
       />
-      <Drawer.Screen 
+      <Drawer.Screen  options= {{drawerIcon: () => (
+        <Ionicons name="clipboard-outline" size={22} />
+      )}}
         name="Asistencia" 
         component={Asistencia} 
       />
-      <Drawer.Screen 
+      <Drawer.Screen  options= {{drawerIcon: () => (
+        <Ionicons name="chatbubbles-outline" size={22} />
+      )}}
         name="Comunicados" 
         component={Comunicados} 
       />
-      <Drawer.Screen 
+      <Drawer.Screen options= {{drawerIcon: () => (
+        <Ionicons name="checkmark-outline" size={22} />
+      )}} 
         name="Notas" 
         component={Notas} 
       />
-      <Drawer.Screen 
+      <Drawer.Screen  options= {{drawerIcon: () => (
+        <Ionicons name="cash-outline" size={22} />
+      )}}
         name="Pagos" 
         component={Pagos} 
       />
-      <Drawer.Screen 
+      <Drawer.Screen  options= {{drawerIcon: () => (
+        <Ionicons name="document-text-outline" size={22} />
+      )}}
         name="Tareas" 
         component={Tareas} 
       />
-      <Drawer.Screen 
+      <Drawer.Screen options= {{drawerIcon: () => (
+        <Ionicons name="person-circle-outline" size={22} />
+      )}} 
         name="Perfil" 
         component={Perfil} 
       />

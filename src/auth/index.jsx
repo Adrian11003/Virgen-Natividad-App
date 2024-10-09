@@ -58,7 +58,7 @@ export const LoginScreen = () => {
         </View >
 
         <Pressable
-          style={{ color: '0f172a', width: '100%', paddingVertical: 12, paddingHorizontal: 24, borderRadius: 50 }}
+          style={{ backgroundColor: '#0f172a', width: '100%', paddingVertical: 12, paddingHorizontal: 24, borderRadius: 50 }}
           onPress={handleLogin}
         >
           <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold', textAlign: 'center' }}>Iniciar Sesión</Text>

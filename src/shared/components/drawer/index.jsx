@@ -1,10 +1,10 @@
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
-import { View, Text, ImageBackground, Image } from 'react-native';
-import { AuthContext } from '../../../core/context/auth';
+import { View, Text, ImageBackground,TouchableOpacity, Image } from 'react-native';
+import { AuthContext } from '../../../core/context/authContext';
 import { useContext } from 'react';
 
 const CustomStudentDrawer = (props) => {
-  const { user } = useContext(AuthContext)
+  const { user ,logoutHandler} = useContext(AuthContext)
 
   return (
     <View style={{ flex: 1 }}>
@@ -25,6 +25,11 @@ const CustomStudentDrawer = (props) => {
           <DrawerItemList {...props}/>
         </View>
       </DrawerContentScrollView>
+      <View style={{padding:20}}>
+    <TouchableOpacity onPress={logoutHandler}>
+      <Text  style={{ color: '#9ca3af' }}>Cerrar Sesión</Text>
+    </TouchableOpacity>
+      </View>
     </View>
   )
 }
