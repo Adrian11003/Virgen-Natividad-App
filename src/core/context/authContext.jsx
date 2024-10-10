@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useState, useEffect } from 'react';
+import { Alert } from 'react-native';
 import { loginRequest } from '../api/auth';
 
 export const AuthContext = createContext();
@@ -10,39 +11,42 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const loadUserData = async () => {
-      try {
-        const userData = await AsyncStorage.getItem('user');
-        if (userData) {
-          setUser(JSON.parse(userData));
-        }
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
+      const userData = await AsyncStorage.getItem('user');
+      if (userData) setUser(JSON.parse(userData));
+      setLoading(false);
     };
     loadUserData();
   }, []);
 
-  const loginHandler = async (identificador, contrasena) => {
+  const login = async (identificador, contrasena) => {
     try {
-      const userData = await loginRequest(identificador, contrasena);
-      setUser(userData);
-      await AsyncStorage.setItem('user', JSON.stringify(userData));
-      return userData;
+      const { data } = await loginRequest(identificador, contrasena);
+      setUser(data);
+      await AsyncStorage.setItem('user', JSON.stringify(data));
+      return data;
     } catch (error) {
-      console.error(error);
-      throw error;
+      throw new Error(error.response?.data?.message || 'Error en el inicio de sesión');
     }
   };
 
-  const logoutHandler = async () => {
+  const handleLogin = async (identificador, contrasena, navigation) => {
+    try {
+      const userData = await login(identificador, contrasena);
+      if (userData) navigation.navigate('Drawer');
+      else Alert.alert('Error', 'Rol no reconocido');
+    } catch (error) {
+      Alert.alert('Error de inicio de sesión', error.message);
+    }
+  };
+
+  const handleLogout = async (navigation) => {
     setUser(null);
     await AsyncStorage.removeItem('user');
+    navigation.navigate('Login');
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, loginHandler, logoutHandler }}>
+    <AuthContext.Provider value={{ user, loading, login, handleLogin, handleLogout }}>
       {children}
     </AuthContext.Provider>
   );

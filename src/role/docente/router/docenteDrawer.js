@@ -1,28 +1,46 @@
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { Asistencia } from '../screens/asistencia/index';
-import { Comunicados } from '../screens/comunicados/index';
 import { Home } from '../screens/home/index';
-import { Notas } from '../screens/notas/index';
-import { Pagos } from '../screens/pagos/index';
+import { GestionarNotas } from '../screens/gestionar-notas/index';
+import { GestionarTareas } from '../screens/gestionar-tareas/index';
 import { Perfil } from '../screens/perfil/index';
-import { Tareas } from '../screens/tareas/index';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import CustomDrawer from '../../../shared/components/custom/drawer';
 
 const Drawer = createDrawerNavigator();
 
 export const DocenteDrawer = () => {
   return (
-    <Drawer.Navigator initialRouteName="Home">
+    <Drawer.Navigator 
+      drawerContent={props => <CustomDrawer{...props} />} 
+      initialRouteName="Home"
+    >
       <Drawer.Screen 
         name="Home" 
         component={Home} 
+        options= {{drawerIcon: () => (
+          <Ionicons name="home-outline" size={22} />
+        )}}
       />
       <Drawer.Screen 
-        name="GestionarNotas" 
+        name="Notas" 
         component={GestionarNotas} 
+        options= {{drawerIcon: () => (
+          <Ionicons name="checkmark-outline" size={22} />
+        )}}
       />
       <Drawer.Screen 
-        name="GestionarComunicados" 
-        component={GestionarComunicados} 
+        name="Tareas" 
+        component={GestionarTareas} 
+        options= {{drawerIcon: () => (
+          <Ionicons name="document-text-outline" size={22} />
+        )}}
+      />
+      <Drawer.Screen 
+        name="Perfil" 
+        component={Perfil} 
+        options= {{drawerIcon: () => (
+          <Ionicons name="person-circle-outline" size={22} />
+        )}}
       />
     </Drawer.Navigator>
   );

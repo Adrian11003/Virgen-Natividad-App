@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native';
 
-export const GestionarAsistencia = () => {
+export const Perfil = () => {
   return (
     <View style={{
       marginTop: 10,
@@ -10,7 +10,7 @@ export const GestionarAsistencia = () => {
       <View style={{
         innerWidth: '80%',
       }}>
-        <Text>Gestionar Asistencia</Text>
+        <Text>Perfil</Text>
       </View>
     </View>
   )

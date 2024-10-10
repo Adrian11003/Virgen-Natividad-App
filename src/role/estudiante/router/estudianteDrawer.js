@@ -7,15 +7,13 @@ import { Pagos } from '../screens/pagos/index';
 import { Perfil } from '../screens/perfil/index';
 import { Tareas } from '../screens/tareas/index';
 import Ionicons from '@expo/vector-icons/Ionicons';
-
-
-import CustomStudentDrawer from '../../../shared/components/drawer';
+import CustomDrawer from '../../../shared/components/custom/drawer';
 
 const Drawer = createDrawerNavigator();
 
 export const EstudianteDrawer = () => {
   return (
-    <Drawer.Navigator drawerContent={props =><CustomStudentDrawer{...props} />}initialRouteName="Home">
+    <Drawer.Navigator drawerContent={props => <CustomDrawer{...props} />}initialRouteName="Home">
       <Drawer.Screen options= {{drawerIcon: () => (
         <Ionicons name="home-outline" size={22} />
       )}}

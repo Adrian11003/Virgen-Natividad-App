@@ -2,6 +2,8 @@ import { useContext } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { AuthContext } from './authContext';
 import { EstudianteDrawer } from '../../role/estudiante/router/estudianteDrawer';
+import { TutorDrawer } from '../../role/tutor/router/tutorDrawer';
+import { DocenteDrawer } from '../../role/docente/router/docenteDrawer';
 import { LoginScreen } from '../../auth/index';
 
 export const ProtectedRoute = () => {
@@ -20,10 +22,10 @@ export const ProtectedRoute = () => {
   }
 
   switch (user.rol) {
-    // case 'Tutor':
-    //   return <TutorDrawer />;
-    // case 'Docente':
-    //   return <DocenteDrawer />;
+    case 'Tutor':
+      return <TutorDrawer />;
+    case 'Docente':
+      return <DocenteDrawer />;
     case 'Estudiante':
       return <EstudianteDrawer />;
     default:
