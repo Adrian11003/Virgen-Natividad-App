@@ -1,28 +1,14 @@
-import { useState, useContext } from 'react';
-import { SafeAreaView, TextInput, View, Image, Text, Pressable, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView, TextInput, View, Image, Text, Pressable } from 'react-native';
 import { AuthContext } from '../core/context/authContext';
+import { useNavigation } from '@react-navigation/native';
+import { useState, useContext } from 'react';
 
 export const LoginScreen = () => {
   const [identificador, setIdentificador] = useState('');
   const [contrasena, setContrasena] = useState('');
+  const { handleLogin } = useContext(AuthContext);
   const navigation = useNavigation();
-  const { loginHandler } = useContext(AuthContext);
-
-  const handleLogin = async () => {
-    try {
-      const userData = await loginHandler(identificador, contrasena);
-      if (userData) {
-        navigation.navigate('Drawer');
-      } else {
-        Alert.alert("Error", "Rol no reconocido");
-      }
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Error de inicio de sesión", error.message);
-    }
-  };
-
+  
   return (
     <SafeAreaView style={{ flex: 1, justifyContent: 'center', backgroundColor: '#f3f4f6' }}>
       <View style={{ alignItems: 'center', padding: 24 }}>
@@ -59,7 +45,7 @@ export const LoginScreen = () => {
 
         <Pressable
           style={{ backgroundColor: '#0f172a', width: '100%', paddingVertical: 12, paddingHorizontal: 24, borderRadius: 50 }}
-          onPress={handleLogin}
+          onPress={() => handleLogin(identificador, contrasena, navigation)}
         >
           <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold', textAlign: 'center' }}>Iniciar Sesión</Text>
         </Pressable>
