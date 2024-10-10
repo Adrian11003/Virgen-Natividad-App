@@ -4,8 +4,8 @@ import { Comunicados } from '../screens/comunicados/index';
 import { Home } from '../screens/home/index';
 import { Notas } from '../screens/notas/index';
 import { Pagos } from '../screens/pagos/index';
-import { Perfil } from '../screens/perfil/index';
-import { Tareas } from '../screens/tareas/index';
+import Perfil from '../screens/perfil';
+import Tareas from '../screens/tareas';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 
@@ -50,7 +50,7 @@ export const EstudianteDrawer = () => {
         <Ionicons name="document-text-outline" size={22} />
       )}}
         name="Tareas" 
-        component={Tareas} 
+        component={Tareas}
       />
       <Drawer.Screen options= {{drawerIcon: () => (
         <Ionicons name="person-circle-outline" size={22} />

@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { loginRequest } from '../api/auth';
 
 export const AuthContext = createContext();
@@ -40,6 +41,9 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     await AsyncStorage.removeItem('user');
   };
+  if (loading) {
+    return <Text>AQUI VA ALGGO</Text>;
+  }
 
   return (
     <AuthContext.Provider value={{ user, loading, loginHandler, logoutHandler }}>
