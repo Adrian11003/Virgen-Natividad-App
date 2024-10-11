@@ -5,7 +5,8 @@ import { Home } from '../screens/home/index';
 import { Notas } from '../screens/notas/index';
 import { Pagos } from '../screens/pagos/index';
 import Perfil from '../screens/perfil';
-import Tareas from '../screens/tareas';
+import Horario from '../screens/horario';
+import {Tareas} from '../screens/tareas';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import CustomDrawer from '../../../shared/components/custom/drawer';
 
@@ -55,6 +56,12 @@ export const EstudianteDrawer = () => {
       )}} 
         name="Perfil" 
         component={Perfil} 
+      />
+        <Drawer.Screen options= {{drawerIcon: () => (
+        <Ionicons name="calendar-clear-outline" size={22} />
+      )}} 
+        name="Horario" 
+        component={Horario} 
       />
     </Drawer.Navigator>
   );
