@@ -1,35 +1,58 @@
-import { createContext, useState, useEffect } from 'react';
-import { getHorariosByDocenteAndCursoRequest } from '../api/horarios';
+import { createContext, useState } from 'react';
+import { getHorariosByDocenteCursoRequest, getHorariosBySeccionGradoRequest } from '../api/horarios';
 
-export const HorarioContext = createContext();
+export const HorariosContext = createContext();
 
-export const HorarioProvider = ({ children, docenteId, cursoId }) => {
-  const [horarios, setHorarios] = useState([]);
+export const HorariosProvider = ({ children }) => {
+  const [horarios, setHorarios] = useState({});
   const [loadingHorarios, setLoadingHorarios] = useState(false);
-  const [error, setError] = useState(null);
 
-  const getHorariosByDocenteAndCurso = async (docenteId, cursoId) => {
+  const organizarHorarios = (data) => {
+    const horariosPorDiaYHora = {};
+    data.forEach(({ dia_semana, hora_inicio, hora_fin, curso }) => {
+      const hora = `${hora_inicio} - ${hora_fin}`;
+      horariosPorDiaYHora[dia_semana] = horariosPorDiaYHora[dia_semana] || {};
+      horariosPorDiaYHora[dia_semana][hora] = curso.nombre;
+    });
+    return horariosPorDiaYHora;
+  };
+
+  const getHorariosByDocenteCurso = async (docenteId, cursoId) => {
     setLoadingHorarios(true);
-    setError(null);
     try {
-      const { data } = await getHorariosByDocenteAndCursoRequest(docenteId, cursoId);
-      setHorarios(data);
+      const { data } = await getHorariosByDocenteCursoRequest(docenteId, cursoId);
+      const horariosOrganizados = organizarHorarios(data);
+      setHorarios(horariosOrganizados);
     } catch (err) {
-      setError(err.response?.data?.message || 'Error al cargar los horarios');
+      console.log(err.error.message);
     } finally {
       setLoadingHorarios(false);
     }
   };
 
-  useEffect(() => {
-    if (docenteId && cursoId) {
-      getHorariosByDocenteAndCurso(docenteId, cursoId);
+  const getHorariosByGradoSeccion = async (seccionId, gradoId) => {
+    setLoadingHorarios(true);
+    try {
+      const { data } = await getHorariosBySeccionGradoRequest(seccionId, gradoId);
+      const horariosOrganizados = organizarHorarios(data);
+      setHorarios(horariosOrganizados);
+    } catch (err) {
+      console.log(err.error.message);
+    } finally {
+      setLoadingHorarios(false);
     }
-  }, [docenteId, cursoId]);
+  };
 
   return (
-    <HorarioContext.Provider value={{ horarios, loadingHorarios, error, getHorariosByDocenteAndCurso }}>
+    <HorariosContext.Provider 
+      value={{ 
+        horarios, 
+        loadingHorarios, 
+        getHorariosByDocenteCurso, 
+        getHorariosByGradoSeccion 
+      }}
+    >
       {children}
-    </HorarioContext.Provider>
+    </HorariosContext.Provider>
   );
 };

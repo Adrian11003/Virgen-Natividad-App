@@ -1,4 +1,4 @@
-import { SafeAreaView, TextInput, View, Image, Text, Pressable } from 'react-native';
+import { SafeAreaView, TextInput, View, Image, Text, Pressable, ActivityIndicator } from 'react-native';
 import { AuthContext } from '../core/context/authContext';
 import { useNavigation } from '@react-navigation/native';
 import { useState, useContext } from 'react';
@@ -6,9 +6,17 @@ import { useState, useContext } from 'react';
 export const LoginScreen = () => {
   const [identificador, setIdentificador] = useState('');
   const [contrasena, setContrasena] = useState('');
-  const { handleLogin } = useContext(AuthContext);
+  const { handleLogin, loading } = useContext(AuthContext);
   const navigation = useNavigation();
-  
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView style={{ flex: 1, justifyContent: 'center', backgroundColor: '#f3f4f6' }}>
       <View style={{ alignItems: 'center', padding: 24 }}>

@@ -14,7 +14,7 @@ const Drawer = createDrawerNavigator();
 
 export const EstudianteDrawer = () => {
   return (
-    <Drawer.Navigator drawerContent={props => <CustomDrawer{...props} />}initialRouteName="Home">
+    <Drawer.Navigator drawerContent={props => <CustomDrawer{...props} />} initialRouteName="Home">
       <Drawer.Screen options= {{drawerIcon: () => (
         <Ionicons name="home-outline" size={22} />
       )}}

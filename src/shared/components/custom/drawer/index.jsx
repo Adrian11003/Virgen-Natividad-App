@@ -1,13 +1,11 @@
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { View, Text, ImageBackground,TouchableOpacity, Image } from 'react-native';
 import { AuthContext } from '../../../../core/context/authContext';
-import { useNavigation } from '@react-navigation/native';
 import { useContext } from 'react';
 
 const CustomDrawer = (props) => {
   const { user, handleLogout } = useContext(AuthContext)
   const defaultImage = require('../../../../assets/images/default-profile.jpg');
-  const navigation = useNavigation();
 
   return (
     <View style={{ flex: 1 }}>
@@ -29,7 +27,7 @@ const CustomDrawer = (props) => {
         </View>
       </DrawerContentScrollView>
       <View style={{ padding:20 }}>
-      <TouchableOpacity onPress={() => handleLogout(navigation)}>
+      <TouchableOpacity onPress={() => handleLogout()}>
         <Text  style={{ color: '#9ca3af' }}>Cerrar Sesión</Text>
       </TouchableOpacity>
       </View>
