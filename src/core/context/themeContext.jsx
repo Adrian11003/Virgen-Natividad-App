@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useMemo, useState } from 'react';
-import { useColorScheme, MD3LightTheme, MD3DarkTheme } from 'react-native';
-import { Provider as PaperProvider } from 'react-native-paper';
+import { useColorScheme, MD3LightTheme, MD3DarkTheme, StatusBar } from 'react-native';
+import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import { paperDarkTheme } from '../../shared/constants/themes/paper-dark-theme';
 import { paperLightTheme } from '../../shared/constants/themes/paper-light-theme';
 import { 
@@ -11,19 +11,15 @@ import {
 
 const lightTheme = {
   ...NavigationDefaultTheme,
-  ...paperLightTheme, // Paleta añadida
-  colors: {
-    ...NavigationDefaultTheme.colors,
-    ...paperLightTheme.colors // Paleta añadida
-  }
+  paperLightTheme, // Paleta añadida
 };
 
 const darkTheme = {
   ...NavigationDarkTheme,
-  ...paperDarkTheme, // Paleta añadida
+  paperDarkTheme,
   colors: {
-    ...NavigationDarkTheme.colors,
-    ...paperDarkTheme.colors // Paleta añadida
+    ...DefaultTheme.colors,
+    ...paperDarkTheme.colors
   }
 };
 
@@ -52,20 +48,27 @@ export const ThemeContextProvider = ({children}) => {
   );
 
   return (
-    <NavigationContainer theme={theme}>
-      <PaperProvider theme={theme}>
-        <ThemeContext.Provider 
-          value={{ 
-            theme, 
-            themeType, 
-            isDarkTheme, 
-            setThemeType, 
-            toogleThemeType 
-          }}
-        > 
-          {children}
-        </ThemeContext.Provider>
-      </PaperProvider>
-    </NavigationContainer> 
+    <>
+      {/* Cambia el estilo de la barra de estado basado en el tema */}
+      <StatusBar 
+        barStyle={isDarkTheme ? 'light-content' : 'dark-content'} 
+        backgroundColor={theme.colors.background} 
+      />
+      <NavigationContainer theme={theme}>
+        <PaperProvider theme={theme}>
+          <ThemeContext.Provider 
+            value={{ 
+              theme, 
+              themeType, 
+              isDarkTheme, 
+              setThemeType, 
+              toogleThemeType 
+            }}
+          > 
+            {children}
+          </ThemeContext.Provider>
+        </PaperProvider>
+      </NavigationContainer>
+    </>
   );
 };

@@ -1,9 +1,9 @@
 import { ThemeContextProvider, useTheme } from './core/context/themeContext';
 import { createStackNavigator } from '@react-navigation/stack';
-import { AuthProvider } from './core/context/authContext';
-import { HorariosProvider } from './core/context/horariosContext';
-import { ProtectedRoute } from './core/context/protectedRoute';
-import { LoginScreen } from './auth/index'
+// import { AuthProvider } from './core/context/authContext';
+// import { HorariosProvider } from './core/context/horariosContext';
+// import { ProtectedRoute } from './core/context/protectedRoute';
+// import { LoginScreen } from './auth/index'
 import { Text, View } from 'react-native';
 
 import { Button } from 'react-native-paper';
@@ -11,7 +11,7 @@ import { Button } from 'react-native-paper';
 const Stack = createStackNavigator();
 
 const TestScreen = () => {
-  const { toogleThemeType, themeType, isDarkTheme, theme } = useTheme()
+  const { toogleThemeType, theme } = useTheme()
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background }}>
