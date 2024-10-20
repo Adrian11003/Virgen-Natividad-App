@@ -1,9 +1,9 @@
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { useColorScheme, StatusBar } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
-import { paperDarkTheme } from '../../shared/constants/themes/dark-theme';
+import { paperDarkTheme, reactNavigationDarkTheme } from '../../shared/constants/themes/dark-theme';
 import { paperLightTheme, reactNavigationLightTheme } from '../../shared/constants/themes/light-theme';
-import { NavigationContainer, DarkTheme as NavigationDarkTheme } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 
 const lightTheme = {
   ...reactNavigationLightTheme,
@@ -15,10 +15,10 @@ const lightTheme = {
 };
 
 const darkTheme = {
-  ...NavigationDarkTheme,
+  ...reactNavigationDarkTheme,
   ...paperDarkTheme,
   colors: {
-    ...NavigationDarkTheme.colors,
+    ...reactNavigationDarkTheme.colors,
     ...paperDarkTheme.colors,
   }
 };

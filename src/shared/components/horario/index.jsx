@@ -1,6 +1,8 @@
 import { View, Text } from 'react-native';
+import { useTheme } from '../../../core/context/themeContext';                           
 
-export const Horario = ({ horarios }) => {
+export const Horario = ({ horarios, rol }) => {
+  const { themeType, theme } = useTheme()
   const days = ['Lun.', 'Mar.', 'Mie.', 'Jue.', 'Vie.'];
   const times = [
     '08:00:00 - 08:45:00',
@@ -36,77 +38,76 @@ export const Horario = ({ horarios }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ margin: 5, padding: 6, borderColor: '#ccc', borderWidth: 1, backgroundColor: '#fff' }}>
-        <Text style={{ fontSize: 24, textAlign: 'center', marginBottom: 16 }}>
-          Horario del Estudiante
+      <View style={{ margin: 5, padding: 6, borderWidth: 1, 
+        borderColor: themeType === 'light' ? '#ccc' : '#3C3C3C',
+        backgroundColor: themeType === 'light' ? '#fff' : '#1A1A1A' }}>
+        <Text style={{ fontSize: 24, textAlign: 'center', marginBottom: 9, color: theme.colors.paperText }}>
+          Horario del {rol}
         </Text>
-    <View style={{ minWidth: '100%', borderRightWidth: 1 }}>
-      <View style={{ 
-        flexDirection: 'row', 
-        borderTopWidth: 1,
-        borderLeftWidth: 1, 
-      }}>
-        <View style={{ 
-          width: '15%', 
-          padding: 8, 
-          borderBottomWidth: 1, 
-          }}>
-          <Text style={{ textAlign: 'center' }}>Hora</Text>
-        </View>
-        {days.map((day) => (
-          <View 
-              key={day} // Agregar la clave aquí para evitar advertencias de React
-              style={{ 
-                  width: '17%', 
-                  padding: 8, 
-                  borderLeftWidth: 1,
-                  borderBottomWidth: 1, // Corregido el cierre de la propiedad borderWidth
-                  textAlign: 'center' // Esta propiedad no debería estar aquí, debes moverla a Text
-              }}
-          >
-              <Text style={{ textAlign: 'center' }}> {/* Aplicar el textAlign en el Text */}
-                  {day}
-              </Text>
-          </View> 
-      ))}
-  </View>
 
-  {times.map((time, index) => (
-          <View key={time} style={{ flexDirection: 'row',   
-            borderLeftWidth: 1, 
-            borderBottomWidth: 1,  
-            borderColor: 'black'  }}>
-            <Text style={{ width: '15%', padding: 8, textAlign: 'center' }}>
-              {formattedTimes[index]}
-            </Text>
+        <View style={{ minWidth: '100%', borderRightWidth: 1, borderColor: themeType === 'light' ? 'black' : '#3C3C3C' }}>
+          {/* Encabezado con días */}
+          <View style={{ flexDirection: 'row', borderTopWidth: 1, borderLeftWidth: 1,
+            borderColor: themeType === 'light' ? 'black' : '#3C3C3C' }}>
+
+            <View style={{ width: '15%', padding: 8, borderBottomWidth: 1, 
+              backgroundColor: themeType === 'light' ? 'white' : '#292929',
+              borderColor: themeType === 'light' ? 'black' : '#3C3C3C' }}>
+              <Text style={{ textAlign: 'center', color: theme.colors.paperText }}>Hora</Text>
+            </View>
+
             {days.map((day) => (
-              <View
-                key={day}
-                style={{
-                  width: '17%',
-                  padding: 8,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderLeftWidth: 1,
-                  backgroundColor: isSelected(day, time) ? '#ADD8E6' : 'transparent',
+              <View 
+                key={day} 
+                style={{ width: '17%', padding: 8, borderLeftWidth: 1, borderBottomWidth: 1,
+                  backgroundColor: themeType === 'light' ? 'white' : '#292929',
+                  borderColor: themeType === 'light' ? 'black' : '#3C3C3C'
                 }}
               >
-                {isSelected(day, time) ? (
-                  <Text
-                    style={{ fontSize: 10, textAlign: 'center' }}
-                    numberOfLines={2}
-                  >
-                    {getCellInfo(day, time)}
-                  </Text>
-                ) : null}
+                <Text style={{ textAlign: 'center', color: theme.colors.paperText }}>
+                  {day}
+                </Text>
               </View>
             ))}
           </View>
-        ))}
 
-
-    </View>
+          {/* Filas con horarios */}
+          {times.map((time, index) => (
+            <View 
+              key={time} 
+              style={{ flexDirection: 'row', borderLeftWidth: 1, borderBottomWidth: 1, 
+                backgroundColor: themeType === 'light' ? 'white' : '#292929',
+                borderColor: themeType === 'light' ? 'black' : '#3C3C3C'
+               }}
+            >
+              <Text style={{ width: '15%', padding: 8, textAlign: 'center', color: theme.colors.paperText }}>
+                {formattedTimes[index]}
+              </Text>
+              {days.map((day) => (
+                <View
+                  key={day}
+                  style={{
+                    width: '17%',
+                    padding: 8,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderLeftWidth: 1,
+                    borderColor: themeType === 'light' ? 'black' : '#3C3C3C',
+                    backgroundColor: isSelected(day, time) 
+                    ? (themeType === 'light' ? '#ADD8E6' : '#36538B') : 'transparent'
+                  }}
+                >
+                  {isSelected(day, time) ? (
+                    <Text style={{ fontSize: 10, textAlign: 'center', color: theme.colors.paperText }} numberOfLines={2}>
+                      {getCellInfo(day, time)}
+                    </Text>
+                  ) : null}
+                </View>
+              ))}
+            </View>
+          ))}
+        </View>
       </View>
-</View>
+    </View>
   );
 };

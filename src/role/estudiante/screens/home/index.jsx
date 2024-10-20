@@ -1,21 +1,20 @@
 import { useContext, useEffect, useState } from 'react';
-import { View, Dimensions, Text } from 'react-native';
+import { View, Text } from 'react-native';
 import { HorariosContext } from '../../../../core/context/horariosContext';
 import { AuthContext } from '../../../../core/context/authContext';
 import { useTheme } from '../../../../core/context/themeContext';
 import { Horario } from '../../../../shared/components/horario/index';
-import { Button } from 'react-native-paper';
+import currentDate from '../../../../shared/constants/today-date';
+import isMediumScreen from '../../../../shared/constants/screen-width/md';
+import { ProgressBar } from 'react-native-paper';
 
 export const Home = () => {
-  const { horarios, getHorariosByGradoSeccion } = useContext(HorariosContext);
+  const { horarios, getHorariosByGradoSeccion, loading } = useContext(HorariosContext);
   const { user } = useContext(AuthContext)
   const { toogleThemeType, theme } = useTheme()
 
   const [seccionId, setSeccionId] = useState(null);
   const [gradoId, setGradoId] = useState(null);
-
-  const screenWidth = Dimensions.get('window').width;
-  const isMediumScreen = screenWidth >= 768; 
 
   useEffect(() => {
       setSeccionId(user.perfil.seccion._id);
@@ -28,15 +27,16 @@ export const Home = () => {
     }
   }, [seccionId, gradoId]);
 
+  if (loading) {
+    return <ProgressBar indeterminate />
+  }
+
   return (
     <>
-      <View>
-        <Text style={{ color: theme.colors.paperText }}>
-          Bienvenido {user.perfil.nombre}, {user.perfil.apellido}
+      <View style={{ marginTop: 20 }}>
+        <Text style={{ color: theme.colors.paperText, marginLeft: 20, fontSize: 15}}>
+          Hola <Text style={{ fontWeight: 'bold' }}>{user.perfil.nombre}</Text>, <Text>hoy es {currentDate}. </Text>
         </Text>
-        <Button mode="contained" onPress={toogleThemeType}>
-          Cambiar Tema
-        </Button>
       </View>
       <View style={{ 
         padding: 16,
@@ -44,7 +44,7 @@ export const Home = () => {
         width: isMediumScreen ? '50%' : '100%',
         height: '100%',
         }}>
-          <Horario horarios={horarios} />
+          <Horario horarios={horarios} rol={user.rol}/>
       </View>
     </>
   );

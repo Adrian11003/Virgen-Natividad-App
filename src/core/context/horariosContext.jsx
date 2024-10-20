@@ -5,7 +5,7 @@ export const HorariosContext = createContext();
 
 export const HorariosProvider = ({ children }) => {
   const [horarios, setHorarios] = useState({});
-  const [loadingHorarios, setLoadingHorarios] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const organizarHorarios = (data) => {
     const horariosPorDiaYHora = {};
@@ -18,7 +18,7 @@ export const HorariosProvider = ({ children }) => {
   };
 
   const getHorariosByDocenteCurso = async (docenteId, cursoId) => {
-    setLoadingHorarios(true);
+    setLoading(true);
     try {
       const { data } = await getHorariosByDocenteCursoRequest(docenteId, cursoId);
       const horariosOrganizados = organizarHorarios(data);
@@ -26,12 +26,12 @@ export const HorariosProvider = ({ children }) => {
     } catch (err) {
       console.log(err.error.message);
     } finally {
-      setLoadingHorarios(false);
+      setLoading(false);
     }
   };
 
   const getHorariosByGradoSeccion = async (seccionId, gradoId) => {
-    setLoadingHorarios(true);
+    setLoading(true);
     try {
       const { data } = await getHorariosBySeccionGradoRequest(seccionId, gradoId);
       const horariosOrganizados = organizarHorarios(data);
@@ -39,7 +39,7 @@ export const HorariosProvider = ({ children }) => {
     } catch (err) {
       console.log(err.error.message);
     } finally {
-      setLoadingHorarios(false);
+      setLoading(false);
     }
   };
 
@@ -47,7 +47,7 @@ export const HorariosProvider = ({ children }) => {
     <HorariosContext.Provider 
       value={{ 
         horarios, 
-        loadingHorarios, 
+        loading, 
         getHorariosByDocenteCurso, 
         getHorariosByGradoSeccion 
       }}
