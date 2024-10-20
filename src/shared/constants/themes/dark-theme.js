@@ -1,3 +1,15 @@
+export const reactNavigationDarkTheme = {
+  dark: true,
+  colors: {
+    primary: 'rgb(255, 45, 85)',
+    background: 'rgb(242, 242, 242)',
+    card: 'rgb(22, 46, 83)',
+    text: 'rgb(255, 255, 255)',
+    border: 'rgb(22, 46, 83)',
+    notification: 'rgb(255, 69, 58)',
+  },
+};
+
 export const paperDarkTheme = {
   "colors": {
     "primary": "rgb(172, 199, 255)",
