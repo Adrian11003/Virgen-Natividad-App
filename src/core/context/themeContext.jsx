@@ -1,25 +1,25 @@
 import React, { useCallback, useContext, useMemo, useState } from 'react';
-import { useColorScheme, MD3LightTheme, MD3DarkTheme, StatusBar } from 'react-native';
-import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
-import { paperDarkTheme } from '../../shared/constants/themes/paper-dark-theme';
-import { paperLightTheme } from '../../shared/constants/themes/paper-light-theme';
-import { 
-  NavigationContainer, 
-  DarkTheme as NavigationDarkTheme, 
-  DefaultTheme as NavigationDefaultTheme
-} from '@react-navigation/native';
+import { useColorScheme, StatusBar } from 'react-native';
+import { Provider as PaperProvider } from 'react-native-paper';
+import { paperDarkTheme } from '../../shared/constants/themes/dark-theme';
+import { paperLightTheme, reactNavigationLightTheme } from '../../shared/constants/themes/light-theme';
+import { NavigationContainer, DarkTheme as NavigationDarkTheme } from '@react-navigation/native';
 
 const lightTheme = {
-  ...NavigationDefaultTheme,
-  paperLightTheme, // Paleta añadida
+  ...reactNavigationLightTheme,
+  ...paperLightTheme,
+  colors: {
+    ...reactNavigationLightTheme.colors,
+    ...paperLightTheme.colors,
+  }
 };
 
 const darkTheme = {
   ...NavigationDarkTheme,
-  paperDarkTheme,
+  ...paperDarkTheme,
   colors: {
-    ...DefaultTheme.colors,
-    ...paperDarkTheme.colors
+    ...NavigationDarkTheme.colors,
+    ...paperDarkTheme.colors,
   }
 };
 
@@ -49,9 +49,8 @@ export const ThemeContextProvider = ({children}) => {
 
   return (
     <>
-      {/* Cambia el estilo de la barra de estado basado en el tema */}
       <StatusBar 
-        barStyle={isDarkTheme ? 'light-content' : 'dark-content'} 
+        barStyle={'light-content'} 
         backgroundColor={theme.colors.background} 
       />
       <NavigationContainer theme={theme}>
