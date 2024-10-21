@@ -6,12 +6,12 @@ import { useTheme } from '../../../../core/context/themeContext';
 import { Horario } from '../../../../shared/components/horario/index';
 import currentDate from '../../../../shared/constants/today-date';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
-import { ProgressBar } from 'react-native-paper';
+import { ProgressBar, Button } from 'react-native-paper';
 
 export const Home = () => {
   const { horarios, getHorariosByGradoSeccion, loading } = useContext(HorariosContext);
   const { user } = useContext(AuthContext)
-  const { toogleThemeType, theme } = useTheme()
+  const { theme, toogleThemeType } = useTheme()
 
   const [seccionId, setSeccionId] = useState(null);
   const [gradoId, setGradoId] = useState(null);
@@ -38,6 +38,7 @@ export const Home = () => {
           Hola <Text style={{ fontWeight: 'bold' }}>{user.perfil.nombre}</Text>, <Text>hoy es {currentDate}. </Text>
         </Text>
       </View>
+      <Button onPress={toogleThemeType}>aaaa</Button>
       <View style={{ 
         padding: 16,
         flexDirection: 'column',
