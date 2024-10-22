@@ -1,5 +1,5 @@
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
-import { View, Text, ImageBackground, TouchableOpacity, Image } from 'react-native';
+import { View, Text, ImageBackground, TouchableOpacity, Image, Platform } from 'react-native';
 import { AuthContext } from '../../../../core/context/authContext';
 import React, { useContext, useState } from 'react';
 import { Switch } from 'react-native-paper';
@@ -18,21 +18,24 @@ const CustomDrawer = (props) => {
   return (
     <View style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
-        <ImageBackground style={{ paddingStart: 10, paddingBottom: 10 }}>
+        <ImageBackground style={{ paddingStart: 10, paddingBottom: 10, marginTop: 10 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Image
               style={{ marginBottom: 10, height: 80, width: 80, borderRadius: 40 }}
               source={user.perfil.multimedia ? { uri: user.perfil.multimedia.url } : defaultImage}
             />
-            <View style={{marginLeft:20}}>
+            <View style={{ marginLeft: 15 }}>
             <Text style={{ color: 'white', fontWeight: 'bold' }}>
-              {isSwitchOn ? 'Tema: claro' : 'Tema: Oscuro'}
+              {isSwitchOn ? 'Tema: Claro' : 'Tema: Oscuro'}
             </Text>
-              <Switch
+              <Switch 
                 color='#9ca3af'
                 value={isSwitchOn}
                 onValueChange={onToggleSwitch}
-               
+                style={{
+                  marginRight: Platform.OS === 'android' ? 45 : 0,
+                  marginTop: Platform.OS === 'android' ? -10 : 5,
+                }}
               />
             </View>
           </View>
