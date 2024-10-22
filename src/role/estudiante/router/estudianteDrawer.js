@@ -14,75 +14,70 @@ const Drawer = createDrawerNavigator();
 
 export const EstudianteDrawer = () => {
   return (
-    <Drawer.Navigator drawerContent={props => <CustomDrawer{...props} />} screenOptions={{
-      drawerActiveTintColor: '#79abfd',
-      drawerLabelStyle: { color: '#434446' }
-    }}
-      initialRouteName="Home">
-
-      <Drawer.Screen options={{
-        drawerIcon: () => (
-          <Ionicons name="home-outline" size={22} />
-        )
+    <Drawer.Navigator 
+      drawerContent={props => <CustomDrawer {...props} />} 
+      initialRouteName="Home" 
+      screenOptions={{
+        drawerActiveTintColor: 'white', 
+        drawerInactiveTintColor: 'white', 
+        drawerLabelStyle: { fontSize: 16 }, 
       }}
-        name="Home"
-        component={Home}
+    >
+      <Drawer.Screen 
+        name="Home" 
+        component={Home} 
+        options={{
+          drawerIcon: () => <Ionicons name="home-outline" size={22} color="white" />,
+        }} 
       />
-      <Drawer.Screen options={{
-        drawerIcon: () => (
-          <Ionicons name="clipboard-outline" size={22} />
-        )
-      }}
-        name="Asistencia"
-        component={Asistencia}
+      <Drawer.Screen 
+        name="Asistencia" 
+        component={Asistencia} 
+        options={{
+          drawerIcon: () => <Ionicons name="clipboard-outline" size={22} color="white" />,
+        }} 
       />
-      <Drawer.Screen options={{
-        drawerIcon: () => (
-          <Ionicons name="chatbubbles-outline" size={22} />
-        )
-      }}
-        name="Comunicados"
-        component={Comunicados}
+      <Drawer.Screen 
+        name="Comunicados" 
+        component={Comunicados} 
+        options={{
+          drawerIcon: () => <Ionicons name="chatbubbles-outline" size={22} color="white" />,
+        }} 
       />
-      <Drawer.Screen options={{
-        drawerIcon: () => (
-          <Ionicons name="checkmark-outline" size={22} />
-        )
-      }}
-        name="Notas"
-        component={Notas}
+      <Drawer.Screen 
+        name="Notas" 
+        component={Notas} 
+        options={{
+          drawerIcon: () => <Ionicons name="checkmark-outline" size={22} color="white" />,
+        }} 
       />
-      <Drawer.Screen options={{
-        drawerIcon: () => (
-          <Ionicons name="cash-outline" size={22} />
-        )
-      }}
-        name="Pagos"
-        component={Pagos}
+      <Drawer.Screen 
+        name="Pagos" 
+        component={Pagos} 
+        options={{
+          drawerIcon: () => <Ionicons name="cash-outline" size={22} color="white" />,
+        }} 
       />
-      <Drawer.Screen options={{
-        drawerIcon: () => (
-          <Ionicons name="document-text-outline" size={22} />
-        )
-      }}
-        name="Tareas"
-        component={Tareas}
+      <Drawer.Screen 
+        name="Tareas" 
+        component={Tareas} 
+        options={{
+          drawerIcon: () => <Ionicons name="document-text-outline" size={22} color="white" />,
+        }} 
       />
-      <Drawer.Screen options={{
-        drawerIcon: () => (
-          <Ionicons name="person-circle-outline" size={22} />
-        )
-      }}
-        name="Perfil"
-        component={Perfil}
+      <Drawer.Screen 
+        name="Perfil" 
+        component={Perfil} 
+        options={{
+          drawerIcon: () => <Ionicons name="person-circle-outline" size={22} color="white" />,
+        }} 
       />
-      <Drawer.Screen options={{
-        drawerIcon: () => (
-          <Ionicons name="calendar-clear-outline" size={22} />
-        )
-      }}
-        name="Horario"
-        component={Horario}
+      <Drawer.Screen 
+        name="Horario" 
+        component={Horario} 
+        options={{
+          drawerIcon: () => <Ionicons name="calendar-clear-outline" size={22} color="white" />,
+        }} 
       />
     </Drawer.Navigator>
   );
