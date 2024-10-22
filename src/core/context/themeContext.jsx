@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useMemo, useState } from 'react';
-import { useColorScheme, StatusBar } from 'react-native';
+import { useColorScheme, StatusBar, Platform } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { paperDarkTheme, reactNavigationDarkTheme } from '../../shared/constants/themes/dark-theme';
 import { paperLightTheme, reactNavigationLightTheme } from '../../shared/constants/themes/light-theme';
@@ -33,9 +33,21 @@ const ThemeContext = React.createContext({
 
 export const useTheme = () => useContext(ThemeContext);
 
+const getPreferredTheme = () => {
+  if (Platform.OS === 'web') {
+    const currentHour = new Date().getHours();
+    if (currentHour >= 6 && currentHour < 18) {
+      return 'light';
+    } else {
+      return 'dark';
+    }
+  }
+  return useColorScheme();
+};
+
 export const ThemeContextProvider = ({children}) => {
-  const colorScheme = useColorScheme();
-  const [themeType, setThemeType] = useState(colorScheme || 'light');
+  const preferredTheme = getPreferredTheme();
+  const [themeType, setThemeType] = useState(preferredTheme || 'light');
 
   const toogleThemeType = useCallback(() => {
     setThemeType((prev) => (prev === 'dark' ? 'light' : 'dark'));
@@ -47,10 +59,19 @@ export const ThemeContextProvider = ({children}) => {
     [isDarkTheme]
   );
 
+  const barStyle = useMemo(() => {
+    if (Platform.OS === 'ios') {
+      return 'light-content';
+    } else if (Platform.OS === 'android') {
+      return isDarkTheme ? 'light-content' : 'dark-content'; 
+    }
+    return 'light-content'; 
+  }, [isDarkTheme]);
+
   return (
     <>
       <StatusBar 
-        barStyle={'light-content'} 
+        barStyle={barStyle} 
         backgroundColor={theme.colors.background} 
       />
       <NavigationContainer theme={theme}>
