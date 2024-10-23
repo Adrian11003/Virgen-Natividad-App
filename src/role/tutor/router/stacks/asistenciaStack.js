@@ -6,16 +6,25 @@ const Stack = createStackNavigator();
 
 export const AsistenciaStack = () => {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      initialRouteName="GestionarAsistencia"
+      screenOptions={{
+        headerShown: true,
+      }}
+    >
       <Stack.Screen 
         name="GestionarAsistencia" 
-        component={GestionarAsistencia} 
-        options={{ headerShown: false }}
+        component={GestionarAsistencia}
+        options={{
+          headerShown: false
+        }}
       />
       <Stack.Screen 
         name="GuardarAsistencia" 
-        component={GuardarAsistencia} 
-        options={{ headerShown: false }}
+        component={GuardarAsistencia}
+        options={{
+          headerShown: false
+        }}
       />
     </Stack.Navigator>
   );
