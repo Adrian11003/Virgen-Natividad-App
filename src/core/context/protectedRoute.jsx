@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { AuthContext } from './authContext';
 import { EstudianteDrawer } from '../../role/estudiante/router/estudianteDrawer';
-import { TutorDrawer } from '../../role/tutor/router/tutorDrawer';
+import { TutorDrawer } from '../../role/tutor/router/drawer/tutorDrawer'
 import { DocenteDrawer } from '../../role/docente/router/docenteDrawer';
 import { LoginScreen } from '../../auth/index';
 

@@ -34,15 +34,8 @@ const ThemeContext = React.createContext({
 export const useTheme = () => useContext(ThemeContext);
 
 const getPreferredTheme = () => {
-  if (Platform.OS === 'web') {
-    const currentHour = new Date().getHours();
-    if (currentHour >= 6 && currentHour < 18) {
-      return 'light';
-    } else {
-      return 'dark';
-    }
-  }
-  return useColorScheme();
+  const currentHour = new Date().getHours();
+  return (currentHour >= 6 && currentHour < 18) ? 'light' : 'dark';
 };
 
 export const ThemeContextProvider = ({children}) => {
