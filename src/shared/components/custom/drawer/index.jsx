@@ -4,6 +4,7 @@ import { AuthContext } from '../../../../core/context/authContext';
 import React, { useContext, useState } from 'react';
 import { Switch } from 'react-native-paper';
 import { useTheme } from '../../../../core/context/themeContext';
+import { Ionicons } from '@expo/vector-icons';
 
 const CustomDrawer = (props) => {
   const { user, handleLogout } = useContext(AuthContext);
@@ -50,9 +51,12 @@ const CustomDrawer = (props) => {
           <DrawerItemList {...props} />
         </View>
       </DrawerContentScrollView>
-      <View style={{ padding: 20 }}>
+      <View style={{ marginBottom:15 ,padding: 20, borderTopWidth: 1, borderTopColor: '#ccc' }}>
         <TouchableOpacity onPress={() => handleLogout()}>
-          <Text style={{ color: '#9ca3af' }}>Cerrar Sesión</Text>
+          <View style={{flexDirection:'row',alignItems:'center'}}>
+          <Ionicons name="log-out-outline" size={22} color="white" style={{marginRight:30}} />
+          <Text style={{ fontSize:16, color: 'white', fontWeight:'bold',lineHeight: 22}}>Cerrar Sesión</Text>
+          </View>
         </TouchableOpacity>
       </View>
     </View>
