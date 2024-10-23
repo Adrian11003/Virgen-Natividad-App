@@ -1,76 +1,65 @@
-import { useEffect, useContext, useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import { AuthContext } from '../../../../core/context/authContext';
 import { AsistenciaContext } from '../../../../core/context/asistenciaContext';
-import DropDownPicker from 'react-native-dropdown-picker';
-import { Button } from 'react-native-paper'
+import { Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
+import { CustomSelector } from '../../../../shared/components/custom/selector/index';
 import { useTheme } from '../../../../core/context/themeContext';
+import isMediumScreen from '../../../../shared/constants/screen-width/md';
+import { ModalNuevaAsistencia } from '../../../../shared/components/modal/modal-asistencia/index';
 
 export const GestionarAsistencia = () => {
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState();
-  const { themeType } = useTheme();
-
-  const [items, setItems] = useState([]);
-
-  const { user } = useContext(AuthContext)
+  const [selectedSemana, setSelectedSemana] = useState();
+  const { user } = useContext(AuthContext);
   const { semanas, fetchSemanas } = useContext(AsistenciaContext);
-
   const navigation = useNavigation();
+  const { theme, themeType } = useTheme();
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     fetchSemanas();
   }, []);
 
-  useEffect(() => {
-    const semanaItems = semanas.map((semana) => ({
-      label: semana.nombre,
-      value: semana._id,
-    }));
-    const todasLasSemanasItem = { label: 'Todas las semanas', value: 'todas' };
-    setItems([todasLasSemanasItem, ...semanaItems]);
-  }, [semanas]);
-
   return (
-    <>
-    <View style={{ justifyContent: 'space-between', fontSize: 16 }}>
-      <Text>Seccion: {user.perfil.seccion.nombre}</Text>
+    <View style={{ padding: 20, flex: 1 }}>
       <View
         style={{
-          paddingTop: 50,
-          flexDirection: 'row',
-          justifyContent: 'center',
-          width: 180
-        }}>
-        <DropDownPicker
-          open={open}
-          value={value}
-          items={items}
-          setOpen={setOpen}
-          setValue={setValue}
-          setItems={setItems}
-          theme={ themeType === 'light' ? 'LIGHT' : 'DARK' }
-          placeholder='Todas las semanas'
+          display: 'grid',
+          gridTemplateColumns: isMediumScreen ? '3fr 1fr 1fr' : '1fr',
+          gap: 12,
+          alignItems: 'center',
+          marginBottom: 20,
+        }}
+      >
+        <Text style={{ fontSize: 15, fontWeight: 'bold', color: theme.colors.paperText }}>
+          Sección: {user.perfil.seccion.nombre}
+        </Text>
+
+        <CustomSelector
+          opciones={semanas}
+          selectedOption={selectedSemana}
+          onSelect={(item) => setSelectedSemana(item)}
+          placeholder="Semana"
+          style={{
+            width: '100%',
+          }}
         />
+
+        <Button 
+          icon="plus" 
+          mode="contained" 
+          buttonColor={theme.colors.primary}
+          onPress={() => setModalVisible(true)}
+        >
+          Nueva Asistencia
+        </Button>
       </View>
+
+      <ModalNuevaAsistencia
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+      />
     </View>
-    <Button 
-      onPress={() => navigation.navigate('GuardarAsistencia')}
-    >
-      Ir a Guardar Asistencia
-    </Button>
-    <View style={{
-      marginTop: 10,
-      alignItems: 'center',
-      justifyContent: 'center'
-    }}>
-    <View style={{
-      innerWidth: '80%',
-    }}>
-      <Text>Asistencia</Text>
-    </View>
-    </View>
-    </>
-  )
-}
+  );
+};

@@ -13,34 +13,39 @@ export const DocenteDrawer = () => {
     <Drawer.Navigator 
       drawerContent={props => <CustomDrawer{...props} />} 
       initialRouteName="Home"
+      screenOptions={{
+        drawerActiveTintColor: 'white', 
+        drawerInactiveTintColor: 'white', 
+        drawerLabelStyle: { fontSize: 16 }, 
+      }}
     >
       <Drawer.Screen 
         name="Home" 
         component={Home} 
-        options= {{drawerIcon: () => (
-          <Ionicons name="home-outline" size={22} />
-        )}}
+        options= {{
+          drawerIcon: () => <Ionicons name="home-outline" size={22} color="white" />
+        }}
       />
       <Drawer.Screen 
         name="Notas" 
         component={GestionarNotas} 
-        options= {{drawerIcon: () => (
-          <Ionicons name="checkmark-outline" size={22} />
-        )}}
+        options= {{
+          drawerIcon: () => <Ionicons name="checkmark-outline" size={22} color="white" />
+        }}
       />
       <Drawer.Screen 
         name="Tareas" 
         component={GestionarTareas} 
-        options= {{drawerIcon: () => (
-          <Ionicons name="document-text-outline" size={22} />
-        )}}
+        options= {{
+          drawerIcon: () => <Ionicons name="document-text-outline" size={22} color="white" />
+        }}
       />
       <Drawer.Screen 
         name="Perfil" 
         component={Perfil} 
-        options= {{drawerIcon: () => (
-          <Ionicons name="person-circle-outline" size={22} />
-        )}}
+        options= {{
+          drawerIcon: () => <Ionicons name="person-circle-outline" size={22} color="white" />
+        }}
       />
     </Drawer.Navigator>
   );
