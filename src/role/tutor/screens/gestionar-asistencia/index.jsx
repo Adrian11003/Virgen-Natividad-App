@@ -4,15 +4,20 @@ import { AuthContext } from '../../../../core/context/authContext';
 import { AsistenciaContext } from '../../../../core/context/asistenciaContext';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Button } from 'react-native-paper'
+import { useNavigation } from '@react-navigation/native';
+import { useTheme } from '../../../../core/context/themeContext';
 
 export const GestionarAsistencia = () => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState();
+  const { themeType } = useTheme();
 
   const [items, setItems] = useState([]);
 
   const { user } = useContext(AuthContext)
   const { semanas, fetchSemanas } = useContext(AsistenciaContext);
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     fetchSemanas();
@@ -45,11 +50,14 @@ export const GestionarAsistencia = () => {
           setOpen={setOpen}
           setValue={setValue}
           setItems={setItems}
+          theme={ themeType === 'light' ? 'LIGHT' : 'DARK' }
           placeholder='Todas las semanas'
         />
       </View>
     </View>
-    <Button >
+    <Button 
+      onPress={() => navigation.navigate('GuardarAsistencia')}
+    >
       Ir a Guardar Asistencia
     </Button>
     <View style={{

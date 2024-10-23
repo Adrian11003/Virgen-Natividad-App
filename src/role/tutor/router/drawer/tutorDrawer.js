@@ -1,10 +1,10 @@
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { GestionarAsistencia } from '../screens/gestionar-asistencia/index';
-import { GestionarComunicados } from '../screens/gestionar-comunicados/index';
-import { Home } from '../screens/home/index';
-import { Perfil } from '../screens/perfil/index';
+import { AsistenciaStack } from '../stack/tutorStack';
+import { GestionarComunicados } from '../../screens/gestionar-comunicados/index';
+import { Home } from '../../screens/home/index';
+import { Perfil } from '../../screens/perfil/index';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import CustomDrawer from '../../../shared/components/custom/drawer';
+import CustomDrawer from '../../../../shared/components/custom/drawer/index';
 
 const Drawer = createDrawerNavigator();
 
@@ -23,8 +23,8 @@ export const TutorDrawer = () => {
       />
       <Drawer.Screen
         name="Asistencia" 
-        component={GestionarAsistencia} 
-        options= {{drawerIcon: () => (
+        component={AsistenciaStack} 
+        options={{drawerIcon: () => (
           <Ionicons name="clipboard-outline" size={22} />
         )}}
       />
