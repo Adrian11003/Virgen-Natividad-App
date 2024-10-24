@@ -38,9 +38,9 @@ export const Horario = ({ horarios, rol }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ margin: 5, padding: 6, borderWidth: 1, 
+      <View style={{ margin: 5, padding: 6, borderWidth: 1, borderRadius: 4,
         borderColor: themeType === 'light' ? '#ccc' : '#3C3C3C',
-        backgroundColor: themeType === 'light' ? '#fff' : '#1A1A1A' }}>
+        backgroundColor: themeType === 'light' ? '#fff' : '#141417' }}>
         <Text style={{ fontSize: 24, textAlign: 'center', marginBottom: 9, color: theme.colors.paperText }}>
           Horario del {rol}
         </Text>
