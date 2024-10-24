@@ -1,5 +1,5 @@
 import { createContext, useState } from 'react';
-import { getHorariosByDocenteCursoRequest, getHorariosBySeccionGradoRequest } from '../api/horarios';
+import { getHorariosByDocenteRequest, getHorariosBySeccionGradoRequest } from '../api/horarios';
 
 export const HorariosContext = createContext();
 
@@ -17,10 +17,10 @@ export const HorariosProvider = ({ children }) => {
     return horariosPorDiaYHora;
   };
 
-  const getHorariosByDocenteCurso = async (docenteId, cursoId) => {
+  const getHorariosByDocente = async (docenteId) => {
     setLoading(true);
     try {
-      const { data } = await getHorariosByDocenteCursoRequest(docenteId, cursoId);
+      const { data } = await getHorariosByDocenteRequest(docenteId);
       const horariosOrganizados = organizarHorarios(data);
       setHorarios(horariosOrganizados);
     } catch (err) {
@@ -48,7 +48,7 @@ export const HorariosProvider = ({ children }) => {
       value={{ 
         horarios, 
         loading, 
-        getHorariosByDocenteCurso, 
+        getHorariosByDocente,
         getHorariosByGradoSeccion 
       }}
     >
