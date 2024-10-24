@@ -37,7 +37,7 @@ export const CustomSelector = ({ opciones, selectedOption, onSelect, placeholder
           borderColor: themeType === 'light' ? '#C0C0C0' : '#777', 
         }}
       >
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 20 }}>
         <Text style={{ color: theme.colors.paperText }}>
           {selectedOption ? selectedOption.nombre : placeholder}
         </Text>
