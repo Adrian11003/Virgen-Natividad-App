@@ -3,6 +3,7 @@ import { SafeAreaView, TextInput, View, Image, Text, Pressable, ActivityIndicato
 import { AuthContext } from '../core/context/authContext';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../core/context/themeContext';  // Ajusta la ruta del ThemeContext
+import { Button, Snackbar } from 'react-native-paper';
 
 export const LoginScreen = () => {
   const [identificador, setIdentificador] = useState('');
@@ -11,14 +12,37 @@ export const LoginScreen = () => {
   const navigation = useNavigation();
   const { width } = useWindowDimensions();
 
-  const { theme, toogleThemeType, isDarkTheme } = useTheme();  // Extraemos el tema y el toggle
+  const { theme, toogleThemeType, isDarkTheme, themeType } = useTheme();  // Extraemos el tema y el toggle
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarVisible, setSnackbarVisible] = useState(false); // Estado inicial: Snackbar no visible
 
+// Función para mostrar el Snackbar
+const onLoginPress = () => {
+  // Validación para el campo identificador
+  if (!identificador) {
+    setSnackbarMessage('El campo de identificador no puede estar vacío');
+    setSnackbarVisible(true); // Mostrar el Snackbar con el mensaje de error
+    return;
+  }
+
+  // Validación para el campo contraseña
+  if (!contrasena || contrasena.length <= 4) {
+    setSnackbarMessage(
+      'La contraseña debe tener más de 4 caracteres y no puede estar vacía'
+    );
+    setSnackbarVisible(true); // Mostrar el Snackbar con el mensaje de error
+    return;
+  }
+
+  // Si ambas validaciones pasan, ejecutar el login
+  handleLogin(identificador, contrasena);
+};
   // Definir punto de quiebre para pantallas medianas (tabletas)
   const isMediumScreen = width >= 768;
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
       </View>
     );
@@ -31,7 +55,8 @@ export const LoginScreen = () => {
         alignItems: 'center',
         justifyContent: 'center',
         height: '100%',
-        backgroundColor: theme.colors.background, // Usar color del tema
+        backgroundColor: themeType === 'light' ? '#fff' : '#000' // Usar color del tema
+        
       }}>
         {/* Sección del logo */}
         <View style={{
@@ -40,16 +65,17 @@ export const LoginScreen = () => {
           alignItems: 'center',
           width: isMediumScreen ? '40%' : '100%',
           height: isMediumScreen ? '100%' : 'auto',
+          
           backgroundColor: isMediumScreen ? 'transparent' : theme.colors.surface
         }}>
           {isMediumScreen ? (
             <ImageBackground
-              source={require("../assets/images/fondaco.jpg")}
+              source={{uri:'https://img.freepik.com/vector-gratis/fondo-azul-degradado_23-2149337036.jpg'}}
               style={{
                 flex: 5,
                 justifyContent: 'center',
                 alignItems: 'center',
-                width: '220%',
+                width: '140%',
                 height: '100%',
                 padding: 80
               }}
@@ -93,7 +119,7 @@ export const LoginScreen = () => {
             color: isDarkTheme ? theme.colors.text : theme.colors.primary,  // Usar color del tema
             fontWeight: 'bold'
           }}
-          onPress={toogleThemeType}
+          
           >
             ¡Bienvenido de nuevo!
           </Text>
@@ -112,7 +138,7 @@ export const LoginScreen = () => {
                 borderRadius: 16,
                 color: isDarkTheme ? theme.colors.text : theme.colors.primary  // Usar color del tema
               }}
-              onPress={toogleThemeType}
+              
               placeholder="Nro. Documento"
               placeholderTextColor={ theme.colors.placeholder}  // Placeholder acorde al tema
             />
@@ -129,7 +155,7 @@ export const LoginScreen = () => {
                 borderRadius: 16,
                 color:  isDarkTheme ? theme.colors.text : theme.colors.primary
               }}
-              onPress={toogleThemeType}
+              
               placeholder="Contraseña"
               secureTextEntry
               placeholderTextColor={ theme.colors.placeholder}
@@ -145,7 +171,7 @@ export const LoginScreen = () => {
               paddingHorizontal: 24,
               borderRadius: 50
             }}
-            onPress={() => handleLogin(identificador, contrasena, navigation)}
+            onPress={onLoginPress}
           >
             <Text style={{ color: theme.colors.onPrimary, fontSize: 20, fontWeight: 'bold', textAlign: 'center' }}>
               Ingresar
@@ -161,7 +187,9 @@ export const LoginScreen = () => {
               paddingHorizontal: 20,
               borderRadius: 20
             }}
-            onPress={toogleThemeType}  // Alterna entre los temas
+            onPress={toogleThemeType} 
+             // Alterna entre los temas
+            
           >
             <Text style={{ color: theme.colors.onPrimary, textAlign: 'center' }}>
               Cambiar a {isDarkTheme ? 'Modo Día' : 'Modo Noche'}
@@ -169,6 +197,31 @@ export const LoginScreen = () => {
           </Pressable>
         </View>
       </View>
+       {/* Snackbar */}
+      {/* Snackbar */}
+      <View
+  style={{
+    flex: 1, // Ocupa todo el espacio disponible
+    justifyContent: 'center', // Centra verticalmente
+    alignItems: 'center', // Centra horizontalmente
+  }}
+>
+  <Snackbar
+    visible={snackbarVisible}
+    onDismiss={() => setSnackbarVisible(false)} // Ocultar el Snackbar
+    duration={3000} // Duración de 3 segundos
+    action={{
+      label: 'Cerrar',
+      onPress: () => setSnackbarVisible(false), // Acción para cerrar manualmente el Snackbar
+    }}
+    style={{
+      width: '50%', // Establece el ancho del Snackbar
+      alignSelf: 'center', // Asegura que el Snackbar esté centrado horizontalmente
+    }}
+  >
+    {snackbarMessage}
+  </Snackbar>
+</View>
     </SafeAreaView>
   );
 };
