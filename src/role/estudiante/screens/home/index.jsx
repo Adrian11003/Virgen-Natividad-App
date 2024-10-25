@@ -16,15 +16,15 @@ const image3 = require('../../../../assets/images/Aviso3.png');
 
 export const Home = () => {
   const { horarios, getHorariosByGradoSeccion, loading } = useContext(HorariosContext);
-  const { user } = useContext(AuthContext);
-  const { theme } = useTheme();
+  const { user } = useContext(AuthContext)
+  const { theme } = useTheme()
 
   const [seccionId, setSeccionId] = useState(null);
   const [gradoId, setGradoId] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedTitle, setSelectedTitle] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-
+  
   const images = [
     { source: image1, title: 'Aviso Importante' },
     { source: image2, title: 'Calendario Escolar 2024' },
@@ -32,10 +32,10 @@ export const Home = () => {
   ];
 
   useEffect(() => {
-    setSeccionId(user.perfil.seccion._id);
-    setGradoId(user.perfil.grado._id);
+      setSeccionId(user.perfil.seccion._id);
+      setGradoId(user.perfil.grado._id);
   }, [user]);
-
+  
   useEffect(() => {
     if (seccionId && gradoId) {
       getHorariosByGradoSeccion(seccionId, gradoId);
@@ -53,7 +53,7 @@ export const Home = () => {
   };
 
   if (loading) {
-    return <ProgressBar indeterminate />;
+    return <ProgressBar indeterminate />
   }
 
   return (
