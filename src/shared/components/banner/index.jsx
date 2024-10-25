@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Image, Animated, TouchableWithoutFeedback } from 'react-native';
+import { Image, Animated, TouchableWithoutFeedback, Text } from 'react-native';
 import { useTheme } from '../../../core/context/themeContext';
 
-export const Banner = ({ source }) => {
-  const { themeType } = useTheme();
+export const Banner = ({ source, onPress, title }) => {
+  const { themeType, theme } = useTheme();
   const [scaleValue] = useState(new Animated.Value(1)); 
 
   const handlePressIn = () => {
@@ -26,6 +26,7 @@ export const Banner = ({ source }) => {
     <TouchableWithoutFeedback
       onPressIn={handlePressIn} 
       onPressOut={handlePressOut} 
+      onPress={onPress}
     >
       <Animated.View style={{ 
         transform: [{ scale: scaleValue }], 
@@ -43,11 +44,15 @@ export const Banner = ({ source }) => {
         flex: 1, 
         alignItems: 'center',
       }}>
+        <Text style={{ color: theme.colors.paperText, fontSize: 20, marginBottom: 10 }}>
+          {title}
+        </Text>  
+      
         <Image
           source={source}
           style={{ 
             width: '100%',
-            height: '100%',
+            height: '80%',
             borderRadius: 8,
           }}
           resizeMode="cover" 

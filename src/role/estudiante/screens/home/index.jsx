@@ -7,7 +7,12 @@ import { Horario } from '../../../../shared/components/horario/index';
 import currentDate from '../../../../shared/constants/today-date';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
 import { ProgressBar } from 'react-native-paper';
-import { Banner } from '../../../../shared/components/banner';
+import { Banner } from '../../../../shared/components/banner/index';
+import { ModalBanner } from '../../../../shared/components/modal/modal-banner/index';
+
+const image1 = require('../../../../assets/images/Aviso1.png');
+const image2 = require('../../../../assets/images/Aviso2.png');
+const image3 = require('../../../../assets/images/Aviso3.png');
 
 export const Home = () => {
   const { horarios, getHorariosByGradoSeccion, loading } = useContext(HorariosContext);
@@ -16,6 +21,15 @@ export const Home = () => {
 
   const [seccionId, setSeccionId] = useState(null);
   const [gradoId, setGradoId] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedTitle, setSelectedTitle] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const images = [
+    { source: image1, title: 'Aviso Importante' },
+    { source: image2, title: 'Calendario Escolar 2024' },
+    { source: image3, title: 'Cronograma de evaluacione' }
+  ];
 
   useEffect(() => {
     setSeccionId(user.perfil.seccion._id);
@@ -27,6 +41,16 @@ export const Home = () => {
       getHorariosByGradoSeccion(seccionId, gradoId);
     }
   }, [seccionId, gradoId]);
+
+  const handleOpenModal = (image, title) => {
+    setSelectedImage(image);
+    setSelectedTitle(title);
+    setModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
+  };
 
   if (loading) {
     return <ProgressBar indeterminate />;
@@ -54,12 +78,22 @@ export const Home = () => {
             marginHorizontal: 20,
             marginBottom: 10
           }}>
-            <Banner source={require('../../../../assets/images/fondaco.jpg')}/>
-            <Banner text="B" />
-            <Banner text="C" />
-            <Banner text="D" />
-            <Banner text="E" />
+            {images.map((img, index) => (
+              <Banner
+                key={index}
+                title={img.title}
+                onPress={() => handleOpenModal(img.source, img.title)}
+                source={img.source}
+              />
+            ))}
           </View>
+
+          <ModalBanner
+            modalVisible={modalVisible}
+            selectedImage={selectedImage}
+            selectedTitle={selectedTitle}
+            onClose={handleCloseModal}
+          />
         </ScrollView>
       </View>
     </View>
