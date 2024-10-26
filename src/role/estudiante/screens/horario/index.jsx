@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { View, Dimensions } from 'react-native';
 import { HorariosContext } from '../../../../core/context/horariosContext';
 import { AuthContext } from '../../../../core/context/authContext';
-import { Horario } from '../../../../shared/components/horario/index';
+import { Horario } from '../../../../shared/components/custom/horario/index';
 
 const HorarioEstudiante = () => {
   const { horarios, getHorariosByGradoSeccion } = useContext(HorariosContext);

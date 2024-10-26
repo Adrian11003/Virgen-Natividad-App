@@ -3,17 +3,17 @@ import { View, Text, ScrollView } from 'react-native';
 import { HorariosContext } from '../../../../core/context/horariosContext';
 import { AuthContext } from '../../../../core/context/authContext';
 import { useTheme } from '../../../../core/context/themeContext';
-import { Horario } from '../../../../shared/components/horario/index';
+import { Horario } from '../../../../shared/components/custom/horario/index';
 import currentDate from '../../../../shared/constants/today-date';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
 import { ProgressBar } from 'react-native-paper';
-import { Banner } from '../../../../shared/components/banner/index';
+import { Banner } from '../../../../shared/components/custom/banner/index';
 import { ModalBanner } from '../../../../shared/components/modal/modal-banner/index';
 
 const image1 = require('../../../../assets/images/Aviso1.png');
 const image2 = require('../../../../assets/images/Aviso2.png');
 const image3 = require('../../../../assets/images/Aviso3.png');
-
+ 
 export const Home = () => {
   const { horarios, getHorariosByGradoSeccion, loading } = useContext(HorariosContext);
   const { user } = useContext(AuthContext);
@@ -28,7 +28,8 @@ export const Home = () => {
   const images = [
     { source: image1, title: 'Aviso Importante' },
     { source: image2, title: 'Calendario Escolar 2024' },
-    { source: image3, title: 'Cronograma de evaluacione' }
+    { source: image3, title: 'Cronograma de evaluaciones' },
+    { source: image3, title: 'Cronograma de evaluaciones' }
   ];
 
   useEffect(() => {
@@ -71,20 +72,15 @@ export const Home = () => {
             <Horario horarios={horarios} rol={user.rol} />
           </View>
 
-          <View style={{ 
-            display: isMediumScreen ? 'grid' : 'flex',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 12,
-            marginHorizontal: 20,
-            marginBottom: 10
-          }}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: 20, marginBottom: 10, gap: 13 }}>
             {images.map((img, index) => (
-              <Banner
-                key={index}
-                title={img.title}
-                onPress={() => handleOpenModal(img.source, img.title)}
-                source={img.source}
-              />
+              <View key={index} style={{ width: isMediumScreen ? '32%' : '100%', marginBottom: 12 }}> 
+                <Banner
+                  title={img.title}
+                  onPress={() => handleOpenModal(img.source, img.title)}
+                  source={img.source}
+                />
+              </View>
             ))}
           </View>
 

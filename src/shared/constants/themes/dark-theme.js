@@ -50,6 +50,7 @@ export const paperDarkTheme = {
       "level5": "rgb(47, 51, 62)"
     },
     "paperText": "rgb(255, 255, 255)",
+    "modalBackground": "#1B1B1F",
     "surfaceDisabled": "rgba(227, 226, 230, 0.12)",
     "onSurfaceDisabled": "rgba(227, 226, 230, 0.38)",
     "backdrop": "rgba(45, 48, 56, 0.4)"
