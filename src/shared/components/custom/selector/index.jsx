@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import { useTheme } from '../../../../core/context/themeContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import isMediumScreen from '../../../../shared/constants/screen-width/md';
 
-export const CustomSelector = ({ opciones, selectedOption, onSelect, placeholder = 'Selecciona una opción' }) => {
+export const CustomSelector = ({ opciones, selectedOption, onSelect, placeholder = 'Selecciona una opción', mobileWidth }) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const { theme, themeType } = useTheme();
 
@@ -24,9 +25,8 @@ export const CustomSelector = ({ opciones, selectedOption, onSelect, placeholder
     </TouchableOpacity>
   );
   
-
   return (
-    <View style={{ position: 'relative', zIndex: 1 }}>
+    <View style={{ position: 'relative', zIndex: 1, width: isMediumScreen ? mobileWidth : '100%' }}>
       <TouchableOpacity
         onPress={() => setIsSelectorOpen(!isSelectorOpen)}
         style={{

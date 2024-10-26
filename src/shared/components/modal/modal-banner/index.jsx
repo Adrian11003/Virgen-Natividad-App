@@ -17,7 +17,7 @@ export const ModalBanner = ({ modalVisible, selectedImage, selectedTitle, onClos
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0,0,0,0.5)'
       }}>
         <View style={{
           width: isMediumScreen ? '55%' : '90%',
