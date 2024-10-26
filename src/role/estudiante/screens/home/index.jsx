@@ -13,6 +13,9 @@ import { ModalBanner } from '../../../../shared/components/modal/modal-banner/in
 const image1 = require('../../../../assets/images/Aviso1.png');
 const image2 = require('../../../../assets/images/Aviso2.png');
 const image3 = require('../../../../assets/images/Aviso3.png');
+const image4 = require('../../../../assets/images/Aviso4.png');
+const image5 = require('../../../../assets/images/Aviso5.png');
+const image6 = require('../../../../assets/images/Aviso6.png');
  
 export const Home = () => {
   const { horarios, getHorariosByGradoSeccion, loading } = useContext(HorariosContext);
@@ -29,7 +32,9 @@ export const Home = () => {
     { source: image1, title: 'Aviso Importante' },
     { source: image2, title: 'Calendario Escolar 2024' },
     { source: image3, title: 'Cronograma de evaluaciones' },
-    { source: image3, title: 'Cronograma de evaluaciones' }
+    { source: image4, title: 'Escuela de familia' },
+    { source: image5, title: 'Campaña solidaria - Surco te abriga' },
+    { source: image6, title: 'Comunicado de Talleres' }
   ];
 
   useEffect(() => {
