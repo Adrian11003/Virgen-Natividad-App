@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Image, Animated, TouchableWithoutFeedback, Text } from 'react-native';
-import { useTheme } from '../../../core/context/themeContext';
+import { useTheme } from '../../../../core/context/themeContext';
 
 export const Banner = ({ source, onPress, title }) => {
   const { themeType, theme } = useTheme();

@@ -1,8 +1,11 @@
 import React from 'react';
 import { View, Modal, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import isMediumScreen from '../../../constants/screen-width/md';
+import { useTheme } from '../../../../core/context/themeContext';
 
 export const ModalBanner = ({ modalVisible, selectedImage, selectedTitle, onClose }) => {
+  const { theme } = useTheme();
+
   return (
     <Modal
       animationType="fade"
@@ -19,7 +22,7 @@ export const ModalBanner = ({ modalVisible, selectedImage, selectedTitle, onClos
         <View style={{
           width: isMediumScreen ? '55%' : '90%',
           height: '80%',
-          backgroundColor: '#fff',
+          backgroundColor: theme.colors.modalBackground,
           borderRadius: 10,
           padding: 20,
           justifyContent: 'space-between',
@@ -30,6 +33,7 @@ export const ModalBanner = ({ modalVisible, selectedImage, selectedTitle, onClos
             fontWeight: 'bold',
             marginBottom: 10,
             textAlign: 'center',
+            color: theme.colors.paperText
           }}>
             {selectedTitle}
           </Text>
@@ -38,17 +42,18 @@ export const ModalBanner = ({ modalVisible, selectedImage, selectedTitle, onClos
             contentContainerStyle={{
               flexGrow: 1,
               justifyContent: 'center',
-              alignItems: 'center',
+              alignItems: 'center'
             }}
             showsVerticalScrollIndicator={true}
             showsHorizontalScrollIndicator={true}
             horizontal={true}
+            style= {{ borderRadius: 8 }}
           >
             {selectedImage && (
               <Image 
                 source={selectedImage} 
-                style={{ transform: [{ scale: 1 }] }} 
-                resizeMode="contain" 
+                style={{ transform: [{ scale: 1 }], borderRadius: 8 }} 
+                resizeMode="contain"
               />
             )}
           </ScrollView>
