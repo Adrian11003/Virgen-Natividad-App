@@ -3,7 +3,7 @@ import { View, Text, ScrollView} from 'react-native';
 import { HorariosContext } from '../../../../core/context/horariosContext';
 import { AuthContext } from '../../../../core/context/authContext';
 import { useTheme } from '../../../../core/context/themeContext';
-import { Horario } from '../../../../shared/components/horario/index';
+import { Horario } from '../../../../shared/components/custom/horario/index';
 import currentDate from '../../../../shared/constants/today-date';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
 import { ProgressBar } from 'react-native-paper';

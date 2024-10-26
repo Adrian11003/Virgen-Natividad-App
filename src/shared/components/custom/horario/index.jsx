@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native';
-import { useTheme } from '../../../core/context/themeContext';                           
+import { useTheme } from '../../../../core/context/themeContext';                           
 
 export const Horario = ({ horarios, rol }) => {
   const { themeType, theme } = useTheme()

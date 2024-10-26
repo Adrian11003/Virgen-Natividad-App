@@ -23,8 +23,8 @@ export const Asistencia = () => {
   useEffect(() => {
     if (semanas && semanas.length > 0) {
       const semanaItems = semanas.map((semana) => ({
-        label: semana.nombre, // El nombre de la semana será mostrado
-        value: semana.id, // El id de la semana será el valor
+        label: semana.nombre, 
+        value: semana.id, 
       }));
       setItems(semanaItems);
     }

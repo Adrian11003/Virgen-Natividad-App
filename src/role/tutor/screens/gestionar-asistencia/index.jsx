@@ -22,33 +22,36 @@ export const GestionarAsistencia = () => {
   }, []);
 
   return (
-    <View style={{ padding: 20, flex: 1 }}>
+    <View style={{ width: '100%', maxWidth: 1300, marginVertical: 15, marginHorizontal: 'auto' }}>
       <View
         style={{
-          display: 'grid',
-          gridTemplateColumns: isMediumScreen ? '3fr 1fr 1fr' : '1fr',
-          gap: 12,
+          flexDirection: isMediumScreen ? 'row' : 'column',  
           alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 12,
           marginBottom: 20,
+          marginHorizontal: 20
         }}
       >
-        <Text style={{ fontSize: 15, fontWeight: 'bold', color: theme.colors.paperText }}>
-          Sección: {user.perfil.seccion.nombre}
-        </Text>
+        <View style={{ display: 'flex', justifyContent: 'center', width: isMediumScreen ? '50%' : '100%'}}>
+          <Text style={{ fontSize: 15, fontWeight: 'bold', color: theme.colors.paperText }}>
+            Sección: {user.perfil.seccion.nombre}
+          </Text>
+        </View>
 
         <CustomSelector
           opciones={semanas}
           selectedOption={selectedSemana}
           onSelect={(item) => setSelectedSemana(item)}
           placeholder="Semana"
-          style={{
-            width: '100%',
-          }}
+          mobileWidth="20%"
         />
 
         <Button 
           icon="plus" 
           mode="contained" 
+          style={{ width: isMediumScreen ? '25%' : '100%' }}
           buttonColor={theme.colors.primary}
           onPress={() => setModalVisible(true)}
         >
@@ -59,6 +62,7 @@ export const GestionarAsistencia = () => {
       <ModalNuevaAsistencia
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
+        seccion={user.perfil.seccion.nombre}
       />
     </View>
   );
