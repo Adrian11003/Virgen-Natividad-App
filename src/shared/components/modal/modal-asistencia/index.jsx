@@ -51,6 +51,7 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion })
               onSelect={(item) => setSelectedSemana(item)}
               placeholder="Semana"
               mobileWidth="20%"
+              isModal={true}
             />
           </View>
 
