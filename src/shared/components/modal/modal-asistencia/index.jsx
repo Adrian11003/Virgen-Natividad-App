@@ -20,7 +20,7 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion })
       transparent={true}
       visible={modalVisible}
       onRequestClose={() => {
-        setModalVisible(false);
+      setModalVisible(false);
       }}
     >
       <View
@@ -42,7 +42,7 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion })
           }}
         >
           <Text style={{ fontSize: 18, marginBottom: 15 }}>Seccion: {seccion}</Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', zIndex: 10 }}>
             <Text>Semana: </Text>
             
             <CustomSelector
@@ -55,7 +55,7 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion })
             />
           </View>
 
-          <View style={{ position: 'relative' }}>
+          <View style={{zIndex: 5, position: 'relative' , marginTop: 20}}>
             <Button
               mode="contained"
               title="Cerrar"
