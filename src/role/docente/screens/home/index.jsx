@@ -7,7 +7,7 @@ import { Horario } from '../../../../shared/components/custom/horario/index';
 import currentDate from '../../../../shared/constants/today-date';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
 import { ProgressBar } from 'react-native-paper';
-import { Banner } from '../../../../shared/components/banner/index';
+import { Banner } from '../../../../shared/components/custom/banner/index';
 import { ModalBanner } from '../../../../shared/components/modal/modal-banner/index';
 
 
