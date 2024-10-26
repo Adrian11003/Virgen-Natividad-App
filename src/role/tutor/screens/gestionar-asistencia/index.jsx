@@ -41,12 +41,12 @@ export const GestionarAsistencia = () => {
         </View>
 
         <CustomSelector
-        
           opciones={semanas}
           selectedOption={selectedSemana}
           onSelect={(item) => setSelectedSemana(item)}
           placeholder="Semana"
           mobileWidth="20%"
+          isModal={false}
         />
 
         <Button 
