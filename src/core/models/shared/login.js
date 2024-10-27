@@ -1,6 +1,6 @@
-class LoginRequest {
-  constructor(correo, password) {
-    this.correo = correo;
+export class LoginRequest {
+  constructor(identificador, password) {
+    this.identificador = identificador;
     this.password = password;
   }
 }

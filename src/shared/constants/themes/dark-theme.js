@@ -49,6 +49,7 @@ export const paperDarkTheme = {
       "level4": "rgb(44, 48, 58)",
       "level5": "rgb(47, 51, 62)"
     },
+    "customIcon": "#CFCFCF",
     "loginButton": "#ACC7FF",
     "paperText": "rgb(255, 255, 255)",
     "modalBackground": "#1B1B1F",

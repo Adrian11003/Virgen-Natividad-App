@@ -1,8 +1,11 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { SafeAreaView, View, Image, Text, Pressable, ActivityIndicator, ImageBackground, StatusBar } from 'react-native';
 import { AuthContext } from '../core/context/authContext';
 import { useTheme } from '../core/context/themeContext';
-import { Snackbar, TextInput } from 'react-native-paper';
+import { TextInput } from 'react-native-paper';
+import { LoginRequest } from '../core/models/shared/login';
+import { useNavigation } from '@react-navigation/native';
+import { CustomSnackbar } from '../shared/components/custom/snackbar';
 import isMediumScreen from '../shared/constants/screen-width/md';
 
 const imagenFondo = require('../assets/images/fondo.jpg');
@@ -28,26 +31,37 @@ const Logo = () => {
 export const LoginScreen = () => {
   const [identificador, setIdentificador] = useState('');
   const [contrasena, setContrasena] = useState('');
-  const { handleLogin, loading } = useContext(AuthContext);
-  const { theme, themeType, isDarkTheme, toogleThemeType } = useTheme();
+  const [flatTextSecureEntry, setFlatTextSecureEntry] = useState(true);
+  const { handleLogin, loading, error } = useContext(AuthContext);
+  const { theme, themeType, isDarkTheme } = useTheme();
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const { navigation } = useNavigation();
 
   const onLoginPress = () => {
     if (!identificador) {
-      setSnackbarMessage('El campo de identificador no puede estar vacío');
+      setSnackbarMessage('El Nro. Documento o Correo no puede estar vacío');
       setSnackbarVisible(true);
       return;
     }
 
-    if (!contrasena || contrasena.length <= 4) {
-      setSnackbarMessage('La contraseña debe tener más de 4 caracteres y no puede estar vacía');
+    if (!contrasena) {
+      setSnackbarMessage('La contraseña no puede estar vacía');
       setSnackbarVisible(true);
       return;
     }
 
-    handleLogin(identificador, contrasena);
+    const loginRequestInstance = new LoginRequest(identificador, contrasena);
+
+    handleLogin(loginRequestInstance, navigation);
   };
+
+  useEffect(() => {
+    if (error && error.response) {
+      setSnackbarMessage(error.response.data.message);
+      setSnackbarVisible(true);
+    }
+  }, [error]);
 
   if (loading) {
     return (
@@ -117,10 +131,17 @@ export const LoginScreen = () => {
 
           <View style={{ width: '100%', marginBottom: 40, marginTop: 20 }}>
             <TextInput
-              label="Nro. Documento"
+              label="Nro. de Documento o Correo"
               value={identificador}
               onChangeText={text => setIdentificador(text)}
               mode="outlined"
+              right={
+                <TextInput.Icon
+                  icon={"account"}
+                  color={theme.colors.customIcon}
+                  size={24}
+                />
+              }
             />
             <View style={{ marginBottom: 15 }}></View>
             <TextInput
@@ -128,9 +149,17 @@ export const LoginScreen = () => {
               value={contrasena}
               onChangeText={text => setContrasena(text)}
               mode="outlined"
+              secureTextEntry={flatTextSecureEntry}
+              right={
+                <TextInput.Icon
+                  icon={flatTextSecureEntry ? 'eye' : 'eye-off'}
+                  onPress={() => setFlatTextSecureEntry(!flatTextSecureEntry)} 
+                  forceTextInputFocus={false}
+                  color={ isDarkTheme && theme.colors.customIcon}
+                />
+              }
             />
           </View>
-
 
           <Pressable
             style={{
@@ -149,23 +178,11 @@ export const LoginScreen = () => {
         </View>
       </View>
 
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Snackbar
-          visible={snackbarVisible}
-          onDismiss={() => setSnackbarVisible(false)}
-          duration={3000}
-          action={{
-            label: 'Cerrar',
-            onPress: () => setSnackbarVisible(false)
-          }}
-          style={{
-            width: isMediumScreen ? '50%' : '90%',
-            alignSelf: 'center'
-          }}
-        >
-          {snackbarMessage}
-        </Snackbar>
-      </View>
+      <CustomSnackbar
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}
+        message={snackbarMessage}
+      />
     </SafeAreaView>
   );
 };
