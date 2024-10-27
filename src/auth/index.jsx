@@ -12,37 +12,31 @@ export const LoginScreen = () => {
   const navigation = useNavigation();
   const { width } = useWindowDimensions();
 
-  const { theme, toogleThemeType, isDarkTheme, themeType } = useTheme();  // Extraemos el tema y el toggle
+  const { theme, toogleThemeType, isDarkTheme, themeType } = useTheme();
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarVisible, setSnackbarVisible] = useState(false); // Estado inicial: Snackbar no visible
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
 
-// Función para mostrar el Snackbar
-const onLoginPress = () => {
-  // Validación para el campo identificador
-  if (!identificador) {
-    setSnackbarMessage('El campo de identificador no puede estar vacío');
-    setSnackbarVisible(true); // Mostrar el Snackbar con el mensaje de error
-    return;
-  }
+  const onLoginPress = () => {
+    if (!identificador) {
+      setSnackbarMessage('El campo de identificador no puede estar vacío');
+      setSnackbarVisible(true);
+      return;
+    }
 
-  // Validación para el campo contraseña
-  if (!contrasena || contrasena.length <= 4) {
-    setSnackbarMessage(
-      'La contraseña debe tener más de 4 caracteres y no puede estar vacía'
-    );
-    setSnackbarVisible(true); // Mostrar el Snackbar con el mensaje de error
-    return;
-  }
+    if (!contrasena || contrasena.length <= 4) {
+      setSnackbarMessage('La contraseña debe tener más de 4 caracteres y no puede estar vacía');
+      setSnackbarVisible(true);
+      return;
+    }
 
-  // Si ambas validaciones pasan, ejecutar el login
-  handleLogin(identificador, contrasena);
-};
-  // Definir punto de quiebre para pantallas medianas (tabletas)
+    handleLogin(identificador, contrasena);
+  };
+
   const isMediumScreen = width >= 768;
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
       </View>
     );
@@ -52,30 +46,25 @@ const onLoginPress = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <View style={{
         flexDirection: isMediumScreen ? 'row' : 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
         height: '100%',
-        backgroundColor: themeType === 'light' ? '#fff' : '#000' // Usar color del tema
-        
+        backgroundColor: themeType === 'light' ? '#fff' : '#000'
       }}>
-        {/* Sección del logo */}
+        {/* Sección de Imagen */}
         <View style={{
           flex: isMediumScreen ? 1 : 0,
           justifyContent: 'center',
           alignItems: 'center',
-          width: isMediumScreen ? '40%' : '100%',
-          height: isMediumScreen ? '100%' : 'auto',
-          
+          width: isMediumScreen ? '50%' : '100%',
           backgroundColor: isMediumScreen ? 'transparent' : theme.colors.surface
         }}>
           {isMediumScreen ? (
             <ImageBackground
-              source={{uri:'https://img.freepik.com/vector-gratis/fondo-azul-degradado_23-2149337036.jpg'}}
+              source={{ uri: 'https://img.freepik.com/vector-gratis/fondo-azul-degradado_23-2149337036.jpg' }}
               style={{
-                flex: 5,
+                flex: 1,
                 justifyContent: 'center',
                 alignItems: 'center',
-                width: '140%',
+                width: '100%',
                 height: '100%',
                 padding: 80
               }}
@@ -86,7 +75,7 @@ const onLoginPress = () => {
                 style={{ width: 100, height: 100, marginBottom: 20 }}
                 resizeMode="contain"
               />
-              <Text style={{ color: 'white', fontSize: 36, fontWeight: 'bold', textAlign: 'center', marginLeft: '20%' }}>
+              <Text style={{ color: 'white', fontSize: 36, fontWeight: 'bold', textAlign: 'center' }}>
                 Virgen Natividad
               </Text>
             </ImageBackground>
@@ -99,28 +88,22 @@ const onLoginPress = () => {
           )}
         </View>
 
+        {/* Sección de Color y Bienvenido */}
         <View style={{
-          flex: isMediumScreen ? 2 : 1,
+          flex: isMediumScreen ? 1 : 1,
           alignItems: 'center',
-          width: isMediumScreen ? '60%' : '100%',
+          width: isMediumScreen ? '50%' : '100%',
           padding: 24,
-          backgroundColor: theme.colors.surface,  // Usar color del tema
-          borderRadius: isMediumScreen ? 16 : 0,
-          justifyContent: 'center',
-          borderWidth: isMediumScreen ? 4 : 0,
-          borderColor: isMediumScreen ? theme.colors.border : 'transparent',
-          marginLeft: isMediumScreen ? 100 : 0,
-          marginRight: isMediumScreen ? 100 : 0,
+          backgroundColor: theme.colors.surface,
+          justifyContent: 'center'
         }}>
           <Text style={{
             marginBottom: 16,
             fontSize: isMediumScreen ? 40 : 36,
             textAlign: 'center',
-            color: isDarkTheme ? theme.colors.text : theme.colors.primary,  // Usar color del tema
+            color: isDarkTheme ? theme.colors.text : theme.colors.primary,
             fontWeight: 'bold'
-          }}
-          
-          >
+          }}>
             ¡Bienvenido de nuevo!
           </Text>
 
@@ -136,11 +119,10 @@ const onLoginPress = () => {
                 borderColor: theme.colors.border,
                 padding: 12,
                 borderRadius: 16,
-                color: isDarkTheme ? theme.colors.text : theme.colors.primary  // Usar color del tema
+                color: isDarkTheme ? theme.colors.text : theme.colors.primary
               }}
-              
               placeholder="Nro. Documento"
-              placeholderTextColor={ theme.colors.placeholder}  // Placeholder acorde al tema
+              placeholderTextColor={theme.colors.placeholder}
             />
             <TextInput
               value={contrasena}
@@ -153,16 +135,14 @@ const onLoginPress = () => {
                 borderColor: theme.colors.border,
                 padding: 12,
                 borderRadius: 16,
-                color:  isDarkTheme ? theme.colors.text : theme.colors.primary
+                color: isDarkTheme ? theme.colors.text : theme.colors.primary
               }}
-              
               placeholder="Contraseña"
               secureTextEntry
-              placeholderTextColor={ theme.colors.placeholder}
+              placeholderTextColor={theme.colors.placeholder}
             />
           </View>
 
-          {/* Botón de iniciar sesión */}
           <Pressable
             style={{
               backgroundColor: theme.colors.primary,
@@ -178,7 +158,6 @@ const onLoginPress = () => {
             </Text>
           </Pressable>
 
-          {/* Botón para alternar tema */}
           <Pressable
             style={{
               marginTop: 16,
@@ -187,9 +166,7 @@ const onLoginPress = () => {
               paddingHorizontal: 20,
               borderRadius: 20
             }}
-            onPress={toogleThemeType} 
-             // Alterna entre los temas
-            
+            onPress={toogleThemeType}
           >
             <Text style={{ color: theme.colors.onPrimary, textAlign: 'center' }}>
               Cambiar a {isDarkTheme ? 'Modo Día' : 'Modo Noche'}
@@ -197,31 +174,24 @@ const onLoginPress = () => {
           </Pressable>
         </View>
       </View>
-       {/* Snackbar */}
-      {/* Snackbar */}
-      <View
-  style={{
-    flex: 1, // Ocupa todo el espacio disponible
-    justifyContent: 'center', // Centra verticalmente
-    alignItems: 'center', // Centra horizontalmente
-  }}
->
-  <Snackbar
-    visible={snackbarVisible}
-    onDismiss={() => setSnackbarVisible(false)} // Ocultar el Snackbar
-    duration={3000} // Duración de 3 segundos
-    action={{
-      label: 'Cerrar',
-      onPress: () => setSnackbarVisible(false), // Acción para cerrar manualmente el Snackbar
-    }}
-    style={{
-      width: '50%', // Establece el ancho del Snackbar
-      alignSelf: 'center', // Asegura que el Snackbar esté centrado horizontalmente
-    }}
-  >
-    {snackbarMessage}
-  </Snackbar>
-</View>
+
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Snackbar
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          duration={3000}
+          action={{
+            label: 'Cerrar',
+            onPress: () => setSnackbarVisible(false)
+          }}
+          style={{
+            width: '50%',
+            alignSelf: 'center'
+          }}
+        >
+          {snackbarMessage}
+        </Snackbar>
+      </View>
     </SafeAreaView>
   );
 };
