@@ -1,18 +1,35 @@
-import React, { useContext, useState } from 'react';
-import { SafeAreaView, TextInput, View, Image, Text, Pressable, ActivityIndicator, useWindowDimensions, ImageBackground } from 'react-native';
+import { useContext, useState } from 'react';
+import { SafeAreaView, View, Image, Text, Pressable, ActivityIndicator, ImageBackground, StatusBar } from 'react-native';
 import { AuthContext } from '../core/context/authContext';
-import { useNavigation } from '@react-navigation/native';
-import { useTheme } from '../core/context/themeContext';  // Ajusta la ruta del ThemeContext
-import { Button, Snackbar } from 'react-native-paper';
+import { useTheme } from '../core/context/themeContext';
+import { Snackbar, TextInput } from 'react-native-paper';
+import isMediumScreen from '../shared/constants/screen-width/md';
+
+const imagenFondo = require('../assets/images/fondo.jpg');
+const logo = require('../assets/images/logo.png');
+const logoBlanco = require('../assets/images/logoInvertido.png');
+
+const Logo = () => {
+  const { theme, isDarkTheme } = useTheme();
+  return (
+    <View style={{ alignItems: 'center', marginBottom: 20 }}>
+      <Image
+        source={ isDarkTheme ? logoBlanco : logo }
+        style={{ width: 100, height: 100, marginBottom: 20 }}
+        resizeMode="contain"
+      />
+      <Text style={{ color: isMediumScreen ? 'white' : theme.colors.paperText, fontSize: 36, fontWeight: '500', textAlign: 'center' }}>
+        Colegio Virgen de la Natividad
+      </Text>
+    </View>
+  );
+};
 
 export const LoginScreen = () => {
   const [identificador, setIdentificador] = useState('');
   const [contrasena, setContrasena] = useState('');
   const { handleLogin, loading } = useContext(AuthContext);
-  const navigation = useNavigation();
-  const { width } = useWindowDimensions();
-
-  const { theme, toogleThemeType, isDarkTheme, themeType } = useTheme();
+  const { theme, themeType, isDarkTheme, toogleThemeType } = useTheme();
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarVisible, setSnackbarVisible] = useState(false);
 
@@ -32,8 +49,6 @@ export const LoginScreen = () => {
     handleLogin(identificador, contrasena);
   };
 
-  const isMediumScreen = width >= 768;
-
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -43,11 +58,14 @@ export const LoginScreen = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: isMediumScreen ? "#000" : theme.colors.background }}>
+      <StatusBar 
+        barStyle={isMediumScreen ? 'light-content' : (themeType === 'light' ? 'dark-content' : 'light-content') } 
+        backgroundColor={isMediumScreen ? '#000' : theme.colors.background} 
+      />
       <View style={{
         flexDirection: isMediumScreen ? 'row' : 'column',
         height: '100%',
-        backgroundColor: themeType === 'light' ? '#fff' : '#000'
       }}>
         {/* Sección de Imagen */}
         <View style={{
@@ -55,37 +73,23 @@ export const LoginScreen = () => {
           justifyContent: 'center',
           alignItems: 'center',
           width: isMediumScreen ? '50%' : '100%',
-          backgroundColor: isMediumScreen ? 'transparent' : theme.colors.surface
+          overflow: 'hidden'
         }}>
-          {isMediumScreen ? (
+          {isMediumScreen &&
             <ImageBackground
-              source={{ uri: 'https://img.freepik.com/vector-gratis/fondo-azul-degradado_23-2149337036.jpg' }}
+              source={imagenFondo}
               style={{
                 flex: 1,
                 justifyContent: 'center',
                 alignItems: 'center',
                 width: '100%',
-                height: '100%',
-                padding: 80
+                height: '100%'
               }}
               resizeMode="cover"
             >
-              <Image
-                source={require("../assets/images/logo.png")}
-                style={{ width: 100, height: 100, marginBottom: 20 }}
-                resizeMode="contain"
-              />
-              <Text style={{ color: 'white', fontSize: 36, fontWeight: 'bold', textAlign: 'center' }}>
-                Virgen Natividad
-              </Text>
+              <Logo />
             </ImageBackground>
-          ) : (
-            <Image
-              source={require("../assets/images/logo.png")}
-              style={{ width: 100, height: 100, marginBottom: 20 }}
-              resizeMode="contain"
-            />
-          )}
+          }
         </View>
 
         {/* Sección de Color y Bienvenido */}
@@ -93,59 +97,44 @@ export const LoginScreen = () => {
           flex: isMediumScreen ? 1 : 1,
           alignItems: 'center',
           width: isMediumScreen ? '50%' : '100%',
-          padding: 24,
+          paddingHorizontal: 24,
           backgroundColor: theme.colors.surface,
-          justifyContent: 'center'
+          justifyContent: 'center',
         }}>
-          <Text style={{
-            marginBottom: 16,
-            fontSize: isMediumScreen ? 40 : 36,
-            textAlign: 'center',
-            color: isDarkTheme ? theme.colors.text : theme.colors.primary,
-            fontWeight: 'bold'
-          }}>
-            ¡Bienvenido de nuevo!
-          </Text>
+          {isMediumScreen ? (
+            <Text style={{
+              marginBottom: 16,
+              fontSize: 36,
+              textAlign: 'center',
+              color: theme.colors.paperText,
+              fontWeight: '500'
+            }}>
+              ¡Bienvenido de nuevo!
+            </Text>
+            ) : (
+            <Logo />
+          )}
 
-          <View style={{ width: '100%', marginBottom: 24 }}>
+          <View style={{ width: '100%', marginBottom: 40, marginTop: 20 }}>
             <TextInput
+              label="Nro. Documento"
               value={identificador}
-              onChangeText={setIdentificador}
-              style={{
-                width: '100%',
-                marginBottom: 12,
-                backgroundColor: theme.colors.surface,
-                borderWidth: 1,
-                borderColor: theme.colors.border,
-                padding: 12,
-                borderRadius: 16,
-                color: isDarkTheme ? theme.colors.text : theme.colors.primary
-              }}
-              placeholder="Nro. Documento"
-              placeholderTextColor={theme.colors.placeholder}
+              onChangeText={text => setIdentificador(text)}
+              mode="outlined"
             />
+            <View style={{ marginBottom: 15 }}></View>
             <TextInput
+              label="Contraseña"
               value={contrasena}
-              onChangeText={setContrasena}
-              style={{
-                width: '100%',
-                marginBottom: 12,
-                backgroundColor: theme.colors.surface,
-                borderWidth: 1,
-                borderColor: theme.colors.border,
-                padding: 12,
-                borderRadius: 16,
-                color: isDarkTheme ? theme.colors.text : theme.colors.primary
-              }}
-              placeholder="Contraseña"
-              secureTextEntry
-              placeholderTextColor={theme.colors.placeholder}
+              onChangeText={text => setContrasena(text)}
+              mode="outlined"
             />
           </View>
 
+
           <Pressable
             style={{
-              backgroundColor: theme.colors.primary,
+              backgroundColor: theme.colors.loginButton,
               width: '100%',
               paddingVertical: 12,
               paddingHorizontal: 24,
@@ -155,21 +144,6 @@ export const LoginScreen = () => {
           >
             <Text style={{ color: theme.colors.onPrimary, fontSize: 20, fontWeight: 'bold', textAlign: 'center' }}>
               Ingresar
-            </Text>
-          </Pressable>
-
-          <Pressable
-            style={{
-              marginTop: 16,
-              backgroundColor: isDarkTheme ? theme.colors.secondary : theme.colors.primary,
-              paddingVertical: 10,
-              paddingHorizontal: 20,
-              borderRadius: 20
-            }}
-            onPress={toogleThemeType}
-          >
-            <Text style={{ color: theme.colors.onPrimary, textAlign: 'center' }}>
-              Cambiar a {isDarkTheme ? 'Modo Día' : 'Modo Noche'}
             </Text>
           </Pressable>
         </View>
@@ -185,7 +159,7 @@ export const LoginScreen = () => {
             onPress: () => setSnackbarVisible(false)
           }}
           style={{
-            width: '50%',
+            width: isMediumScreen ? '50%' : '90%',
             alignSelf: 'center'
           }}
         >
