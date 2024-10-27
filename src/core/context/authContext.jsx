@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [authToken, setAuthToken] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const checkAuthState = async () => {
@@ -38,10 +39,16 @@ export const AuthProvider = ({ children }) => {
     checkAuthState();
   }, []);
 
-  const handleLogin = async (identificador, contrasena, navigation) => {
+  const handleLogin = async (loginRequestInstance, navigation) => {
     try {
       setLoading(true);
-      const { data } = await loginRequest(identificador, contrasena);
+      const { identificador, password } = loginRequestInstance;
+
+      const { data } = await loginRequest({ 
+        identificador: identificador, 
+        contrasena: password
+      });
+
       const dataUser = {
         email: data.email,
         perfil: data.perfil,
@@ -59,7 +66,7 @@ export const AuthProvider = ({ children }) => {
 
       navigation.navigate('Drawer');
     } catch (error) {
-      console.log(error)
+      setError(error)
     } finally {
       setLoading(false);
     }
@@ -70,6 +77,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setAuthToken(null);
     setIsAuthenticated(false);
+    setError(null);
   }
 
   return (
@@ -80,7 +88,8 @@ export const AuthProvider = ({ children }) => {
         isAuthenticated, 
         loading, 
         handleLogin, 
-        handleLogout 
+        handleLogout,
+        error
       }}
     >
       {children}
