@@ -75,7 +75,8 @@ export const ThemeContextProvider = ({children}) => {
               themeType, 
               isDarkTheme, 
               setThemeType, 
-              toogleThemeType 
+              toogleThemeType,
+              barStyle
             }}
           > 
             {children}
