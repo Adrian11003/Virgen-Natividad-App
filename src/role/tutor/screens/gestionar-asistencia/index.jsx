@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { CustomSelector } from '../../../../shared/components/custom/selector/index';
 import { useTheme } from '../../../../core/context/themeContext';
 import { ModalNuevaAsistencia } from '../../../../shared/components/modal/modal-asistencia/index';
-import IconButton from '../../../../shared/components/custom/iconns/index'; 
+import {IconButton} from '../../../../shared/components/custom/iconns/index'; 
 
 // Definición de isMediumScreen utilizando Dimensions
 const isMediumScreen = Dimensions.get('window').width >= 768;
@@ -28,11 +28,13 @@ export const GestionarAsistencia = () => {
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <View style={styles.sectionInfo}>
-          <Text style={{ fontSize: 15, fontWeight: 'bold', color: theme.colors.paperText }}>
+        </View>
+        <Text style={{ 
+          fontSize: 15, 
+          fontWeight: 'bold', 
+          color: theme.colors.paperText }}>
             Sección: {user.perfil.seccion.nombre}
           </Text>
-        </View>
-
         <CustomSelector
           opciones={semanas}
           selectedOption={selectedSemana}
@@ -62,6 +64,12 @@ export const GestionarAsistencia = () => {
       <ScrollView 
         style={styles.scrollView} 
         horizontal={!isMediumScreen}
+        contentContainerStyle={{
+          flexGrow: 1,
+          height: '80%',
+          alignItems: 'center',
+          margin: 30, 
+        }}
       >
         <DataTable>
           <DataTable.Header>
@@ -83,8 +91,17 @@ export const GestionarAsistencia = () => {
               <DataTable.Cell style={styles.cell} numeric>12</DataTable.Cell>
               <DataTable.Cell style={styles.cell} numeric>0</DataTable.Cell>
               <DataTable.Cell style={styles.actionsCell} numeric>
-                <IconButton iconName="pencil-outline" color="#007bff" onPress={() => console.log("Editar")} />
-                <IconButton iconName="trash-outline" color="#ff0000" onPress={() => console.log("Eliminar")} />
+              <IconButton
+                iconName="pencil-outline"
+                color="#007bff"
+              
+                onPress={() => console.log("Editar")}
+              />
+              <IconButton
+               iconName="trash-outline"
+               color="#ff0000"
+               onPress={() => console.log("Eliminar")}
+              />
               </DataTable.Cell>
             </DataTable.Row>
           ))}
@@ -95,10 +112,11 @@ export const GestionarAsistencia = () => {
 };
 const styles = StyleSheet.create({
   container: {
-    zIndex: 2,
-    flex: 1,
-    paddingHorizontal: 10,
-    paddingBottom: 40,
+    width: '100%', 
+    maxWidth: 1300, 
+    marginVertical: 15, 
+    marginHorizontal: 'auto', 
+    marginBottom: 40 
   },
   headerContainer: {
     zIndex: 2,    

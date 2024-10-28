@@ -1,11 +1,12 @@
 // IconButton.js
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Pressable } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
-const IconButton = ({ iconName, color = '#007bff', size = 22, onPress }) => {
+export const IconButton = ({ iconName, color, size = 18, onPress }) => {
   const scale = useSharedValue(1);
+  const [iconColor, setIconColor] = useState('#717880'); 
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -13,12 +14,18 @@ const IconButton = ({ iconName, color = '#007bff', size = 22, onPress }) => {
 
   return (
     <Pressable
-      onPressIn={() => { scale.value = withTiming(2, { duration: 100 }); }}
-      onPressOut={() => { scale.value = withTiming(1, { duration: 100 }); }}
+      onPressIn={() => {
+        scale.value = withTiming(1.2, { duration: 200 });
+        setIconColor(color); 
+      }}
+      onPressOut={() => {
+        scale.value = withTiming(1, { duration: 100 });
+        setIconColor('#717880'); 
+      }}
       onPress={onPress}
     >
       <Animated.View style={[animatedStyle, styles.iconContainer]}>
-        <Ionicons name={iconName} size={size} color={color} />
+        <Ionicons name={iconName} size={size} color={iconColor} />
       </Animated.View>
     </Pressable>
   );
@@ -29,5 +36,3 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
 });
-
-export default IconButton;
