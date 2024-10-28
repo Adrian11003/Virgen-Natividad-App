@@ -5,19 +5,22 @@ import { HorariosProvider } from './core/context/horariosContext';
 import { AsistenciaProvider } from './core/context/asistenciaContext';
 import { ProtectedRoute } from './core/context/protectedRoute';
 import { LoginScreen } from './auth/index';
-
+import { NotasProvider } from './core/context/notasContext';
 const Stack = createStackNavigator();
 
 export default function App() {
   return (
     <ThemeContextProvider>
       <AuthProvider>
+        
         <HorariosProvider>
           <AsistenciaProvider>
+          <NotasProvider>
             <Stack.Navigator initialRouteName="Drawer" screenOptions={{ headerShown: false }}>
               <Stack.Screen name="Login" component={LoginScreen} />
               <Stack.Screen name="Drawer" component={ProtectedRoute} />
             </Stack.Navigator>
+            </NotasProvider>
           </AsistenciaProvider>
         </HorariosProvider>
       </AuthProvider>
