@@ -7,9 +7,8 @@ import { useNavigation } from '@react-navigation/native';
 import { CustomSelector } from '../../../../shared/components/custom/selector/index';
 import { useTheme } from '../../../../core/context/themeContext';
 import { ModalNuevaAsistencia } from '../../../../shared/components/modal/modal-asistencia/index';
-import {IconButton} from '../../../../shared/components/custom/iconns/index'; 
+import { IconButton } from '../../../../shared/components/custom/iconns/index'; 
 
-// Definición de isMediumScreen utilizando Dimensions
 const isMediumScreen = Dimensions.get('window').width >= 768;
 
 export const GestionarAsistencia = () => {
@@ -19,22 +18,28 @@ export const GestionarAsistencia = () => {
   const navigation = useNavigation();
   const { theme } = useTheme();
   const [modalVisible, setModalVisible] = useState(false);
+  
+  const [page, setPage] = useState(0);
+  const [numberOfItemsPerPage, onItemsPerPageChange] = useState(5);
+  const items = [1,2,3,4,5,6]; // Ejemplo de datos
 
   useEffect(() => {
     fetchSemanas();
   }, []);
 
+  useEffect(() => {
+    setPage(0);
+  }, [numberOfItemsPerPage]);
+
+  const from = page * numberOfItemsPerPage;
+  const to = Math.min((page + 1) * numberOfItemsPerPage, items.length);
+
   return (
     <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <View style={styles.sectionInfo}>
-        </View>
-        <Text style={{ 
-          fontSize: 15, 
-          fontWeight: 'bold', 
-          color: theme.colors.paperText }}>
+      <Text style={{ fontSize: 15, fontWeight: 'bold', color: theme.colors.paperText }}>
             Sección: {user.perfil.seccion.nombre}
           </Text>
+      <View style={styles.headerContainer}>
         <CustomSelector
           opciones={semanas}
           selectedOption={selectedSemana}
@@ -43,7 +48,6 @@ export const GestionarAsistencia = () => {
           mobileWidth="20%"
           isModal={false}
         />
-
         <Button 
           icon="plus" 
           mode="contained" 
@@ -62,15 +66,22 @@ export const GestionarAsistencia = () => {
       />
 
       <ScrollView 
-        style={styles.scrollView} 
         horizontal={!isMediumScreen}
         contentContainerStyle={{
-          flexGrow: 1,
           height: '80%',
           alignItems: 'center',
-          margin: 30, 
+          width: '100%'
         }}
       >
+        <View style={{
+          backgroundColor: theme.colors.tableBackgroundColor,  // Color de fondo para toda la tabla
+          borderWidth: 1,
+          borderColor: '#D7D6DA',
+          borderRadius: 8,
+          width: '100%',
+          marginBottom: 40,
+         
+        }}>
         <DataTable>
           <DataTable.Header>
             <DataTable.Title style={styles.header}>Semana</DataTable.Title>
@@ -82,7 +93,7 @@ export const GestionarAsistencia = () => {
             <DataTable.Title style={styles.header} numeric> Acciones </DataTable.Title>
           </DataTable.Header>
 
-          {[1, 2, 3, 4, 5].map((item, index) => (
+          {items.slice(from, to).map((item, index) => (
             <DataTable.Row key={index} style={styles.row}>
               <DataTable.Cell style={styles.cell}>Semana {item}</DataTable.Cell>
               <DataTable.Cell style={styles.cell} numeric>Lun.</DataTable.Cell>
@@ -91,32 +102,44 @@ export const GestionarAsistencia = () => {
               <DataTable.Cell style={styles.cell} numeric>12</DataTable.Cell>
               <DataTable.Cell style={styles.cell} numeric>0</DataTable.Cell>
               <DataTable.Cell style={styles.actionsCell} numeric>
-              <IconButton
-                iconName="pencil-outline"
-                color="#007bff"
-              
-                onPress={() => console.log("Editar")}
-              />
-              <IconButton
-               iconName="trash-outline"
-               color="#ff0000"
-               onPress={() => console.log("Eliminar")}
-              />
+                <IconButton
+                  iconName="pencil-outline"
+                  color="#007bff"
+                  onPress={() => console.log("Editar")}
+                />
+                <IconButton
+                  iconName="trash-outline"
+                  color="#ff0000"
+                  onPress={() => console.log("Eliminar")}
+                />
               </DataTable.Cell>
             </DataTable.Row>
           ))}
-        </DataTable>
+          
+          <DataTable.Pagination
+            page={page}
+            numberOfPages={Math.ceil(items.length / numberOfItemsPerPage)}
+            onPageChange={(page) => setPage(page)}
+            label={`${from + 1}-${to} de ${items.length}`}
+            numberOfItemsPerPage={numberOfItemsPerPage}
+            onItemsPerPageChange={onItemsPerPageChange}
+            showFastPaginationControls
+            numberOfItemsPerPageList={[5, 10, 15]}
+            selectPageDropdownLabel={'Filas por página'}
+          />
+         </DataTable>
+        </View>
       </ScrollView>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     width: '100%', 
     maxWidth: 1300, 
     marginVertical: 15, 
     marginHorizontal: 'auto', 
-    marginBottom: 40 
   },
   headerContainer: {
     zIndex: 2,    
@@ -127,24 +150,15 @@ const styles = StyleSheet.create({
     gap: 12,
     marginBottom: 20,
   },
-  sectionInfo: {
-    zIndex: 2,
-    justifyContent: 'flex-start',
-    width: isMediumScreen ? '50%' : '100%',
-  },
-  scrollView: {
-    flex: 1,
-  },
   row: {
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
-    paddingHorizontal: 5, // Espacio horizontal en cada celda
   },
   cell: {
     zIndex: 2,
     paddingVertical: 12,
     justifyContent: 'flex-start',
-    width: 100, // Ancho específico para cada celda para evitar que se comprima
+    width: '100%', // Ocupa todo el ancho
   },
   actionsCell: {
     zIndex: 2,
@@ -154,9 +168,11 @@ const styles = StyleSheet.create({
   },
   header: {
     zIndex: 2,
-    justifyContent: 'flex-start',
     fontWeight: 'bold',
-    fontSize: 14, // Tamaño de fuente ajustado para encabezados
-    width: 100, // Ancho específico en los encabezados para que coincida con las celdas
+    fontSize: 14,
+    width: '100%',            // Asegura que el título ocupe todo el ancho
+    borderBottomWidth: 1,     // Borde inferior para el encabezado
+    borderBottomColor: '#D7D6DA',
+    justifyContent: 'center', 
   },
 });
