@@ -12,6 +12,8 @@ export const EstudiantesProvider = ({ children }) => {
     setLoading(true);
     try {
       const { data } = await getEstudiantesBySeccionRequest(seccionId);
+      console.log('Estudiantes obtenidos:', data); // Agregar este log
+
       const estudiantesOrdenados = data.sort((a, b) => 
         a.apellido.localeCompare(b.apellido)
       );
