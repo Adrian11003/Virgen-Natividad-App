@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useMemo, useState } from 'react';
-import { useColorScheme, StatusBar, Platform } from 'react-native';
+import { StatusBar, Platform } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { paperDarkTheme, reactNavigationDarkTheme } from '../../shared/constants/themes/dark-theme';
 import { paperLightTheme, reactNavigationLightTheme } from '../../shared/constants/themes/light-theme';

@@ -6,7 +6,6 @@ import { Notas } from '../screens/notas/index';
 import { Pagos } from '../screens/pagos/index';
 import Perfil from '../screens/perfil';
 import Horario from '../screens/horario';
-import { Tareas } from '../screens/tareas';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import CustomDrawer from '../../../shared/components/custom/drawer';
 
@@ -56,13 +55,6 @@ export const EstudianteDrawer = () => {
         component={Pagos} 
         options={{
           drawerIcon: () => <Ionicons name="cash-outline" size={22} color="white" />,
-        }} 
-      />
-      <Drawer.Screen 
-        name="Tareas" 
-        component={Tareas} 
-        options={{
-          drawerIcon: () => <Ionicons name="document-text-outline" size={22} color="white" />,
         }} 
       />
       <Drawer.Screen 

@@ -49,6 +49,7 @@ export const paperLightTheme = {
       "level4": "rgb(229, 232, 245)",
       "level5": "rgb(225, 229, 243)"
     },
+    "tableBackgroundColor": "#E0E0E0",
     "customIcon": "#CFCFCF",
     "loginButton": "#0D192E",
     "paperText": "rgb(0, 0, 0)",
