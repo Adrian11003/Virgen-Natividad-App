@@ -4,18 +4,27 @@ import { useTheme } from '../../../../core/context/themeContext';
 import { CustomSelector } from '../../custom/selector/index'
 import { AsistenciaContext } from '../../../../core/context/asistenciaContext';
 import { AuthContext } from '../../../../core/context/authContext';
-import { Button, ProgressBar, DataTable, RadioButton } from 'react-native-paper';
+import { Button, ProgressBar, DataTable } from 'react-native-paper';
 import { EstudiantesContext } from '../../../../core/context/estudiantesContext';
+import { obtenerFechaActual } from '../../../constants/today-dateFormat';
+import { CustomRadio } from '../../custom/radio-button/index';
 import isMediumScreen from '../../../constants/screen-width/md';
 import fechaFormateada from '../../../constants/today-dateTime';
 
-export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, id = null }) => {
+export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, dataType }) => {
   const [selectedSemana, setSelectedSemana] = useState();
   const [seccionId, setSeccionId] = useState(null);
   const { user } = useContext(AuthContext);
-  const { semanas, fetchSemanas, loading } = useContext(AsistenciaContext);
+  const { 
+    semanas, 
+    fetchSemanas, 
+    loading, 
+    createAsistencia, 
+    resumenesAsistencia
+  } = useContext(AsistenciaContext);
   const { getEstudiantesBySeccion, estudiantes } = useContext(EstudiantesContext);
   const { theme } = useTheme();
+  const [asistencia, setAsistencia] = useState([]);
 
   useEffect(() => {
     fetchSemanas();
@@ -28,42 +37,52 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, i
     }
   }, [seccionId]);
 
-  const [asistencia, setAsistencia] = useState([]);
+  useEffect(() => {
+    if (estudiantes && estudiantes.length > 0) {
+      setAsistencia(estudiantes.map(() => ""));
+    }
+  }, [estudiantes]);
 
   const handleRadioChange = (index, tipo) => {
-    const estudiante = estudiantes[index]; // Obtiene el estudiante actual
-    const estado = tipo === 'presente' ? 'Presente' : tipo === 'falta' ? 'Falta' : 'Justificado'; // Determina el estado
-  
-    // Registra en consola el registro del estudiante con su estado
-    console.log(`Registro ${index + 1}: Estudiante ${estudiante.apellido}, ${estudiante.nombre} - Estado: ${estado}`);
+    const newAsistencia = [...asistencia];
+    newAsistencia[index] = tipo;
+    setAsistencia(newAsistencia);
   };
 
-  // Nueva función para registrar la asistencia
-  const registrarAsistencia = () => {
-    const registros = estudiantes.map((estudiante, index) => {
-      let estado = '';
-      if (estudiante.presente) {
-        estado = 'presente';
-      } else if (estudiante.falta) {
-        estado = 'falta';
-      } else if (estudiante.justificado) {
-        estado = 'justificado';
-      }
+  const guardarInformacion = async () => {
+    if(dataType === 'create') {
+      console.log(resumenesAsistencia)
 
-      // Solo registrar si hay un estado definido
-      if (estado) {
-        return {
-          registro: index + 1,
-          estudiante: `${estudiante.apellido}, ${estudiante.nombre}`,
-          estado,
-        };
-      }
-      return null; // Ignorar estudiantes sin estado definido
-    }).filter(Boolean); // Filtrar registros nulos
-
-    console.log('Registros de asistencia:', registros);
-    // Aquí puedes agregar lógica para enviar estos registros a tu backend si es necesario
-
+      // const todosSeleccionados = asistencia.every(estado => estado !== "");
+      // if (!todosSeleccionados) {
+      //   alert("Por favor, selecciona el estado de asistencia para todos los estudiantes.");
+      //   return;
+      // }
+  
+      // const promises = estudiantes.map((estudiante, index) => {
+      //   const registro = {
+      //     estudiante_id: estudiante._id,
+      //     seccion_id: estudiante.seccion._id,
+      //     grado_id: estudiante.grado._id,
+      //     periodo_id: estudiante.periodo._id,
+      //     semana_id: selectedSemana._id,
+      //     fecha: obtenerFechaActual(),
+      //     mes: new Date().toLocaleString('default', { month: 'long' }),
+      //     estado: asistencia[index]
+      //   };
+      //   return createAsistencia(registro);
+      // });
+    
+      // try {
+      //   await Promise.all(promises);
+      //   console.log("Asistencia registrada exitosamente para todos los estudiantes.");
+      // } catch (error) {
+      //   console.error("Hubo un error al registrar la asistencia:", error);
+      // }
+    }
+    if(dataType === 'edit') {
+      console.log('Editar asistencia');
+    }
   };
 
   if (loading) {
@@ -141,34 +160,24 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, i
                 {estudiantes && estudiantes.length > 0 ? (
                   <DataTable>
                     <DataTable.Header>
-                      <DataTable.Title style={{ flex: 3 }}>Apellidos y Nombres</DataTable.Title>
-                      <DataTable.Title style={{ flex: 1 }}>Presente</DataTable.Title>
-                      <DataTable.Title style={{ flex: 1 }}>Falta</DataTable.Title>
-                      <DataTable.Title style={{ flex: 1 }}>Justificado</DataTable.Title>
+                      <DataTable.Title style={{ flex: 2 }}>Apellidos y Nombres</DataTable.Title>
+                      <DataTable.Title style={{ flex: 2, justifyContent: 'center' }}>Estado de Asistencia</DataTable.Title>
                     </DataTable.Header>
                     {estudiantes.map((item, index) => (
                       <DataTable.Row key={index}>
-                        <DataTable.Cell style={{ flex: 3 }}>{item.apellido}, {item.nombre}</DataTable.Cell>
-                        <DataTable.Cell style={{ flex: 1 }}>
-                          <RadioButton
-                            value={`presente-${index}`}
-                            status={item.presente ? 'checked' : 'unchecked'}
-                            onPress={() => handleRadioChange(index, 'presente')}
-                          />
-                        </DataTable.Cell>
-                        <DataTable.Cell style={{ flex: 1 }}>
-                          <RadioButton
-                            value={`falta-${index}`}
-                            status={item.falta ? 'checked' : 'unchecked'}
-                            onPress={() => handleRadioChange(index, 'falta')}
-                          />
-                        </DataTable.Cell>
-                        <DataTable.Cell style={{ flex: 1 }}>
-                          <RadioButton
-                            value={`justificado-${index}`}
-                            status={item.justificado ? 'checked' : 'unchecked'}
-                            onPress={() => handleRadioChange(index, 'justificado')}
-                          />
+                        <DataTable.Cell style={{ flex: 2 }}>{item.apellido}, {item.nombre}</DataTable.Cell>
+                        <DataTable.Cell style={{ flex: 2 }}>
+                          <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10 }}>
+                            <CustomRadio
+                              options={[
+                                { label: 'Presente', value: 'Presente' },
+                                { label: 'Falta', value: 'Falta' },
+                                { label: 'Justificado', value: 'Justificado' }
+                              ]}
+                              checkedValue={asistencia[index]}
+                              onChange={(value) => handleRadioChange(index, value)}
+                            />
+                          </View>
                         </DataTable.Cell>
                       </DataTable.Row>
                     ))}
@@ -182,21 +191,20 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, i
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
                   <Button
                     mode="contained"
-                    title="Cerrar"
-                    onPress={() => setModalVisible(false)}
-                    style={{ marginRight: 10 }}  // Espacio entre botones
-                  >
-                    Cerrar
-                  </Button>
-                  <Button
-                    mode="contained"
                     title="Registrar Asistencia"
                     onPress={() => {
-                      registrarAsistencia();
-                      setModalVisible(false);
+                      guardarInformacion();
                     }}
                   >
                     Registrar Asistencia
+                  </Button>
+                  <Button
+                    mode="contained"
+                    title="Cerrar"
+                    onPress={() => setModalVisible(false)}
+                    style={{ marginRight: 10 }}
+                  >
+                    Cerrar
                   </Button>
                 </View>
               </View>

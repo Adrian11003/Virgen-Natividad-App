@@ -17,6 +17,7 @@ export const GestionarAsistencia = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [seccionId, setSeccionId] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
+  const [dataType, setDataType] = useState(null);
 
   useEffect(() => {
     fetchSemanas();
@@ -47,11 +48,13 @@ export const GestionarAsistencia = () => {
 
   const agregarAsistencia = () => {
     setSelectedId(null);
+    setDataType('create')
     setModalVisible(true);
   };
 
   const editarAsistencia = (id) => {
     setModalVisible(true);
+    setDataType('edit')
     setSelectedId(id);
   };
 
@@ -124,6 +127,7 @@ export const GestionarAsistencia = () => {
       <ModalNuevaAsistencia
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
+        dataType={dataType}
         seccion={user.perfil.seccion.nombre}
         id={selectedId}
       />
