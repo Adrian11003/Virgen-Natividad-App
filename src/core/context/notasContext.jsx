@@ -7,7 +7,8 @@ export const NotasProvider = ({ children }) => {
   const [notas, setNotas] = useState([]);
   const [loadingNotas, setLoadingNotas] = useState(false);
   const [error, setError] = useState(null);
-  const [seccionesCursos, setSeccionesCursos] = useState([]);
+  const [secciones, setSecciones] = useState([]); // Nuevo estado para secciones
+  const [cursos, setCursos] = useState([]); // Nuevo estado para cursos
   const [loadingSeccionesCursos, setLoadingSeccionesCursos] = useState(false);
   
   const getNotas = async () => {
@@ -33,21 +34,28 @@ export const NotasProvider = ({ children }) => {
   };
 
   const getSeccionesCursosByDocente = async (docenteId) => {
-    console.log('Llamando a getSeccionesCursosByDocente con ID:', docenteId); 
     setLoadingSeccionesCursos(true);
     setError(null);
     try {
       const { data } = await getSeccionesCursosByDocenteRequest(docenteId);
-      console.log('Datos obtenidos para secciones y cursos:', data); // Verifica los datos
-      if (data && data.length > 0) {
-        setSeccionesCursos(data);
-      } else {
-        console.log('No se recibieron datos para secciones y cursos.');
-      }
+
+      // Separar secciones y cursos
+      const seccionesData = data.map(item => ({
+        id: item.seccion._id,
+        nombre: item.seccion.nombre,
+      }));
+      
+      const cursosData = data.map(item => ({
+        id: item.curso._id,
+        nombre: item.curso.nombre,
+      }));
+
+      // Guardar datos en los estados correspondientes
+      setSecciones(seccionesData);
+      setCursos(cursosData);
+      
     } catch (err) {
-      console.error('Error al cargar secciones y cursos:', err);
-      console.error('Detalles del error:', err.response); // Añade este log
-      setError(err.response?.data?.message || 'Error al cargar secciones y cursos');
+      setError(err.response?.data?.message || 'Error al cargar las secciones y cursos');
     } finally {
       setLoadingSeccionesCursos(false);
     }
@@ -64,7 +72,8 @@ export const NotasProvider = ({ children }) => {
       error,
       getNotas,
       createNota,
-      seccionesCursos,
+      secciones, // Exponemos las secciones individualmente
+      cursos, // Exponemos los cursos individualmente
       loadingSeccionesCursos,
       getSeccionesCursosByDocente, }}>
       {children}

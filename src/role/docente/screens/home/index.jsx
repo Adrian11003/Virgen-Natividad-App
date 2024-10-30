@@ -23,7 +23,7 @@ export const Home = () => {
   const { horarios, getHorariosByDocente, loading } = useContext(HorariosContext);
   const { user } = useContext(AuthContext);
   const { theme } = useTheme();
-  const { getSeccionesCursosByDocente, seccionesCursos, loadingSeccionesCursos } = useContext(NotasContext);
+  const { getSeccionesCursosByDocente, secciones, cursos, loadingSeccionesCursos } = useContext(NotasContext);
   const [docenteId, setDocenteId] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedTitle, setSelectedTitle] = useState('');
@@ -47,8 +47,11 @@ export const Home = () => {
     if (docenteId) {
       getHorariosByDocente(docenteId);
       getSeccionesCursosByDocente(docenteId);
+      console.log('DocenteId:', docenteId);
+      
     }
   }, [docenteId]);
+ 
 
   const handleOpenModal = (image, title) => {
     setSelectedImage(image);
