@@ -40,11 +40,12 @@ export const GestionarAsistencia = () => {
   ];
 
   const displayedResumenAsistencia = () => {
-    if (!selectedSemana) return resumenesAsistencia;
+    if (!selectedSemana || selectedSemana._id === 'all') return resumenesAsistencia;
     return resumenesAsistencia.filter(item => 
       item.semana._id === selectedSemana._id
     );
   };
+
 
   const agregarAsistencia = () => {
     setSelectedId(null);
@@ -94,7 +95,7 @@ export const GestionarAsistencia = () => {
         </View>
 
         <CustomSelector
-          opciones={semanas}
+          opciones={[{ nombre: 'Todas las semanas', _id: 'all' }, ...semanas]}
           selectedOption={selectedSemana}
           onSelect={(item) => setSelectedSemana(item)}
           placeholder="Todas las semanas"
