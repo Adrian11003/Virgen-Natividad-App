@@ -26,7 +26,7 @@ export const CustomSelector = ({ opciones, selectedOption, onSelect, placeholder
   );
   
   return (
-    <View style={{ position: 'relative', zIndex: 1, width: isMediumScreen ? mobileWidth : (isModal ? '50%' : '100%') }}>
+    <View style={{ position: 'relative', zIndex: 1, width: isMediumScreen ? mobileWidth : (isModal ? '15%' : '100%') }}>
       <TouchableOpacity
         onPress={() => setIsSelectorOpen(!isSelectorOpen)}
         style={{
