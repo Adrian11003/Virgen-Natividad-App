@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
-import { getNotasRequest, createNotaRequest } from '../api/notas';
+import { getNotasRequest, createNotaRequest, getSeccionesCursosByDocenteRequest } from '../api/notas';
 
 export const NotasContext = createContext();
 
@@ -33,20 +33,25 @@ export const NotasProvider = ({ children }) => {
   };
 
   const getSeccionesCursosByDocente = async (docenteId) => {
-    console.log('Llamando a getSeccionesCursosByDocente con ID:', docenteId); // Agregar este log
+    console.log('Llamando a getSeccionesCursosByDocente con ID:', docenteId); 
     setLoadingSeccionesCursos(true);
     setError(null);
     try {
-        const { data } = await getSeccionesCursosByDocenteRequest(docenteId);
-        console.log('Secciones y cursos obtenidos:', data); // Agregar este log
+      const { data } = await getSeccionesCursosByDocenteRequest(docenteId);
+      console.log('Datos obtenidos para secciones y cursos:', data); // Verifica los datos
+      if (data && data.length > 0) {
         setSeccionesCursos(data);
+      } else {
+        console.log('No se recibieron datos para secciones y cursos.');
+      }
     } catch (err) {
-        console.error('Error al cargar secciones y cursos:', err); // Mejorar manejo de errores
-        setError(err.response?.data?.message || 'Error al cargar secciones y cursos');
+      console.error('Error al cargar secciones y cursos:', err);
+      console.error('Detalles del error:', err.response); // Añade este log
+      setError(err.response?.data?.message || 'Error al cargar secciones y cursos');
     } finally {
-        setLoadingSeccionesCursos(false);
+      setLoadingSeccionesCursos(false);
     }
-};
+  };
 
   useEffect(() => {
     getNotas();

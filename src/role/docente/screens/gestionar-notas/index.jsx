@@ -10,36 +10,42 @@ import { EstudiantesContext } from '../../../../core/context/estudiantesContext'
 
 
 export const GestionarNotas = () => {
+  const { seccionesCursos, loadingSeccionesCursos, getSeccionesCursosByDocente } = useContext(NotasContext);
   const { user } = useContext(AuthContext);
-  const { seccionesCursos, getSeccionesCursosByDocente, loadingSeccionesCursos } = useContext(NotasContext);
+  const [docenteId, setDocenteId] = useState(null);
   const { estudiantes, getEstudiantesBySeccion, loadingEstudiantes } = useContext(EstudiantesContext);
   const { theme } = useTheme();
   
-  const [seccionId, setSeccionId] = useState(null);
-  const [cursoId, setCursoId] = useState(null);
-  const [cursoNombre, setCursoNombre] = useState('');
-  const [seccionNombre, setSeccionNombre] = useState('');
   useEffect(() => {
-  
-      getSeccionesCursosByDocente(user.perfil._id); // Obtener secciones y cursos del docente
-    
-  }, [user, getSeccionesCursosByDocente]);
-
-  useEffect(() => {
-    if (seccionId ) {
-      setSeccionId(firstSeccion.seccionId); // Asegúrate que seccionId existe
-      setCursoId(firstSeccion.cursoId); // Asegúrate que cursoId existe
-      setSeccionNombre(firstSeccion.seccionNombre); // Asegúrate que seccionNombre existe
-      setCursoNombre(firstSeccion.cursoNombre); // Asegúrate que cursoNombre existe
+   
       setDocenteId(user.perfil._id);
-    }
-  }, [seccionId,cursoId]);
+    
+  }, [user]);
 
+  // Llamamos a getSeccionesCursosByDocente cuando el docenteId esté disponible
   useEffect(() => {
-    if (seccionId) {
-      getEstudiantesBySeccion(seccionId);
+    if (docenteId) {
+      getSeccionesCursosByDocente(docenteId);
     }
-  }, [seccionId, getEstudiantesBySeccion]);
+  }, [docenteId]);
+
+  // Estado para almacenar el nombre de la sección y del curso
+  const [seccionNombre, setSeccionNombre] = useState('');
+  const [cursoNombre, setCursoNombre] = useState('');
+
+  // Observamos seccionesCursos para extraer el nombre de la sección y curso
+  useEffect(() => {
+    if (seccionesCursos.length > 0) {
+      // Suponiendo que solo queremos mostrar la primera sección y curso
+      console.log('Secciones y cursos actualizados:', seccionesCursos);
+      const { seccion, curso } = seccionesCursos[0];
+      setSeccionNombre(seccion.nombre);
+      setCursoNombre(curso.nombre);
+      
+      // Extraer estudiantes de la sección
+      getEstudiantesBySeccion(seccion._id); // Llamar a la función para obtener estudiantes
+    }
+  }, [seccionesCursos]);
 
   const columns = [
     { header: 'Alumno', field: 'nombreCompleto' },
@@ -52,7 +58,7 @@ export const GestionarNotas = () => {
     return estudiantes || [];
   };
 
- 
+  console.log("Estudiantes obtenidos:", estudiantes);
 
   if (loadingEstudiantes || loadingSeccionesCursos) {
     return <ProgressBar indeterminate />;
@@ -72,7 +78,7 @@ export const GestionarNotas = () => {
           zIndex: 2,
         }}
       >
-       <View style={{ display: 'flex', justifyContent: 'center', width: isMediumScreen ? '50%' : '100%' }}>
+        <View style={{ display: 'flex', justifyContent: 'center', width: isMediumScreen ? '50%' : '100%' }}>
           <Text style={{ fontSize: 15, fontWeight: 'bold', color: theme.colors.paperText }}>
             Sección: {seccionNombre}
           </Text>
@@ -81,7 +87,7 @@ export const GestionarNotas = () => {
           </Text>
         </View>
       </View>
-
+  
       <View style={{ marginHorizontal: 20 }}>
         <CustomTable
           columns={columns}
