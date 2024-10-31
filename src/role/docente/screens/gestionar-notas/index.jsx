@@ -1,12 +1,12 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, StyleSheet,ScrollView} from 'react-native';
+import { View, Text, StyleSheet,Dimensions ,ScrollView} from 'react-native';
 import { AuthContext } from '../../../../core/context/authContext';
 import { NotasContext } from '../../../../core/context/notasContext';
 import { Button, ProgressBar } from 'react-native-paper';
-import { CustomTable } from '../../../../shared/components/custom/table/index';
 import { useTheme } from '../../../../core/context/themeContext';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
 import { EstudiantesContext } from '../../../../core/context/estudiantesContext';
+import { DataTable } from 'react-native-paper'; // Si usas DataTable directamente de react-native-paper
 
 
 export const GestionarNotas = () => {
@@ -15,7 +15,10 @@ export const GestionarNotas = () => {
   const [docenteId, setDocenteId] = useState(null);
   const { estudiantes, getEstudiantesBySeccion, loadingEstudiantes } = useContext(EstudiantesContext);
   const { theme } = useTheme();
-  
+   // Paginación
+   const [page, setPage] = useState(0);
+   const [numberOfItemsPerPage, setNumberOfItemsPerPage] = useState(8); // Cambia este número según tus necesidades
+ 
 useEffect(() => {
    
       setDocenteId(user.perfil._id);
@@ -50,76 +53,138 @@ useEffect(() => {
     getEstudiantesBySeccion(secciones[0].id);
   }, [secciones]);
 
-  
+  const displayedEstudiantes = estudiantes.map(estudiante => ({
+    nombreCompleto: `${estudiante.nombre} ${estudiante.apellido}`,
+    dni: estudiante.numero_documento,
+    
+  }));
 
-  const columns = [
-    { header: 'Alumno', field: 'nombreCompleto' },
-    { header: 'DNI', field: 'dni' },
-    { header: 'Direccion', field: 'direccion' },
-    { header: 'Notas', field: 'acciones' },
-  ];
+  if (loadingEstudiantes || loadingSeccionesCursos) {
+    return <ProgressBar indeterminate />;
+  }
 
-  const displayedEstudiantes = () => {
-    return estudiantes.map(estudiante => ({
-      nombreCompleto: `${estudiante.nombre} ${estudiante.apellido}`,
-      dni: estudiante.numero_documento,
-      direccion: estudiante.direccion,
-      acciones: (
-        <Button 
-          mode="contained" 
-         
-          style={{ backgroundColor: theme.colors.primary }}
-        >
-          Agregar Notas
-        </Button>
-      )
-    }));
-  };
+ 
 
-  console.log("Estudiantes obtenidos:", estudiantes);
+  const from = page * numberOfItemsPerPage;
+  const to = Math.min((page + 1) * numberOfItemsPerPage, displayedEstudiantes.length);
+  const paginatedData = displayedEstudiantes.slice(from, to);
 
   if (loadingEstudiantes || loadingSeccionesCursos) {
     return <ProgressBar indeterminate />;
   }
 
   return (
-    <View style={{ width: '100%', maxWidth: 1300, marginTop: isMediumScreen ? 30 : 15, marginHorizontal: 'auto' }}>
-      <View
-         style={{
-          flexDirection: isMediumScreen ? 'row' : 'column',  
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 12,
-          marginBottom: 20,
-          marginHorizontal: 20,
-          zIndex: 2
-        }}
-      >
-        <View 
+    <View style={styles.container}>
+    <View style={styles.header}>
+      <Text style={[styles.sectionText, { color: theme.colors.paperText }]}>
+        Sección: {secciones[0].nombre} | Curso: {cursos[0].nombre}
+      </Text>
+    </View>
+
+    <ScrollView horizontal style={styles.scrollView}>
+      <DataTable style={styles.table}>
+        <DataTable.Header 
           style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            width: isMediumScreen ? '50%' : '100%'
+            width: isMediumScreen ? 1300 : 800, 
+            borderBottomWidth: 1, 
+            borderBottomColor: 'rgb(192, 192, 192)',
           }}
         >
-          <Text style={{ fontSize: 15, fontWeight: 'bold', color: theme.colors.paperText }}>
-            Sección: {secciones[0].nombre}
-          </Text>
-          <Text style={{ fontSize: 15, fontWeight: 'bold', color: theme.colors.paperText }}>
-            Sección: {cursos [0].nombre}
-          </Text>
-        </View>
+          <DataTable.Title style={styles.tableHeaderCell}>Alumno</DataTable.Title>
+          <DataTable.Title style={styles.tableHeaderCell}>DNI</DataTable.Title>
+        
+          <DataTable.Title style={styles.tableHeaderCell}>Acciones</DataTable.Title>
+        </DataTable.Header>
 
-       
-      </View>
+        {paginatedData.map((estudiante, index) => (
+          <DataTable.Row style={[styles.row, { width: isMediumScreen ? 1300 : 800 }]} key={index}>
+            <DataTable.Cell style={styles.tableCell}>{estudiante.nombreCompleto}</DataTable.Cell>
+            <DataTable.Cell style={styles.tableCell}>{estudiante.dni}</DataTable.Cell>
+            <DataTable.Cell style={styles.actionCell}>
+              <Button 
+                mode="contained" 
+                onPress={() => console.log("Editar Notas")} 
+                style={styles.editButton}
+                compact
+              >
+                Editar Notas
+              </Button>
+            </DataTable.Cell>
+          </DataTable.Row>
+        ))}
 
-      <View style={{ marginHorizontal: 20 }}>
-        <CustomTable 
-          columns={columns}
-          data={displayedEstudiantes()}
+        <DataTable.Pagination
+          page={page}
+          numberOfPages={Math.ceil(displayedEstudiantes.length / numberOfItemsPerPage)}
+          onPageChange={newPage => setPage(newPage)}
+          label={`${from + 1}-${to} de ${displayedEstudiantes.length}`}
+          numberOfItemsPerPage={numberOfItemsPerPage}
+          onItemsPerPageChange={setNumberOfItemsPerPage}
+          showFastPaginationControls
+          selectPageDropdownLabel={'Filas por página'}
+          style={styles.pagination}
         />
-      </View>
-    </View>
-    );
+      </DataTable>
+    </ScrollView>
+  </View>
+);
 };
+
+// Estilos
+const styles = StyleSheet.create({
+container: {
+  width: '100%',
+  maxWidth: 1300,
+  marginTop: 20,
+  marginHorizontal: 'auto', // Centra el contenido horizontalmente
+  paddingHorizontal: 10,
+  alignItems: 'center', // Centra el contenido
+},
+header: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  marginBottom: 20,
+  marginHorizontal: 20,
+},
+sectionText: {
+  fontSize: 15,
+  fontWeight: 'bold',
+},
+scrollView: {
+  width: '50%', // Asegúrate de que el ScrollView ocupe todo el ancho
+},
+table: {
+  width: '100%', // Asegúrate de que la tabla ocupe todo el ancho del contenedor
+  borderWidth: 1,
+  borderColor: '#e0e0e0',
+  borderRadius: 5,
+  overflow: 'hidden',
+},
+tableHeaderCell: {
+  flex: 1,
+  justifyContent: 'center',
+  textAlign: 'center',
+},
+row: {
+  borderBottomWidth: 1,
+  borderBottomColor: 'rgb(192, 192, 192)',
+},
+tableCell: {
+  flex: 1,
+  justifyContent: 'center',
+  paddingHorizontal: 5,
+},
+actionCell: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+editButton: {
+  backgroundColor: '#1E88E5',
+},
+pagination: {
+  justifyContent: 'flex-start',
+  marginVertical: 7,
+},
+});
