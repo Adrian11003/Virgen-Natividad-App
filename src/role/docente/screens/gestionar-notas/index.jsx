@@ -8,7 +8,7 @@ import isMediumScreen from '../../../../shared/constants/screen-width/md';
 import { EstudiantesContext } from '../../../../core/context/estudiantesContext';
 import { DataTable } from 'react-native-paper'; // Si usas DataTable directamente de react-native-paper
 import { useRoute } from '@react-navigation/native';
-
+import { ModalNuevaNota } from '../../../../shared/components/modal/modal-notas/index';
 
 export const GestionarNotas = () => {
   const { getSeccionesCursosByDocente, secciones, cursos, loadingSeccionesCursos } = useContext(NotasContext);
@@ -20,6 +20,9 @@ export const GestionarNotas = () => {
   const [numberOfItemsPerPage, setNumberOfItemsPerPage] = useState(8); // Cambia este número según tus necesidades
   const route = useRoute();
   const { seccion, curso } = route.params;
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+
   
   useEffect(() => {
     setDocenteId(user.perfil._id);
@@ -38,6 +41,7 @@ export const GestionarNotas = () => {
   const displayedEstudiantes = estudiantes.map(estudiante => ({
     nombreCompleto: `${estudiante.nombre} ${estudiante.apellido}`,
     dni: estudiante.numero_documento,
+    id: estudiante._id,
   }));
 
   if (loading) {
@@ -76,14 +80,17 @@ export const GestionarNotas = () => {
             <DataTable.Cell style={styles.tableCell}>{estudiante.nombreCompleto}</DataTable.Cell>
             <DataTable.Cell style={styles.tableCell}>{estudiante.dni}</DataTable.Cell>
             <DataTable.Cell style={styles.actionCell}>
-              <Button 
-                mode="contained" 
-                onPress={() => console.log("Editar Notas")} 
-                style={styles.editButton}
-                compact
-              >
-                Editar Notas
-              </Button>
+            <Button 
+                  mode="contained" 
+                  onPress={() => {
+                    setSelectedId(estudiante.id); // Asignar el ID del estudiante seleccionado
+                    setModalVisible(true); 
+                  }} 
+                  style={{backgroundColor: theme.colors.primary}}
+                  compact
+                >
+                  Agregar Notas
+                </Button>
             </DataTable.Cell>
           </DataTable.Row>
         ))}
@@ -101,6 +108,15 @@ export const GestionarNotas = () => {
         />
       </DataTable>
     </ScrollView>
+     {/* Modal para gestionar notas */}
+     {modalVisible && (
+        <ModalNuevaNota
+          modalVisible={modalVisible} 
+          setModalVisible={setModalVisible} 
+          seccion={seccion.nombre}
+          id={selectedId} // Pasar el ID del estudiante seleccionado al modal
+        />
+      )}
     <View>
       
     </View>
@@ -158,9 +174,7 @@ actionCell: {
   justifyContent: 'center',
   alignItems: 'center',
 },
-editButton: {
-  backgroundColor: '#1E88E5',
-},
+
 pagination: {
   justifyContent: 'flex-start',
   marginVertical: 7,
