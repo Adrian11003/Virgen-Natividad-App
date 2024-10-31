@@ -32,7 +32,6 @@ export const GestionarAsistencia = () => {
 
   const columns = [
     { header: 'Semana', field: 'semana.nombre' },
-    { header: 'Dia', field: 'dia' },
     { header: 'Fecha', field: 'fecha' },
     { header: 'Presentes', field: 'presentes' },
     { header: 'Faltas', field: 'faltas' },
@@ -46,16 +45,15 @@ export const GestionarAsistencia = () => {
     );
   };
 
-
   const agregarAsistencia = () => {
-    setSelectedId(null);
-    setDataType('create')
+    setDataType('create');
     setModalVisible(true);
+    setSelectedId(null);
   };
 
   const editarAsistencia = (id) => {
     setModalVisible(true);
-    setDataType('edit')
+    setDataType('edit');
     setSelectedId(id);
   };
 
