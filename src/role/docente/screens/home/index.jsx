@@ -4,7 +4,7 @@ import { HorariosContext } from '../../../../core/context/horariosContext';
 import { AuthContext } from '../../../../core/context/authContext';
 import { useTheme } from '../../../../core/context/themeContext';
 import { Horario } from '../../../../shared/components/custom/horario/index';
-import currentDate from '../../../../shared/constants/today-date';
+import currentDate from '../../../../shared/constants/dates/today-date-words';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
 import { ProgressBar } from 'react-native-paper';
 import { Banner } from '../../../../shared/components/custom/banner/index';

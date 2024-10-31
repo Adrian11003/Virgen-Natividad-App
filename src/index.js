@@ -6,7 +6,7 @@ import { AsistenciaProvider } from './core/context/asistenciaContext';
 import { EstudiantesProvider } from './core/context/estudiantesContext';
 import { ProtectedRoute } from './core/context/protectedRoute';
 import { LoginScreen } from './auth/index';
-import { NotasContext, NotasProvider } from './core/context/notasContext';
+import { NotasProvider } from './core/context/notasContext';
 
 const Stack = createStackNavigator();
 
@@ -14,18 +14,18 @@ export default function App() {
   return (
     <ThemeContextProvider>
       <AuthProvider>
-        <NotasProvider>
         <HorariosProvider>
           <AsistenciaProvider>
             <EstudiantesProvider>
-              <Stack.Navigator initialRouteName="Drawer" screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="Login" component={LoginScreen} />
-                <Stack.Screen name="Drawer" component={ProtectedRoute} />
-              </Stack.Navigator>
+              <NotasProvider>
+                <Stack.Navigator initialRouteName="Drawer" screenOptions={{ headerShown: false }}>
+                  <Stack.Screen name="Login" component={LoginScreen} />
+                  <Stack.Screen name="Drawer" component={ProtectedRoute} />
+                </Stack.Navigator>
+              </NotasProvider>
             </EstudiantesProvider>
           </AsistenciaProvider>
         </HorariosProvider>
-        </NotasProvider>
       </AuthProvider>
     </ThemeContextProvider>
   );

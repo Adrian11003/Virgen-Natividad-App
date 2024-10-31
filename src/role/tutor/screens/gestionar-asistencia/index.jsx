@@ -17,6 +17,7 @@ export const GestionarAsistencia = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [seccionId, setSeccionId] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
+  const [dataType, setDataType] = useState(null);
 
   useEffect(() => {
     fetchSemanas();
@@ -39,19 +40,22 @@ export const GestionarAsistencia = () => {
   ];
 
   const displayedResumenAsistencia = () => {
-    if (!selectedSemana) return resumenesAsistencia;
+    if (!selectedSemana || selectedSemana._id === 'all') return resumenesAsistencia;
     return resumenesAsistencia.filter(item => 
       item.semana._id === selectedSemana._id
     );
   };
 
+
   const agregarAsistencia = () => {
     setSelectedId(null);
+    setDataType('create')
     setModalVisible(true);
   };
 
   const editarAsistencia = (id) => {
     setModalVisible(true);
+    setDataType('edit')
     setSelectedId(id);
   };
 
@@ -91,7 +95,7 @@ export const GestionarAsistencia = () => {
         </View>
 
         <CustomSelector
-          opciones={semanas}
+          opciones={[{ nombre: 'Todas las semanas', _id: 'all' }, ...semanas]}
           selectedOption={selectedSemana}
           onSelect={(item) => setSelectedSemana(item)}
           placeholder="Todas las semanas"
@@ -124,6 +128,7 @@ export const GestionarAsistencia = () => {
       <ModalNuevaAsistencia
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
+        dataType={dataType}
         seccion={user.perfil.seccion.nombre}
         id={selectedId}
       />

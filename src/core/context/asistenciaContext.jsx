@@ -7,6 +7,13 @@ import {
   updateResumenAsistenciaRequest,
   deleteResumenAsistenciaRequest
 } from '../api/resumen-asistencia';
+import {
+  getResumenAsistenciaRequest,
+  createAsistenciaRequest,
+  updateAsistenciaRequest,
+  getFechasRequest,
+  getAsistenciasBySeccionGradoPeriodoRequest
+} from '../api/asistencia'
 
 export const AsistenciaContext = createContext();
 
@@ -14,6 +21,8 @@ export const AsistenciaProvider = ({ children }) => {
   const [semanas, setSemanas] = useState([]);
   const [resumenesAsistencia, setResumenesAsistencia] = useState([]);
   const [resumenAsistencia, setResumenAsistencia] = useState([]);
+  const [asistencias, setAsistencias] = useState([]);
+  const [fechas, setFechas] = useState([]);
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null);
 
@@ -101,6 +110,69 @@ export const AsistenciaProvider = ({ children }) => {
     }
   };
 
+  const getResumenAsistencia = async (seccionId, fecha) => {
+    setLoading(true);
+    try {
+      return await getResumenAsistenciaRequest(seccionId, fecha);
+    } catch (error) {
+      console.log(error)
+      setError(error)
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const getAsistenciasBySeccionGradoPeriodo = async (seccionId, gradoId, periodoId) => {
+    setLoading(true);
+    try {
+      const { data } = await getAsistenciasBySeccionGradoPeriodoRequest(seccionId, gradoId, periodoId);
+      setAsistencias(data);
+    } catch (error) {
+      console.log(error)
+      setError(error)
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const createAsistencia = async (createData) => {
+    setLoading(true);
+    try {
+      return await createAsistenciaRequest(createData);
+    } catch (error) {
+      console.log(error)
+      setError(error)
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const updateAsistencia = async (id, updateData) => {
+    setLoading(true);
+    try {
+      await updateAsistenciaRequest(id, updateData);
+      getAsistenciasBySeccionGradoPeriodo();
+    } catch (error) {
+      console.log(error)
+      setError(error)
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const getFechasAsistencia = async (fecha) => {
+    setLoading(true);
+    try {
+      const { data } = await getFechasRequest(fecha);
+      setFechas(data);
+    } catch (error) {
+      console.log(error)
+      setError(error)
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <AsistenciaContext.Provider 
       value={{ 
@@ -114,6 +186,13 @@ export const AsistenciaProvider = ({ children }) => {
         resumenAsistencia,
         updateResumenAsistencia,
         deleteResumenAsistencia,
+        asistencias,
+        getAsistenciasBySeccionGradoPeriodo,
+        getResumenAsistencia,
+        createAsistencia,
+        updateAsistencia,
+        getFechasAsistencia,
+        fechas,
         error
       }}
     >
