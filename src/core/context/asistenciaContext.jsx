@@ -125,7 +125,10 @@ export const AsistenciaProvider = ({ children }) => {
   const createAsistencia = async (createData) => {
     setLoading(true);
     try {
-      await createAsistenciaRequest(createData);
+      const response = await createAsistenciaRequest(createData);
+      const nuevaAsistencia = response.data; 
+      console.log("Asistencia creada:", nuevaAsistencia);
+      return nuevaAsistencia;
     } catch (error) {
       console.log(error)
       setError(error)

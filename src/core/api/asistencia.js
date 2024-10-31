@@ -11,3 +11,6 @@ export const updateAsistenciaRequest = (data) =>
 
 export const getAsistenciasByFechaRequest = (fecha) =>
   axios.get(`/asistencia/fechas/${fecha}`);
+
+export const getResumenAsistenciaRequest = (seccionId, fecha) =>
+  axios.get(`/asistencia/resumen/asistencia?fecha=${fecha}&seccion_id=${seccionId}`);
