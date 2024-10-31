@@ -8,6 +8,7 @@ import {
   deleteResumenAsistenciaRequest
 } from '../api/resumen-asistencia';
 import {
+  getResumenAsistenciaRequest,
   createAsistenciaRequest,
   updateAsistenciaRequest,
   getFechasRequest,
@@ -109,6 +110,18 @@ export const AsistenciaProvider = ({ children }) => {
     }
   };
 
+  const getResumenAsistencia = async (seccionId, fecha) => {
+    setLoading(true);
+    try {
+      return await getResumenAsistenciaRequest(seccionId, fecha);
+    } catch (error) {
+      console.log(error)
+      setError(error)
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const getAsistenciasBySeccionGradoPeriodo = async (seccionId, gradoId, periodoId) => {
     setLoading(true);
     try {
@@ -125,10 +138,7 @@ export const AsistenciaProvider = ({ children }) => {
   const createAsistencia = async (createData) => {
     setLoading(true);
     try {
-      const response = await createAsistenciaRequest(createData);
-      const nuevaAsistencia = response.data; 
-      console.log("Asistencia creada:", nuevaAsistencia);
-      return nuevaAsistencia;
+      return await createAsistenciaRequest(createData);
     } catch (error) {
       console.log(error)
       setError(error)
@@ -176,8 +186,9 @@ export const AsistenciaProvider = ({ children }) => {
         resumenAsistencia,
         updateResumenAsistencia,
         deleteResumenAsistencia,
-        getAsistenciasBySeccionGradoPeriodo,
         asistencias,
+        getAsistenciasBySeccionGradoPeriodo,
+        getResumenAsistencia,
         createAsistencia,
         updateAsistencia,
         getFechasAsistencia,
