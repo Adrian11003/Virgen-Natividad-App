@@ -1,4 +1,4 @@
-import { View, Text, Modal, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, Modal, ScrollView, SafeAreaView, TouchableOpacity, TouchableWithoutFeedback} from 'react-native';
 import { useContext, useEffect, useState } from 'react';
 import { useTheme } from '../../../../core/context/themeContext';
 import { CustomSelector } from '../../custom/selector/index';
@@ -11,6 +11,8 @@ import { CustomSnackbar } from '../../custom/snackbar/index';
 import isMediumScreen from '../../../constants/screen-width/md';
 import fechaFormateada from '../../../constants/dates/today-date-time';
 import obtenerFechaActual from '../../../constants/dates/today-date-dash';
+import diaSemana from '../../../constants/dates/today-day-word';
+import DatePicker from 'react-native-modern-datepicker';
 
 export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, dataType }) => {
   const [selectedSemana, setSelectedSemana] = useState();
@@ -22,6 +24,8 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
   const [asistencia, setAsistencia] = useState([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false); 
   const [snackbarMessage, setSnackbarMessage] = useState(''); 
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
 
   useEffect(() => {
     fetchSemanas();
@@ -45,6 +49,18 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
     newAsistencia[index] = tipo;
     setAsistencia(newAsistencia);
   };
+  const showDatePicker = () => {
+  setDatePickerVisible(true);
+};
+
+const hideDatePicker = () => {
+  setDatePickerVisible(false);
+};
+
+const handleDateChange = (date) => {
+  setSelectedDate(new Date(date));
+  hideDatePicker();
+};
 
   const guardarInformacion = async () => {
     if (dataType === 'create') {
@@ -68,7 +84,7 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
           grado_id: estudiante.grado._id,
           periodo_id: estudiante.periodo._id,
           semana_id: selectedSemana._id,
-          fecha: obtenerFechaActual(),
+          fecha: selectedDate,
           mes: new Date().toLocaleString('default', { month: 'long' }),
           estado: asistencia[index]
         };
@@ -146,10 +162,9 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
                   >
                     Sección: {seccion}
                   </Text>
-                  <View style={{zIndex: 100}}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
+                <View style={{zIndex: 2}}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
                       <Text style={{ color: theme.colors.paperText }}>Semana: </Text>
-                      
                       
                       <CustomSelector
                         opciones={semanas}
@@ -160,7 +175,44 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
                         isModal={true}
                       />
 
-                      <Text style={{ marginLeft: 10, color: theme.colors.paperText }}>Fecha: {fechaFormateada}</Text>
+                      <TouchableOpacity onPress={showDatePicker} style={{ marginLeft: 10, zIndex: 25 }}>
+                        <Text style={{ color: theme.colors.paperText }}>
+                          Fecha: {selectedDate.toLocaleDateString('es-ES', 
+                            { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                        </Text>
+                      </TouchableOpacity>
+
+                      {isDatePickerVisible && (
+                        <Modal
+                        style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+                          transparent={true}
+                          animationType="fade"
+                          visible={isDatePickerVisible}
+                          onRequestClose={hideDatePicker}
+                        >
+                            <View style={{ flex: 1, 
+                              justifyContent: 'center', 
+                              alignItems: 'center',
+                              width:'70%', }}>
+                              <TouchableWithoutFeedback>
+                                <View style={{ backgroundColor: 'white', 
+                                  padding: 5, borderRadius: 10,
+                                  alignItems: 'center', 
+                                  width: '70%',
+                                  zIndex: 25 }}>
+                                  <DatePicker
+                                    selected={selectedDate}
+                                    onDateChange={handleDateChange}
+                                    mode="calendar"
+                                  />
+                                  <Button mode="contained" onPress={hideDatePicker}>
+                                    Cerrar
+                                  </Button>
+                                </View>
+                              </TouchableWithoutFeedback>
+                            </View>
+                        </Modal>
+                      )}
                     </View>
                   </View>
 
