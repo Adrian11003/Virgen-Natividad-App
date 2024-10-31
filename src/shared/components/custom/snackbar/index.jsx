@@ -2,9 +2,9 @@ import { View } from 'react-native';
 import { Snackbar } from 'react-native-paper';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
 
-export const CustomSnackbar = ({ visible, onDismiss, message, customStyle }) => {
+export const CustomSnackbar = ({ visible, onDismiss, message }) => {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', ...customStyle }}>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Snackbar
         visible={visible}
         onDismiss={onDismiss}

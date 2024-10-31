@@ -1,7 +1,7 @@
 import { Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { View, Text } from 'react-native';
-import fechaFormateada from '../../../../shared/constants/today-dateTime';
+import fechaFormateada from '../../../../shared/constants/dates/today-date-time';
 
 export const GuardarAsistencia = () => {
   const navigation = useNavigation();

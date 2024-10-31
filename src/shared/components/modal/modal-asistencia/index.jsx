@@ -6,11 +6,13 @@ import { AsistenciaContext } from '../../../../core/context/asistenciaContext';
 import { AuthContext } from '../../../../core/context/authContext';
 import { Button, ProgressBar, DataTable } from 'react-native-paper';
 import { EstudiantesContext } from '../../../../core/context/estudiantesContext';
-import { obtenerFechaActual } from '../../../constants/today-dateFormat';
 import { CustomRadio } from '../../custom/radio-button/index';
-import isMediumScreen from '../../../constants/screen-width/md';
-import fechaFormateada from '../../../constants/today-dateTime';
 import { CustomSnackbar } from '../../custom/snackbar/index'; 
+import isMediumScreen from '../../../constants/screen-width/md';
+import fechaFormateada from '../../../constants/dates/today-date-time';
+import obtenerFechaActual from '../../../constants/dates/today-date-dash';
+import diaSemana from '../../../constants/dates/today-day-word';
+import DatePicker from 'react-native-date-picker'
 
 export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, dataType }) => {
   const [selectedSemana, setSelectedSemana] = useState();
@@ -22,6 +24,8 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
   const [asistencia, setAsistencia] = useState([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false); 
   const [snackbarMessage, setSnackbarMessage] = useState(''); 
+  const [date, setDate] = useState(new Date())
+  const [open, setOpen] = useState(false)
 
   useEffect(() => {
     fetchSemanas();
@@ -70,6 +74,7 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
           semana_id: selectedSemana._id,
           fecha: obtenerFechaActual(),
           mes: new Date().toLocaleString('default', { month: 'long' }),
+          dia: diaSemana,
           estado: asistencia[index]
         };
         return createAsistencia(registro);
@@ -112,7 +117,7 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
           <View
             style={{
               width: isMediumScreen ? '60%' : '90%',
-              height: '74%',
+              height: '82%',
               padding: 20,
               backgroundColor: theme.colors.modalBackground,
               borderRadius: 10,
@@ -132,7 +137,7 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
                     Sección: {seccion}
                   </Text>
 
-                  <View>
+                  <View style={{  }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
                       <Text style={{ color: theme.colors.paperText }}>Semana: </Text>
 
@@ -145,7 +150,19 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
                         isModal={true}
                       />
 
-                      <Text style={{ marginStart: 20, color: theme.colors.paperText, width: '40%' }}>Fecha: {fechaFormateada}</Text>
+                      <Button title="Open" onPress={() => setOpen(true)} />
+                      <DatePicker
+                        modal
+                        open={open}
+                        date={date}
+                        onConfirm={(date) => {
+                          setOpen(false)
+                          setDate(date)
+                        }}
+                        onCancel={() => {
+                          setOpen(false)
+                        }}
+                      />
                     </View>
                   </View>
 
