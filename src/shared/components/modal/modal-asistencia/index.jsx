@@ -136,11 +136,11 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
                   >
                     Sección: {seccion}
                   </Text>
-
-                  <View style={{  }}>
+                  <View style={{zIndex: 100}}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
                       <Text style={{ color: theme.colors.paperText }}>Semana: </Text>
-
+                      
+                      
                       <CustomSelector
                         opciones={semanas}
                         selectedOption={selectedSemana}
