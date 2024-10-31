@@ -1,10 +1,11 @@
 import { createContext, useState, useEffect } from 'react';
-import { getNotasRequest, createNotaRequest } from '../api/notas';
+import { getNotasRequest, getSeccionCursoDocenteByDocenteId } from '../api/notas';
 
 export const NotasContext = createContext();
 
 export const NotasProvider = ({ children }) => {
   const [notas, setNotas] = useState([]);
+  const [seccionGradoDocente, setSeccionGradoDocente] = useState([]);
   const [loadingNotas, setLoadingNotas] = useState(false);
   const [error, setError] = useState(null);
 
@@ -13,6 +14,7 @@ export const NotasProvider = ({ children }) => {
     setError(null);
     try {
       const { data } = await getNotasRequest();
+      console.log("Notas recibidas:", data);
       setNotas(data);
     } catch (err) {
       setError(err.response?.data?.message || 'Error al cargar las notas');
@@ -21,6 +23,19 @@ export const NotasProvider = ({ children }) => {
     }
   };
 
+  const getSeccionCursoDocente = async (docenteId) => {
+    setLoadingNotas(true);
+    setError(null);
+    try {
+      const { data } = await getSeccionCursoDocenteByDocenteId(docenteId);
+      console.log("Sección y curso recibidos:", data);
+      setSeccionGradoDocente(data);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Error al cargar las secciones y cursos');
+    } finally {
+      setLoadingNotas(false);
+    }
+  };
   const createNota = async (nota) => {
     try {
       const { data } = await createNotaRequest(nota);
@@ -34,8 +49,18 @@ export const NotasProvider = ({ children }) => {
     getNotas();
   }, []);
 
+
   return (
-    <NotasContext.Provider value={{ notas, loadingNotas, error, getNotas, createNota }}>
+    <NotasContext.Provider
+      value={{
+        notas,
+        seccionGradoDocente,
+        loadingNotas,
+        error,
+        getNotas,
+        getSeccionCursoDocente, createNota
+      }}
+    >
       {children}
     </NotasContext.Provider>
   );
