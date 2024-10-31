@@ -9,6 +9,8 @@ import isMediumScreen from '../../../../shared/constants/screen-width/md';
 import { ProgressBar } from 'react-native-paper';
 import { Banner } from '../../../../shared/components/custom/banner/index';
 import { ModalBanner } from '../../../../shared/components/modal/modal-banner/index';
+import { NotasContext } from '../../../../core/context/notasContext';
+
 
 const image1 = require('../../../../assets/images/Aviso1.png');
 const image2 = require('../../../../assets/images/Aviso2.png');
@@ -19,14 +21,14 @@ const image6 = require('../../../../assets/images/Aviso6.png');
 
 export const Home = () => {
   const { horarios, getHorariosByDocente, loading } = useContext(HorariosContext);
-  const { user } = useContext(AuthContext)
-  const { theme } = useTheme()
-
+  const { user } = useContext(AuthContext);
+  const { theme } = useTheme();
+  const { getSeccionesCursosByDocente, secciones, cursos, loadingSeccionesCursos } = useContext(NotasContext);
   const [docenteId, setDocenteId] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedTitle, setSelectedTitle] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-  
+
   const images = [
     { source: image1, title: 'Aviso Importante' },
     { source: image2, title: 'Calendario Escolar 2024' },
@@ -38,13 +40,18 @@ export const Home = () => {
 
   useEffect(() => {
       setDocenteId(user.perfil._id);
+      
   }, [user]);
   
   useEffect(() => {
     if (docenteId) {
       getHorariosByDocente(docenteId);
+      getSeccionesCursosByDocente(docenteId);
+      console.log('DocenteId:', docenteId);
+      
     }
   }, [docenteId]);
+ 
 
   const handleOpenModal = (image, title) => {
     setSelectedImage(image);

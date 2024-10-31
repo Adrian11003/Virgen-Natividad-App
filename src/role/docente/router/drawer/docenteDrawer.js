@@ -1,10 +1,10 @@
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { Home } from '../screens/home/index';
-import { GestionarNotas } from '../screens/gestionar-notas/index';
-import { GestionarTareas } from '../screens/gestionar-tareas/index';
-import { Perfil } from '../screens/perfil/index';
+import { Home } from '../../screens/home/index';
+import { GestionarNotas } from '../../screens/gestionar-notas/index';
+import { GestionarTareas } from '../../screens/gestionar-tareas/index';
+import { Perfil } from '../../screens/perfil/index';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import CustomDrawer from '../../../shared/components/custom/drawer';
+import CustomDrawer from '../../../../shared/components/custom/drawer';
 
 const Drawer = createDrawerNavigator();
 
