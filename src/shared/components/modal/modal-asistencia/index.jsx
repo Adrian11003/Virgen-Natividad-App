@@ -12,7 +12,6 @@ import isMediumScreen from '../../../constants/screen-width/md';
 import fechaFormateada from '../../../constants/dates/today-date-time';
 import obtenerFechaActual from '../../../constants/dates/today-date-dash';
 import diaSemana from '../../../constants/dates/today-day-word';
-import DatePicker from 'react-native-date-picker'
 
 export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, dataType }) => {
   const [selectedSemana, setSelectedSemana] = useState();
@@ -24,8 +23,6 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
   const [asistencia, setAsistencia] = useState([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false); 
   const [snackbarMessage, setSnackbarMessage] = useState(''); 
-  const [date, setDate] = useState(new Date())
-  const [open, setOpen] = useState(false)
 
   useEffect(() => {
     fetchSemanas();
@@ -150,19 +147,7 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
                         isModal={true}
                       />
 
-                      <Button title="Open" onPress={() => setOpen(true)} />
-                      <DatePicker
-                        modal
-                        open={open}
-                        date={date}
-                        onConfirm={(date) => {
-                          setOpen(false)
-                          setDate(date)
-                        }}
-                        onCancel={() => {
-                          setOpen(false)
-                        }}
-                      />
+                      <Text style={{ marginLeft: 10, color: theme.colors.paperText }}>Fecha: {fechaFormateada}</Text>
                     </View>
                   </View>
 
