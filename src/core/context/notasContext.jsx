@@ -1,46 +1,56 @@
 import { createContext, useState, useEffect } from 'react';
-import { getNotasRequest, createNotaRequest, 
-        getSeccionesCursosByDocenteRequest, // JUAN
-        getSeccionCursoDocenteByDocenteId // ADRIAN
-       } from '../api/notas';
+import { getNotasRequest, createNotaRequest, getSeccionesCursosByDocenteRequest,} from '../api/notas';
 
 export const NotasContext = createContext();
 
 export const NotasProvider = ({ children }) => {
   const [notas, setNotas] = useState([]);
-  const [seccionGradoDocente, setSeccionGradoDocente] = useState([]); // ADRIAN
-  const [loadingNotas, setLoadingNotas] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [secciones, setSecciones] = useState([]); // JUAN
-  const [cursos, setCursos] = useState([]); // JUAN
-  const [loadingSeccionesCursos, setLoadingSeccionesCursos] = useState(false);
+  const [seccionCursoDocente, setSeccionCursoDocente] = useState([]);
+  // const [secciones, setSecciones] = useState([]);
+  // const [cursos, setCursos] = useState([]); // JUAN
   
   const getNotas = async () => {
-    setLoadingNotas(true);
+    setLoading(true);
     setError(null);
     try {
       const { data } = await getNotasRequest();
       console.log("Notas recibidas:", data);
       setNotas(data);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Error al cargar las notas');
+    } catch (error) {
+      console.log(error)
+      setError(error)
     } finally {
-      setLoadingNotas(false);
+      setLoading(false);
     }
   };
 
-  // ADRIAN
-  const getSeccionCursoDocente = async (docenteId) => {
-    setLoadingNotas(true);
-    setError(null);
+  // JUAN
+  const getSeccionesCursosByDocente = async (docenteId) => {
+    setLoading(true);
     try {
-      const { data } = await getSeccionCursoDocenteByDocenteId(docenteId);
-      console.log("Sección y curso recibidos:", data);
-      setSeccionGradoDocente(data);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Error al cargar las secciones y cursos');
+      const { data } = await getSeccionesCursosByDocenteRequest(docenteId);
+      setSeccionCursoDocente(data)
+      // // Separar secciones y cursos
+      // const seccionesData = data.map(item => ({
+      //   id: item.seccion._id,
+      //   nombre: item.seccion.nombre,
+      // }));
+      
+      // const cursosData = data.map(item => ({
+      //   id: item.curso._id,
+      //   nombre: item.curso.nombre,
+      // }));
+
+      // // Guardar datos en los estados correspondientes
+      // setSecciones(seccionesData);
+      // setCursos(cursosData);
+    } catch (error) {
+      console.log(error)
+      setError(error)
     } finally {
-      setLoadingNotas(false);
+      setLoading(false);
     }
   };
 
@@ -48,58 +58,26 @@ export const NotasProvider = ({ children }) => {
     try {
       const { data } = await createNotaRequest(nota);
       setNotas([...notas, data]);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Error al crear la nota');
-    }
-  };
-
-  // JUAN
-  const getSeccionesCursosByDocente = async (docenteId) => {
-    setLoadingSeccionesCursos(true);
-    setError(null);
-    try {
-      const { data } = await getSeccionesCursosByDocenteRequest(docenteId);
-
-      // Separar secciones y cursos
-      const seccionesData = data.map(item => ({
-        id: item.seccion._id,
-        nombre: item.seccion.nombre,
-      }));
-      
-      const cursosData = data.map(item => ({
-        id: item.curso._id,
-        nombre: item.curso.nombre,
-      }));
-
-      // Guardar datos en los estados correspondientes
-      setSecciones(seccionesData);
-      setCursos(cursosData);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Error al cargar las secciones y cursos');
+    } catch (error) {
+      console.log(error)
+      setError(error)
     } finally {
-      setLoadingSeccionesCursos(false);
+      setLoading(false);
     }
   };
-
-  useEffect(() => {
-    getNotas();
-  }, []);
-
 
   return (
     <NotasContext.Provider 
       value={{ 
         notas,
-        loadingNotas,
         error,
         getNotas,
-        seccionGradoDocente // adrian
         createNota,
-        secciones, // juan
-        cursos, // juan
-        loadingSeccionesCursos,
-        getSeccionCursoDocente // ADRIAN
-        getSeccionesCursosByDocente
+        // secciones, // juan
+        // cursos, // juan
+        loading,
+        getSeccionesCursosByDocente,
+        seccionCursoDocente
       }}
     >
       {children}

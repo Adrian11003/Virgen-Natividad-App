@@ -6,6 +6,3 @@ export const createNotaRequest = nota => axios.post('/notas', nota)
 
 export const getSeccionesCursosByDocenteRequest = (docenteId) =>  
   axios.get(`/seccion-curso-docente/docente/${docenteId}`);
-
-export const getSeccionCursoDocenteByDocenteId = (docenteId) => 
-  axios.get(`seccion-curso-docente/docente/${docenteId}`)

@@ -39,20 +39,16 @@ export const Home = () => {
   ];
 
   useEffect(() => {
-      setDocenteId(user.perfil._id);
-      
+    setDocenteId(user.perfil._id);
   }, [user]);
   
   useEffect(() => {
     if (docenteId) {
       getHorariosByDocente(docenteId);
       getSeccionesCursosByDocente(docenteId);
-      console.log('DocenteId:', docenteId);
-      
     }
   }, [docenteId]);
  
-
   const handleOpenModal = (image, title) => {
     setSelectedImage(image);
     setSelectedTitle(title);

@@ -1,6 +1,6 @@
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Home } from '../../screens/home/index';
-import { GestionarNotas } from '../../screens/gestionar-notas/index';
+import { NotasStack } from '../stacks/notasStack';
 import { GestionarTareas } from '../../screens/gestionar-tareas/index';
 import { Perfil } from '../../screens/perfil/index';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -28,8 +28,8 @@ export const DocenteDrawer = () => {
       />
       <Drawer.Screen 
         name="Notas" 
-        component={GestionarNotas} 
-        options= {{
+        component={NotasStack}
+        options={{
           drawerIcon: () => <Ionicons name="checkmark-outline" size={22} color="white" />
         }}
       />

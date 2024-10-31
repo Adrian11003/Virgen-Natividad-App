@@ -7,77 +7,52 @@ import { useTheme } from '../../../../core/context/themeContext';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
 import { EstudiantesContext } from '../../../../core/context/estudiantesContext';
 import { DataTable } from 'react-native-paper'; // Si usas DataTable directamente de react-native-paper
+import { useRoute } from '@react-navigation/native';
 
 
 export const GestionarNotas = () => {
   const { getSeccionesCursosByDocente, secciones, cursos, loadingSeccionesCursos } = useContext(NotasContext);
   const { user } = useContext(AuthContext);
   const [docenteId, setDocenteId] = useState(null);
-  const { estudiantes, getEstudiantesBySeccion, loadingEstudiantes } = useContext(EstudiantesContext);
+  const { estudiantes, getEstudiantesBySeccion, loading } = useContext(EstudiantesContext);
   const { theme } = useTheme();
-   // Paginación
-   const [page, setPage] = useState(0);
-   const [numberOfItemsPerPage, setNumberOfItemsPerPage] = useState(8); // Cambia este número según tus necesidades
- 
-useEffect(() => {
-   
-      setDocenteId(user.perfil._id);
-      
+  const [page, setPage] = useState(0);
+  const [numberOfItemsPerPage, setNumberOfItemsPerPage] = useState(8); // Cambia este número según tus necesidades
+  const route = useRoute();
+  const { seccion, curso } = route.params;
+  
+  useEffect(() => {
+    setDocenteId(user.perfil._id);
   }, [user]);
-
-  // Llamamos a getSeccionesCursosByDocente cuando el docenteId esté disponible
   
   useEffect(() => {
     if (docenteId) {
       getSeccionesCursosByDocente(docenteId);
-      console.log('DocenteId:', docenteId);
     }
   }, [docenteId]);
 
   useEffect(() => {
-    // Asegúrate de que los datos hayan cargado antes de imprimirlos
-    if (!loadingSeccionesCursos) {
-      console.log('Secciones:', secciones); // Ver todas las secciones con sus nombres e IDs
-      console.log('Cursos:', cursos); // Ver todos los cursos con sus nombres e IDs
-      
-      // Acceder a datos específicos (por ejemplo, ID de la primera sección y curso)
-      if (secciones.length > 0) {
-        console.log('Primer Sección - Nombre:', secciones[0].nombre, 'ID:', secciones[0].id);
-      }
-      if (cursos.length > 0) {
-        console.log('Primer Curso - Nombre:', cursos[0].nombre, 'ID:', cursos[0].id);
-      }
-    }
-  }, [secciones, cursos, loadingSeccionesCursos]);
-  useEffect(() => {
-    getEstudiantesBySeccion(secciones[0].id);
+    getEstudiantesBySeccion(seccion._id);
   }, [secciones]);
 
   const displayedEstudiantes = estudiantes.map(estudiante => ({
     nombreCompleto: `${estudiante.nombre} ${estudiante.apellido}`,
     dni: estudiante.numero_documento,
-    
   }));
 
-  if (loadingEstudiantes || loadingSeccionesCursos) {
+  if (loading) {
     return <ProgressBar indeterminate />;
   }
-
- 
 
   const from = page * numberOfItemsPerPage;
   const to = Math.min((page + 1) * numberOfItemsPerPage, displayedEstudiantes.length);
   const paginatedData = displayedEstudiantes.slice(from, to);
 
-  if (loadingEstudiantes || loadingSeccionesCursos) {
-    return <ProgressBar indeterminate />;
-  }
-
   return (
     <View style={styles.container}>
     <View style={styles.header}>
       <Text style={[styles.sectionText, { color: theme.colors.paperText }]}>
-        Sección: {secciones[0].nombre} | Curso: {cursos[0].nombre}
+        Sección: {seccion.nombre} | Curso: {curso.nombre}
       </Text>
     </View>
 
@@ -126,6 +101,9 @@ useEffect(() => {
         />
       </DataTable>
     </ScrollView>
+    <View>
+      
+    </View>
   </View>
 );
 };

@@ -88,30 +88,31 @@ const handleDateChange = (date) => {
           mes: new Date().toLocaleString('default', { month: 'long' }),
           estado: asistencia[index]
         };
+        console.log(registro)
 
-        const response = await createAsistencia(registro);
+        // const response = await createAsistencia(registro);
 
-        if (index === 0) {
-          const response2 = await getResumenAsistencia(response.data.seccion._id, response.data.fecha);
-          data = {
-            semana_id: response.data.semana._id,
-            seccion_id: response.data.seccion._id,
-            fecha: response2.data.fecha,
-            presentes: response2.data.totalPresentes,
-            faltas: response2.data.totalFaltas,
-            justificadas: response2.data.totalJustificados,
-          }
-          console.log(data)
-          createResumenAsistencia(data)
-          // console.log("asistencia guardada :D")
-        }
+        // if (index === 0) {
+        //   const response2 = await getResumenAsistencia(response.data.seccion._id, response.data.fecha);
+        //   data = {
+        //     semana_id: response.data.semana._id,
+        //     seccion_id: response.data.seccion._id,
+        //     fecha: response2.data.fecha,
+        //     presentes: response2.data.totalPresentes,
+        //     faltas: response2.data.totalFaltas,
+        //     justificadas: response2.data.totalJustificados,
+        //   }
+        //   console.log(data)
+        //   createResumenAsistencia(data)
+        //   // console.log("asistencia guardada :D")
+        // }
       });
 
-      try {
-        await Promise.all(promises);
-      } catch (error) {
-        console.error("Hubo un error al registrar la asistencia:", error);
-      }
+      // try {
+      //   await Promise.all(promises);
+      // } catch (error) {
+      //   console.error("Hubo un error al registrar la asistencia:", error);
+      // }
     }
     if (dataType === 'edit') {
       console.log('Editar asistencia');
