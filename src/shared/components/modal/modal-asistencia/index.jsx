@@ -18,7 +18,7 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
   const [selectedSemana, setSelectedSemana] = useState();
   const [seccionId, setSeccionId] = useState(null);
   const { user } = useContext(AuthContext);
-  const { semanas, fetchSemanas, loading, createAsistencia, resumenesAsistencia } = useContext(AsistenciaContext);
+  const { semanas, fetchSemanas, loading, createAsistencia, getResumenAsistencia, createResumenAsistencia } = useContext(AsistenciaContext);
   const { getEstudiantesBySeccion, estudiantes } = useContext(EstudiantesContext);
   const { theme } = useTheme();
   const [asistencia, setAsistencia] = useState([]);
@@ -77,7 +77,7 @@ const handleDateChange = (date) => {
         return;
       }
 
-      const promises = estudiantes.map((estudiante, index) => {
+      const promises = estudiantes.map(async (estudiante, index) => {
         const registro = {
           estudiante_id: estudiante._id,
           seccion_id: estudiante.seccion._id,
@@ -86,15 +86,29 @@ const handleDateChange = (date) => {
           semana_id: selectedSemana._id,
           fecha: selectedDate,
           mes: new Date().toLocaleString('default', { month: 'long' }),
-          dia: diaSemana,
           estado: asistencia[index]
         };
-        return createAsistencia(registro);
+
+        const response = await createAsistencia(registro);
+
+        if (index === 0) {
+          const response2 = await getResumenAsistencia(response.data.seccion._id, response.data.fecha);
+          data = {
+            semana_id: response.data.semana._id,
+            seccion_id: response.data.seccion._id,
+            fecha: response2.data.fecha,
+            presentes: response2.data.totalPresentes,
+            faltas: response2.data.totalFaltas,
+            justificadas: response2.data.totalJustificados,
+          }
+          console.log(data)
+          createResumenAsistencia(data)
+          // console.log("asistencia guardada :D")
+        }
       });
 
       try {
         await Promise.all(promises);
-        console.log("Asistencia registrada exitosamente para todos los estudiantes.");
       } catch (error) {
         console.error("Hubo un error al registrar la asistencia:", error);
       }
