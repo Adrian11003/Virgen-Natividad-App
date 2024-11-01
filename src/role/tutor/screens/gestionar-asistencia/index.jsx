@@ -12,7 +12,7 @@ import isMediumScreen from '../../../../shared/constants/screen-width/md';
 export const GestionarAsistencia = () => {
   const [selectedSemana, setSelectedSemana] = useState();
   const { user } = useContext(AuthContext);
-  const { semanas, fetchSemanas, getResumenesAsistenciaBySeccion, resumenesAsistencia, loading } = useContext(AsistenciaContext);
+  const { semanas, fetchSemanas, getResumenesAsistenciaBySeccion, resumenesAsistencia, loading, getResumenAsistenciaById } = useContext(AsistenciaContext);
   const { theme } = useTheme();
   const [modalVisible, setModalVisible] = useState(false);
   const [seccionId, setSeccionId] = useState(null);
@@ -32,7 +32,6 @@ export const GestionarAsistencia = () => {
 
   const columns = [
     { header: 'Semana', field: 'semana.nombre' },
-    { header: 'Dia', field: 'dia' },
     { header: 'Fecha', field: 'fecha' },
     { header: 'Presentes', field: 'presentes' },
     { header: 'Faltas', field: 'faltas' },
@@ -46,17 +45,16 @@ export const GestionarAsistencia = () => {
     );
   };
 
-
   const agregarAsistencia = () => {
-    setSelectedId(null);
-    setDataType('create')
+    setDataType('create');
     setModalVisible(true);
+    setSelectedId(null);
   };
 
   const editarAsistencia = (id) => {
     setModalVisible(true);
-    setDataType('edit')
-    setSelectedId(id);
+    setDataType('edit');
+    getResumenAsistenciaById(id);
   };
 
   const eliminarAsistencia = (id) => {
@@ -130,7 +128,6 @@ export const GestionarAsistencia = () => {
         setModalVisible={setModalVisible}
         dataType={dataType}
         seccion={user.perfil.seccion.nombre}
-        id={selectedId}
       />
     </View>
   );

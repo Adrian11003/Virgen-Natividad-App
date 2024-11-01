@@ -8,11 +8,10 @@ import {
   deleteResumenAsistenciaRequest
 } from '../api/resumen-asistencia';
 import {
-  getResumenAsistenciaRequest,
   createAsistenciaRequest,
   updateAsistenciaRequest,
-  getFechasRequest,
-  getAsistenciasBySeccionGradoPeriodoRequest
+  getAsistenciasBySeccionFechaRequest,
+  getResumenAsistenciaRequest
 } from '../api/asistencia'
 
 export const AsistenciaContext = createContext();
@@ -22,7 +21,6 @@ export const AsistenciaProvider = ({ children }) => {
   const [resumenesAsistencia, setResumenesAsistencia] = useState([]);
   const [resumenAsistencia, setResumenAsistencia] = useState([]);
   const [asistencias, setAsistencias] = useState([]);
-  const [fechas, setFechas] = useState([]);
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null);
 
@@ -61,8 +59,8 @@ export const AsistenciaProvider = ({ children }) => {
   const createResumenAsistencia = async (createData) => {
     setLoading(true);
     try {
-      await createResumenAsistenciaRequest(createData);
-      getResumenesAsistenciaBySeccion();
+      const response = await createResumenAsistenciaRequest(createData);
+      getResumenesAsistenciaBySeccion(response.data.seccion._id);
     } catch (error) {
       console.log(error)
       setError(error)
@@ -122,19 +120,6 @@ export const AsistenciaProvider = ({ children }) => {
     }
   }
 
-  const getAsistenciasBySeccionGradoPeriodo = async (seccionId, gradoId, periodoId) => {
-    setLoading(true);
-    try {
-      const { data } = await getAsistenciasBySeccionGradoPeriodoRequest(seccionId, gradoId, periodoId);
-      setAsistencias(data);
-    } catch (error) {
-      console.log(error)
-      setError(error)
-    } finally {
-      setLoading(false);
-    }
-  }
-
   const createAsistencia = async (createData) => {
     setLoading(true);
     try {
@@ -160,11 +145,11 @@ export const AsistenciaProvider = ({ children }) => {
     }
   }
 
-  const getFechasAsistencia = async (fecha) => {
+  const getAsistenciasBySeccionFecha = async (seccionId, fecha) => {
     setLoading(true);
     try {
-      const { data } = await getFechasRequest(fecha);
-      setFechas(data);
+      const response = await getAsistenciasBySeccionFechaRequest(seccionId, fecha);
+      console.log(response)
     } catch (error) {
       console.log(error)
       setError(error)
@@ -186,13 +171,11 @@ export const AsistenciaProvider = ({ children }) => {
         resumenAsistencia,
         updateResumenAsistencia,
         deleteResumenAsistencia,
-        asistencias,
-        getAsistenciasBySeccionGradoPeriodo,
         getResumenAsistencia,
         createAsistencia,
         updateAsistencia,
-        getFechasAsistencia,
-        fechas,
+        getAsistenciasBySeccionFecha,
+        asistencias,
         error
       }}
     >
