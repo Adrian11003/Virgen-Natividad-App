@@ -74,7 +74,6 @@ export const AsistenciaProvider = ({ children }) => {
     try {
       const { data } = await getResumenAsistenciaByIdRequest(id);
       setResumenAsistencia(data);
-      console.log(data)
     } catch (error) {
       console.log(error)
       setError(error)
@@ -149,9 +148,8 @@ export const AsistenciaProvider = ({ children }) => {
   const getAsistenciasBySeccionFecha = async (seccionId, fecha) => {
     setLoading(true);
     try {
-      const response = getAsistenciasBySeccionFechaRequest(seccionId, fecha);
+      const response = await getAsistenciasBySeccionFechaRequest(seccionId, fecha);
       console.log(response)
-      // console.log(data)
     } catch (error) {
       console.log(error)
       setError(error)

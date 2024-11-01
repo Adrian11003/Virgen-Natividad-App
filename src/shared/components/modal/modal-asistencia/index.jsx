@@ -13,7 +13,7 @@ import DatePicker from 'react-native-modern-datepicker';
 import formatDate from '../../../constants/dates/format-date';
 import formatMonth from '../../../constants/dates/format-month';
 
-export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, dataType, id }) => {
+export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, dataType }) => {
   const { 
     semanas, 
     fetchSemanas, asistencias,
@@ -22,7 +22,6 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
     resumenAsistencia,
     createResumenAsistencia,
     getAsistenciasBySeccionFecha,
-    getResumenAsistenciaById
   } = useContext(AsistenciaContext);
 
   const { user } = useContext(AuthContext);
@@ -50,13 +49,10 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
 
   useEffect(() => {
     if (dataType === 'edit') {
-      getResumenAsistenciaById(id);
+      console.log()
+      getAsistenciasBySeccionFecha(resumenAsistencia.seccion._id, resumenAsistencia.fecha);
     }
-  }, [resumenAsistencia, dataType]);
-
-  useEffect(() => {
-    console.log(resumenAsistencia);
-  }, [resumenAsistencia]);
+  }, [dataType]);
 
   const handleRadioChange = (index, tipo) => {
     const newAsistencia = [...asistencia];
