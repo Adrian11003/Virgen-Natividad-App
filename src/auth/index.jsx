@@ -7,26 +7,9 @@ import { LoginRequest } from '../core/models/shared/login';
 import { useNavigation } from '@react-navigation/native';
 import { CustomSnackbar } from '../shared/components/custom/snackbar';
 import isMediumScreen from '../shared/constants/screen-width/md';
+import { Logo } from '../shared/components/custom/logo/index'
 
 const imagenFondo = require('../assets/images/fondo.jpg');
-const logo = require('../assets/images/logo.png');
-const logoBlanco = require('../assets/images/logoInvertido.png');
-
-const Logo = () => {
-  const { theme, isDarkTheme } = useTheme();
-  return (
-    <View style={{ alignItems: 'center', marginBottom: 20 }}>
-      <Image
-        source={ isDarkTheme ? logoBlanco : logo }
-        style={{ width: 100, height: 100, marginBottom: 20 }}
-        resizeMode="contain"
-      />
-      <Text style={{ color: isMediumScreen ? 'white' : theme.colors.paperText, fontSize: 36, fontWeight: '500', textAlign: 'center' }}>
-        Colegio Virgen de la Natividad
-      </Text>
-    </View>
-  );
-};
 
 export const LoginScreen = () => {
   const [identificador, setIdentificador] = useState('');
