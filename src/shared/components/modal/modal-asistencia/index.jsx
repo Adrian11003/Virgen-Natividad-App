@@ -13,15 +13,17 @@ import DatePicker from 'react-native-modern-datepicker';
 import formatDate from '../../../constants/dates/format-date';
 import formatMonth from '../../../constants/dates/format-month';
 
-export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, dataType }) => {
+export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, seccion = '', dataType = 'create', id }) => {
   const { 
     semanas, 
     fetchSemanas, asistencias,
     loading, createAsistencia, 
     getResumenAsistencia, 
-    resumenAsistencia,
     createResumenAsistencia,
+    getResumenAsistenciaById,
     getAsistenciasBySeccionFecha,
+    loadingAsistencias,
+    resumenAsistencia
   } = useContext(AsistenciaContext);
 
   const { user } = useContext(AuthContext);
@@ -29,7 +31,6 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
   const { theme, isDarkTheme } = useTheme();
 
   const [selectedSemana, setSelectedSemana] = useState();
-  const [seccionId, setSeccionId] = useState(null);
   const [asistencia, setAsistencia] = useState([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false); 
   const [snackbarMessage, setSnackbarMessage] = useState(''); 
@@ -38,21 +39,29 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
 
   useEffect(() => {
     fetchSemanas();
-    setSeccionId(user.perfil.seccion._id);
-  }, [user]);
+  }, []);
+
+  if(dataType === undefined) {
+    return null
+  }
 
   useEffect(() => {
-    if (seccionId) {
-      getEstudiantesBySeccion(seccionId);
-    }
-  }, [seccionId]);
-
-  useEffect(() => {
-    if (dataType === 'edit') {
-      console.log()
-      getAsistenciasBySeccionFecha(resumenAsistencia.seccion._id, resumenAsistencia.fecha);
-    }
-  }, [dataType]);
+    const fetchData = async () => {
+      if (dataType === 'create') {
+        await getEstudiantesBySeccion(user.perfil.seccion._id);
+      }
+      if (dataType === 'edit') {
+        await getResumenAsistenciaById(id);
+        if (resumenAsistencia?.seccion?._id && resumenAsistencia?.fecha) {
+          await getAsistenciasBySeccionFecha(resumenAsistencia.seccion._id, resumenAsistencia.fecha);
+          console.log(resumenAsistencia);
+        }
+      }
+    };
+  
+    fetchData();
+  }, [dataType, id, user.perfil.seccion._id, resumenAsistencia?.seccion?._id, resumenAsistencia?.fecha]);
+  
 
   const handleRadioChange = (index, tipo) => {
     const newAsistencia = [...asistencia];
@@ -131,7 +140,7 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
     }
   };
 
-  if (loading) {
+  if (loadingAsistencias) {
     return <ProgressBar indeterminate />;
   }
 
@@ -258,16 +267,16 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
                       width: '100%',
                     }}
                   >
-                    {estudiantes && estudiantes.length > 0 ? (
+                    {(dataType === 'edit' ? asistencias : estudiantes)? (
                       <DataTable>
                         <DataTable.Header>
                           <DataTable.Title style={{ flex: 2 }}>Apellidos y Nombres</DataTable.Title>
                           <DataTable.Title style={{ flex: 2, justifyContent: 'center' }}>Estado de Asistencia</DataTable.Title>
                         </DataTable.Header>
-                        {estudiantes.map((item, index) => (
+                        {(dataType === 'edit' ? asistencias : estudiantes).map((item, index) => (
                           <DataTable.Row key={index}>
                             <DataTable.Cell style={{ flex: 2 }}>
-                              {item.apellido}, {item.nombre}
+                              {dataType === 'edit' ? `${item.estudiante.apellido}, ${item.estudiante.nombre}` : `${item.apellido}, ${item.nombre}`}
                             </DataTable.Cell>
                             <DataTable.Cell style={{ flex: 2 }}>
                               <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10 }}>

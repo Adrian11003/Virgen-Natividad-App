@@ -23,6 +23,8 @@ export const AsistenciaProvider = ({ children }) => {
   const [asistencias, setAsistencias] = useState([]);
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null);
+  const [loadingResumen, setLoadingResumen] = useState(false); // Nuevo estado de carga específico
+  const [loadingAsistencias, setLoadingAsistencias] = useState(false);
 
   const fetchSemanas = async () => {
     try {
@@ -70,7 +72,7 @@ export const AsistenciaProvider = ({ children }) => {
   }
 
   const getResumenAsistenciaById = async (id) => {
-    setLoading(true);
+    setLoadingResumen(true); // Activar carga específica
     try {
       const { data } = await getResumenAsistenciaByIdRequest(id);
       setResumenAsistencia(data);
@@ -78,7 +80,7 @@ export const AsistenciaProvider = ({ children }) => {
       console.log(error)
       setError(error)
     } finally {
-      setLoading(false);
+      setLoadingResumen(false); // Finalizar carga específica
     }
   }
 
@@ -146,15 +148,15 @@ export const AsistenciaProvider = ({ children }) => {
   }
 
   const getAsistenciasBySeccionFecha = async (seccionId, fecha) => {
-    setLoading(true);
+    setLoadingAsistencias(true);
     try {
-      const response = await getAsistenciasBySeccionFechaRequest(seccionId, fecha);
-      console.log(response)
+      const { data } = await getAsistenciasBySeccionFechaRequest(seccionId, fecha);
+      setAsistencias(data)
     } catch (error) {
       console.log(error)
       setError(error)
     } finally {
-      setLoading(false);
+      setLoadingAsistencias(false);
     }
   }
 
@@ -162,6 +164,8 @@ export const AsistenciaProvider = ({ children }) => {
     <AsistenciaContext.Provider 
       value={{ 
         loading,
+        loadingResumen,
+        loadingAsistencias,
         semanas: ordenarSemanas(semanas),
         fetchSemanas,
         getResumenesAsistenciaBySeccion,

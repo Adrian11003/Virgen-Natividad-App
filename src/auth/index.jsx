@@ -8,6 +8,10 @@ import { useNavigation } from '@react-navigation/native';
 import { CustomSnackbar } from '../shared/components/custom/snackbar';
 import isMediumScreen from '../shared/constants/screen-width/md';
 import { Logo } from '../shared/components/custom/logo/index'
+// import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+// import { initializeApp } from 'firebase/app';
+// import { firebaseConfig } from '../firebase-config';
+
 
 const imagenFondo = require('../assets/images/fondo.jpg');
 
@@ -20,6 +24,47 @@ export const LoginScreen = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const { navigation } = useNavigation();
+
+  // const app = initializeApp(firebaseConfig);
+  // const auth = getAuth(app);
+
+  // const handleCreateAccount = () => {
+  //   if (email === "" || password === "") {
+  //     Alert.alert("Please fill all the fields");
+  //     return;
+  //   }
+
+  //   createUserWithEmailAndPassword(auth, email, password)
+  //     .then((userCredential) => {
+  //       console.log("Account created!");
+  //       const user = userCredential.user;
+  //       console.log(user);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //       Alert.alert(error.message);
+  //     });
+  // };
+
+  // const handleSignIn = () => {
+  //   if (email === "" || password === "") {
+  //     Alert.alert("Please fill all the fields");
+  //     return;
+  //   }
+
+  //   signInWithEmailAndPassword(auth, email, password)
+  //     .then((userCredential) => {
+  //       const user = userCredential.user;
+  //       console.log(user);
+  //       navigation.navigate("Home", { email: user.email});
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //       console.log(error.message);
+  //       Alert.alert(error.message);
+  //     });
+  // };
+
 
   const onLoginPress = () => {
     if (!identificador) {
