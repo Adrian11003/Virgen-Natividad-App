@@ -159,7 +159,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
       }
     }
     if (dataType === 'edit') {
-      
+      console.log(asistencia)
     }
   };
 
