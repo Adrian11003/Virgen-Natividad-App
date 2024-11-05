@@ -5,11 +5,11 @@ export const EstudiantesContext = createContext();
 
 export const EstudiantesProvider = ({ children }) => {
   const [estudiantes, setEstudiantes] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loadingEstudiantes, setLoadingEstudiantes] = useState(false);
   const [error, setError] = useState(null);
 
   const getEstudiantesBySeccion = async (seccionId) => {
-    setLoading(true);
+    setLoadingEstudiantes(true);
     try {
       const { data } = await getEstudiantesBySeccionRequest(seccionId);
       const estudiantesOrdenados = data.sort((a, b) => 
@@ -20,7 +20,7 @@ export const EstudiantesProvider = ({ children }) => {
       console.log(error)
       setError(error)
     } finally {
-      setLoading(false);
+      setLoadingEstudiantes(false);
     }
   };
 
@@ -29,7 +29,7 @@ export const EstudiantesProvider = ({ children }) => {
       value={{ 
         estudiantes, 
         getEstudiantesBySeccion, 
-        loading, 
+        loadingEstudiantes, 
         error
       }}
     >

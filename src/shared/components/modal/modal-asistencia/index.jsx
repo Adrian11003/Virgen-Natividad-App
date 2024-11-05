@@ -1,4 +1,4 @@
-import { View, Text, Modal, ScrollView, SafeAreaView, TouchableOpacity, TouchableWithoutFeedback} from 'react-native';
+import { View, Text, Modal, ScrollView, SafeAreaView, TouchableOpacity, TouchableWithoutFeedback, Animated} from 'react-native';
 import { useContext, useEffect, useState } from 'react';
 import { useTheme } from '../../../../core/context/themeContext';
 import { CustomSelector } from '../../custom/selector/index';
@@ -16,8 +16,7 @@ import formatMonth from '../../../constants/dates/format-month';
 export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, seccion = '', dataType = 'create', id }) => {
   const { 
     semanas, 
-    fetchSemanas, asistencias,
-    loading, createAsistencia, 
+    fetchSemanas, asistencias, createAsistencia, 
     getResumenAsistencia, 
     createResumenAsistencia,
     getResumenAsistenciaById,
@@ -27,55 +26,79 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
   } = useContext(AsistenciaContext);
 
   const { user } = useContext(AuthContext);
-  const { getEstudiantesBySeccion, estudiantes } = useContext(EstudiantesContext);
+  const { getEstudiantesBySeccion, estudiantes, loadingEstudiantes } = useContext(EstudiantesContext);
   const { theme, isDarkTheme } = useTheme();
 
-  const [selectedSemana, setSelectedSemana] = useState();
+  const [selectedSemana, setSelectedSemana] = useState(null);
   const [asistencia, setAsistencia] = useState([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false); 
   const [snackbarMessage, setSnackbarMessage] = useState(''); 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const convertirFecha = (fechaString) => {
+    const [dia, mes, anio] = fechaString.split('-');
+    return new Date(anio, mes - 1, dia); // Restamos 1 al mes porque los meses en JavaScript van de 0 a 11
+  };  
 
   useEffect(() => {
     fetchSemanas();
   }, []);
 
-  if(dataType === undefined) {
-    return null
-  }
+  if (dataType === undefined) {
+    return null;
+  }  
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (dataType === 'create') {
-        await getEstudiantesBySeccion(user.perfil.seccion._id);
-      }
-      if (dataType === 'edit') {
-        await getResumenAsistenciaById(id);
-        if (resumenAsistencia?.seccion?._id && resumenAsistencia?.fecha) {
-          await getAsistenciasBySeccionFecha(resumenAsistencia.seccion._id, resumenAsistencia.fecha);
-          console.log(resumenAsistencia);
-        }
-      }
-    };
+    setLoading(true);
   
-    fetchData();
+    if (dataType === 'create') {
+      setAsistencia([]);
+      getEstudiantesBySeccion(user.perfil.seccion._id);
+      setLoading(false);
+    }
+  
+    if (dataType === 'edit') {
+      setAsistencia([]);
+      getResumenAsistenciaById(id);
+  
+      if (resumenAsistencia?.seccion?._id && resumenAsistencia?.fecha) {
+        getAsistenciasBySeccionFecha(resumenAsistencia.seccion._id, resumenAsistencia.fecha);
+        console.log(resumenAsistencia);
+      }
+    }
   }, [dataType, id, user.perfil.seccion._id, resumenAsistencia?.seccion?._id, resumenAsistencia?.fecha]);
   
+  useEffect(() => {
+    if (dataType === 'edit' && asistencias?.length > 0) {
+      setAsistencia(asistencias.map(item => item.estado || ''));
+      setLoading(false);
+    }
+  }, [dataType, asistencias]);
+
+  useEffect(() => {
+    if (dataType === 'edit' && resumenAsistencia?.fecha) {
+      const fechaConvertida = convertirFecha(resumenAsistencia.fecha);
+      setSelectedDate(fechaConvertida);
+    }
+  }, [dataType, resumenAsistencia]);
+
+  useEffect(() => {
+    if (dataType === 'edit' && resumenAsistencia?.semana) {
+      setSelectedSemana(resumenAsistencia.semana);
+      console.log(selectedSemana)
+    }
+  }, [dataType, resumenAsistencia]);
 
   const handleRadioChange = (index, tipo) => {
     const newAsistencia = [...asistencia];
     newAsistencia[index] = tipo;
     setAsistencia(newAsistencia);
   };
-
-  const showDatePicker = () => {
-    setDatePickerVisible(true);
-  };
-
-  const hideDatePicker = () => {
-    setDatePickerVisible(false);
-  };
+  
+  const showDatePicker = () => setDatePickerVisible(true);
+  const hideDatePicker = () => setDatePickerVisible(false);
 
   const handleDateChange = (date) => {
     setSelectedDate(new Date(date));
@@ -136,13 +159,9 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
       }
     }
     if (dataType === 'edit') {
-      console.log('Editar asistencia');
+      
     }
   };
-
-  if (loadingAsistencias) {
-    return <ProgressBar indeterminate />;
-  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -171,6 +190,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
               borderRadius: 10,
             }}
           >
+            {(loading) && <ProgressBar indeterminate />}
             <ScrollView style={{ flex: 1 }} vertical>
               <ScrollView horizontal>
                 <View style={{ width: 940 }}>
@@ -299,8 +319,8 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
                     )}
                   </View>
 
-                  <View style={{ width: '100%', marginTop: 25 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                  <View style={{ width: '100%', marginTop: 20 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 10 }}>
                       <Button
                         mode="contained"
                         title="Registrar Asistencia"
@@ -308,7 +328,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
                           guardarInformacion();
                         }}
                       >
-                        Registrar Asistencia
+                        { dataType === 'edit' ? 'Guardar Asistencia' : 'Registrar Asistencia' }
                       </Button>
                       <Button
                         mode="contained"
