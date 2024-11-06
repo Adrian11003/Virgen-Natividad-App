@@ -4,7 +4,7 @@ import { useTheme } from '../../../../core/context/themeContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
 
-export const CustomSelector = ({ opciones, selectedOption, onSelect, placeholder = 'Selecciona una opción', mobileWidth, isModal }) => {
+export const CustomSelector = ({ opciones, selectedOption, onSelect, placeholder = 'Selecciona una opción', mobileWidth, isModal, getDisplayValue }) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const { theme, themeType } = useTheme();
 
@@ -21,7 +21,9 @@ export const CustomSelector = ({ opciones, selectedOption, onSelect, placeholder
         backgroundColor: themeType === 'light' ? '#fff' : '#333'
       }}
     >
-      <Text style={{ color: theme.colors.paperText }}>{item.nombre}</Text>
+      <Text style={{ color: theme.colors.paperText }}>
+        {getDisplayValue(item)}
+      </Text>
     </TouchableOpacity>
   );
   

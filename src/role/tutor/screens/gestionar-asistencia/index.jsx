@@ -1,5 +1,5 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { useState, useContext, useEffect } from 'react';
+import { View, Text } from 'react-native';
 import { AuthContext } from '../../../../core/context/authContext';
 import { AsistenciaContext } from '../../../../core/context/asistenciaContext';
 import { Button, ProgressBar } from 'react-native-paper';
@@ -7,6 +7,7 @@ import { CustomSelector } from '../../../../shared/components/custom/selector/in
 import { useTheme } from '../../../../core/context/themeContext';
 import { ModalNuevaAsistencia } from '../../../../shared/components/modal/modal-asistencia/index';
 import { CustomTable } from '../../../../shared/components/custom/table/index';
+import { showSweetAlert } from '../../../../shared/components/custom/swal';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
 
 export const GestionarAsistencia = () => {
@@ -54,6 +55,28 @@ export const GestionarAsistencia = () => {
     setSelectedId(id);
   };
 
+  const handleAsistenciaGuardada = () => {
+    if (dataType === 'create') {
+      showSweetAlert({
+        title: 'Asistencia Creada',
+        text: 'La asistencia ha sido registrada con exito',
+        showCancelButton: false,
+        confirmButtonText: 'Ok',
+        type: 'success',
+      });
+    } else if (dataType === 'edit') {
+      showSweetAlert({
+        title: 'Asistencia Actualizada',
+        text: 'La asistencia ha sido actualizada con exito',
+        showCancelButton: false,
+        confirmButtonText: 'Ok',
+        type: 'success',
+      });
+    }
+    getResumenesAsistenciaBySeccion(user.perfil.seccion._id);
+    setModalVisible(false);
+  };
+
   if (loading) {
     return <ProgressBar indeterminate />
   }
@@ -88,6 +111,7 @@ export const GestionarAsistencia = () => {
           opciones={[{ nombre: 'Todas las semanas', _id: 'all' }, ...semanas]}
           selectedOption={selectedSemana}
           onSelect={(item) => setSelectedSemana(item)}
+          getDisplayValue={(item) => item.nombre}
           placeholder="Todas las semanas"
           mobileWidth="20%"
           isModal={false}
@@ -121,7 +145,9 @@ export const GestionarAsistencia = () => {
         dataType={dataType}
         seccion={user.perfil.seccion.nombre}
         id={selectedId}
+        onAsistenciaGuardada={handleAsistenciaGuardada}
       />
+
     </View>
   );
 };
