@@ -1,17 +1,16 @@
-import { useContext, useState, useEffect } from 'react';
-import { SafeAreaView, View, Image, Text, Pressable, ActivityIndicator, ImageBackground, StatusBar } from 'react-native';
+import { useContext, useState } from 'react';
+import { SafeAreaView, View, Text, Pressable, ActivityIndicator, ImageBackground, StatusBar } from 'react-native';
 import { AuthContext } from '../core/context/authContext';
 import { useTheme } from '../core/context/themeContext';
 import { TextInput } from 'react-native-paper';
 import { LoginRequest } from '../core/models/shared/login';
 import { useNavigation } from '@react-navigation/native';
-import { CustomSnackbar } from '../shared/components/custom/snackbar';
-import isMediumScreen from '../shared/constants/screen-width/md';
 import { Logo } from '../shared/components/custom/logo/index'
+import { showSnackbar } from '../shared/components/custom/snackbar';
+import isMediumScreen from '../shared/constants/screen-width/md';
 // import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 // import { initializeApp } from 'firebase/app';
 // import { firebaseConfig } from '../firebase-config';
-
 
 const imagenFondo = require('../assets/images/fondo.jpg');
 
@@ -21,8 +20,6 @@ export const LoginScreen = () => {
   const [flatTextSecureEntry, setFlatTextSecureEntry] = useState(true);
   const { handleLogin, loading, error } = useContext(AuthContext);
   const { theme, themeType, isDarkTheme } = useTheme();
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarVisible, setSnackbarVisible] = useState(false);
   const { navigation } = useNavigation();
 
   // const app = initializeApp(firebaseConfig);
@@ -68,28 +65,25 @@ export const LoginScreen = () => {
 
   const onLoginPress = () => {
     if (!identificador) {
-      setSnackbarMessage('El Nro. Documento o Correo no puede estar vacío');
-      setSnackbarVisible(true);
+      showSnackbar('El Nro. Documento o Correo no puede estar vacío');
       return;
     }
 
     if (!contrasena) {
-      setSnackbarMessage('La contraseña no puede estar vacía');
-      setSnackbarVisible(true);
+      showSnackbar('La contraseña no puede estar vacía');
       return;
     }
 
     const loginRequestInstance = new LoginRequest(identificador, contrasena);
 
-    handleLogin(loginRequestInstance, navigation);
+    handleLogin(loginRequestInstance, navigation)
+      .then(() => {
+        console.log('Login successful');
+      })
+      .catch((err) => {
+        showSnackbar(error.response.data.message);
+      });
   };
-
-  useEffect(() => {
-    if (error && error.response) {
-      setSnackbarMessage(error.response.data.message);
-      setSnackbarVisible(true);
-    }
-  }, [error]);
 
   if (loading) {
     return (
@@ -205,12 +199,6 @@ export const LoginScreen = () => {
           </Pressable>
         </View>
       </View>
-
-      <CustomSnackbar
-        visible={snackbarVisible}
-        onDismiss={() => setSnackbarVisible(false)}
-        message={snackbarMessage}
-      />
     </SafeAreaView>
   );
 };
