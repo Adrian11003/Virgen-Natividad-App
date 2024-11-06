@@ -7,7 +7,7 @@ import { AuthContext } from '../../../../core/context/authContext';
 import { Button, ProgressBar, DataTable } from 'react-native-paper';
 import { EstudiantesContext } from '../../../../core/context/estudiantesContext';
 import { CustomRadio } from '../../custom/radio-button/index'; 
-import { showSnackbar } from '../../custom/snackbar/index';
+import { CustomSnackbar } from '../../custom/snackbar/index';
 import isMediumScreen from '../../../constants/screen-width/md';
 import DatePicker from 'react-native-modern-datepicker';
 import formatDate from '../../../constants/dates/format-date';
@@ -34,6 +34,8 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
   const [asistencia, setAsistencia] = useState([]);
   const [estudiantes, setEstudiantes] = useState([]);
   const [editAsistencia, setEditAsistencia] = useState([]);
+  const [snackbarVisible, setSnackbarVisible] = useState(false); 
+  const [snackbarMessage, setSnackbarMessage] = useState(''); 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -122,13 +124,15 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
     setLoading(true);
     if (dataType === 'create') {
       if (!selectedSemana) {
-        showSnackbar('Por favor, seleccione una semana.');
+        setSnackbarMessage('Por favor, selecciona una semana.');
+        setSnackbarVisible(true);
         setLoading(false);
         return;
       }
 
       if (asistencia.length !== estudiantes.length || asistencia.some(estado => estado === "")) {
-        showSnackbar('Debe seleccionar la asistencia de todos los estudiantes.');
+        setSnackbarMessage('Debe seleccionar la asistencia de todos los estudiantes');
+        setSnackbarVisible(true);
         setLoading(false);
         return;
       }
@@ -156,7 +160,6 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
             if (index === estudiantes.length - 1) {
               return getResumenAsistencia(dataAsistencia.seccion._id, dataAsistencia.fecha)
                 .then((dataRA) => {
-                  console.log("Resumen de Asistencia:", dataRA); // Verifica el resumen
                   const resumenData = {
                     semana_id: dataAsistencia.semana._id,
                     seccion_id: dataAsistencia.seccion._id,
@@ -177,14 +180,11 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
       
       Promise.all(promises)
         .then(() => {
-          showSnackbar("Asistencia guardada correctamente");
           setLoading(false);
-
           if (onAsistenciaGuardada) onAsistenciaGuardada();
         })
         .catch((error) => {
           console.log(error);
-          showSnackbar("Hubo un error al registrar la asistencia");
           setLoading(false);
         });
     }
@@ -217,6 +217,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
             justifyContent: 'center',
             alignItems: 'center',
             backgroundColor: 'rgba(0,0,0,0.5)',
+            zIndex: 1000,
           }}
         >
           <View
@@ -226,6 +227,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
               padding: 20,
               backgroundColor: theme.colors.modalBackground,
               borderRadius: 10,
+              zIndex: 1000,
             }}
           >
             { loading && <ProgressBar indeterminate /> }
@@ -382,6 +384,15 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
                 </View>
               </ScrollView>
             </ScrollView>
+            {snackbarVisible && (
+              <View style={{ marginBottom: -20 }}>
+                <CustomSnackbar
+                  visible={snackbarVisible}
+                  onDismiss={() => setSnackbarVisible(false)}
+                  message={snackbarMessage}
+                />
+              </View>
+            )}
           </View>
         </SafeAreaView>
       </Modal>
