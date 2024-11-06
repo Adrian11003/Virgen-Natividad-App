@@ -73,15 +73,12 @@ const getAsistenciasByMes = async (estudianteId,periodoId) => {
   };
 
   const createResumenAsistencia = async (createData) => {
-    setLoading(true);
     try {
-      const response = await createResumenAsistenciaRequest(createData);
-      getResumenesAsistenciaBySeccion(response.data.seccion._id);
+      const { data } = await createResumenAsistenciaRequest(createData)
+      return data
     } catch (error) {
       console.log(error)
       setError(error)
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -89,7 +86,7 @@ const getAsistenciasByMes = async (estudianteId,periodoId) => {
     setLoadingResumen(true); // Activar carga específica
     try {
       const { data } = await getResumenAsistenciaByIdRequest(id);
-      setResumenAsistencia(data);
+      return data
     } catch (error) {
       console.log(error)
       setError(error)
@@ -125,26 +122,23 @@ const getAsistenciasByMes = async (estudianteId,periodoId) => {
   };
 
   const getResumenAsistencia = async (seccionId, fecha) => {
-    setLoading(true);
     try {
-      return await getResumenAsistenciaRequest(seccionId, fecha);
+      const { data } = await getResumenAsistenciaRequest(seccionId, fecha);
+      return data
     } catch (error) {
       console.log(error)
       setError(error)
-    } finally {
-      setLoading(false);
     }
   }
 
   const createAsistencia = async (createData) => {
-    setLoading(true);
     try {
-      return await createAsistenciaRequest(createData);
+      const { data } = await createAsistenciaRequest(createData);
+      console.log(data)
+      return data
     } catch (error) {
       console.log(error)
       setError(error)
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -162,17 +156,18 @@ const getAsistenciasByMes = async (estudianteId,periodoId) => {
   }
 
   const getAsistenciasBySeccionFecha = async (seccionId, fecha) => {
-    setLoadingAsistencias(true);
     try {
       const { data } = await getAsistenciasBySeccionFechaRequest(seccionId, fecha);
-      setAsistencias(data)
+      return data.sort((a, b) => {
+        const apellidoA = a.estudiante?.apellido?.toLowerCase() || '';
+        const apellidoB = b.estudiante?.apellido?.toLowerCase() || '';
+        return apellidoA.localeCompare(apellidoB);
+      });
     } catch (error) {
-      console.log(error)
-      setError(error)
-    } finally {
-      setLoadingAsistencias(false);
+      console.log(error);
+      setError(error);
     }
-  }
+  };
 
   return (
     <AsistenciaContext.Provider 
