@@ -11,7 +11,8 @@ import {
   createAsistenciaRequest,
   updateAsistenciaRequest,
   getAsistenciasBySeccionFechaRequest,
-  getResumenAsistenciaRequest
+  getResumenAsistenciaRequest,
+  getAsistenciasByMesRequest
 } from '../api/asistencia'
 
 export const AsistenciaContext = createContext();
@@ -25,6 +26,7 @@ export const AsistenciaProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [loadingResumen, setLoadingResumen] = useState(false); // Nuevo estado de carga específico
   const [loadingAsistencias, setLoadingAsistencias] = useState(false);
+  const [asistenciasMes, setAsistenciasMes] = useState([]);//mes?
 
   const fetchSemanas = async () => {
     try {
@@ -50,6 +52,18 @@ export const AsistenciaProvider = ({ children }) => {
     try {
       const { data } = await getResumenAsistenciaBySeccionRequest(seccionId);
       setResumenesAsistencia(data);
+    } catch (error) {
+      console.log(error)
+      setError(error)
+    } finally {
+      setLoading(false);
+    }
+  };
+const getAsistenciasByMes = async (estudianteId,periodoId) => {
+    setLoading(true);
+    try {
+      const { data } = await getAsistenciasByMesRequest(estudianteId,periodoId);
+      setAsistenciasMes(data);
     } catch (error) {
       console.log(error)
       setError(error)
@@ -169,6 +183,8 @@ export const AsistenciaProvider = ({ children }) => {
         semanas: ordenarSemanas(semanas),
         fetchSemanas,
         getResumenesAsistenciaBySeccion,
+        getAsistenciasByMes,//mes?
+        asistenciasMes,//mes? 
         resumenesAsistencia,
         createResumenAsistencia,
         getResumenAsistenciaById,

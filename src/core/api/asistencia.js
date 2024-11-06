@@ -11,3 +11,6 @@ export const getAsistenciasBySeccionFechaRequest = (seccionId, fecha) =>
 
 export const getResumenAsistenciaRequest = (seccionId, fecha) =>
   axios.get(`/asistencia/resumen/asistencia?fecha=${fecha}&seccion_id=${seccionId}`);
+
+export const getAsistenciasByMesRequest = (estudianteId,periodoId) =>
+  axios.get(`/asistencia/resumen/mensual?estudianteId=${estudianteId}&periodoId=${periodoId}`);
