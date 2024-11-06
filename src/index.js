@@ -8,7 +8,6 @@ import { ProtectedRoute } from './core/context/protectedRoute';
 import { LoginScreen } from './auth/index';
 import { NotasProvider } from './core/context/notasContext';
 import { PeriodoProvider } from './core/context/periodoContext';
-import CustomSnackbar from './shared/components/custom/snackbar';
 import SweetAlert from './shared/components/custom/swal';
 
 const Stack = createStackNavigator();
@@ -22,7 +21,6 @@ export default function App() {
             <EstudiantesProvider>
               <NotasProvider>
                 <PeriodoProvider>
-                  <CustomSnackbar />
                   <SweetAlert />
                   <Stack.Navigator initialRouteName="Drawer" screenOptions={{ headerShown: false }}>
                     <Stack.Screen name="Login" component={LoginScreen} />
