@@ -2,67 +2,68 @@ import { useEffect, useContext, useState } from 'react';
 import { View, Text } from 'react-native';
 import { AuthContext } from '../../../../core/context/authContext';
 import { AsistenciaContext } from '../../../../core/context/asistenciaContext';
+import { PeriodoContext } from '../../../../core/context/periodoContext';
+import { CustomSelector } from '../../../../shared/components/custom/selector';
 import DropDownPicker from 'react-native-dropdown-picker';
+import isMediumScreen from '../../../../shared/constants/screen-width/md';
 
 export const Asistencia = () => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState();
-
-  const [items, setItems] = useState([
-    {label: 'Spain', value: 'spain'},
-    {label: 'Madrid', value: 'madrid'},
-  ]);
-
+  
   const { user } = useContext(AuthContext)
-  const { semanas, fetchSemanas } = useContext(AsistenciaContext);
+  const {asistenciasMes, getAsistenciasByMes} = useContext(AsistenciaContext);
+  const {periodo, fetchPeriodo} = useContext(PeriodoContext);
+  const [selectedPeriodo, setSelectedPeriodo] = useState(null);
 
   useEffect(() => {
-    fetchSemanas();
+    fetchPeriodo()
   }, []);
 
   useEffect(() => {
-    if (semanas && semanas.length > 0) {
-      const semanaItems = semanas.map((semana) => ({
-        label: semana.nombre, 
-        value: semana.id, 
-      }));
-      setItems(semanaItems);
-    }
-  }, [semanas]);
+    getAsistenciasByMes(user.perfil._id, user.perfil.periodo._id)
+  }, [user.perfil._id, user.perfil.periodo._id]);
+
+  console.log(asistenciasMes)
+
+  const columns = [
+    { header: 'Fecha', field: 'fecha' },
+    { header: 'Presentes', field: 'presentes' },
+    { header: 'Faltas', field: 'faltas' },
+    { header: 'Justificados', field: 'justificadas' },
+  ];
+
 
   return (
-    <>
-    <View style={{ justifyContent: 'space-between', fontSize: 16 }}>
-      <Text>Seccion: {user.perfil.seccion.nombre}</Text>
-      <Text></Text>
+    <View style={{width: '100%', maxWidth: 1300, marginTop: isMediumScreen ? 30 : 15, marginHorizontal: 'auto' }}>
       <View
         style={{
-          paddingTop: 50,
-          flexDirection: 'row',
-          justifyContent: 'center',
-        }}>
-        <DropDownPicker
-          open={open}
-          value={value}
-          items={items}
-          setOpen={setOpen}
-          setValue={setValue}
-          setItems={setItems}
-          placeholder="Seleccione una semana"
-        />
+          flexDirection: isMediumScreen ? 'row' : 'column',  
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 12,
+          marginBottom: 20,
+          marginHorizontal: 20,
+          zIndex: 2
+        }}
+      >
+        <View 
+          style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            width: isMediumScreen ? '50%' : '100%'
+          }}
+        >
+          
+        </View>
+        <Text style={{ justifyContent: 'center'}}>Asistencia</Text>   
       </View>
+      {/* <Datatable>
+        <Datatable className="heart">
+            
+        </Datatable>
+      </Datatable> */}
     </View>
-    <View style={{
-    marginTop: 10,
-    alignItems: 'center',
-    justifyContent: 'center'
-    }}>
-    <View style={{
-      innerWidth: '80%',
-    }}>
-      <Text>Asistencia</Text>
-    </View>
-    </View>
-    </>
   )
 }

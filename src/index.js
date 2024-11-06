@@ -7,6 +7,7 @@ import { EstudiantesProvider } from './core/context/estudiantesContext';
 import { ProtectedRoute } from './core/context/protectedRoute';
 import { LoginScreen } from './auth/index';
 import { NotasProvider } from './core/context/notasContext';
+import { PeriodoProvider } from './core/context/periodoContext';
 import CustomSnackbar from './shared/components/custom/snackbar';
 import SweetAlert from './shared/components/custom/swal';
 
@@ -20,12 +21,14 @@ export default function App() {
           <AsistenciaProvider>
             <EstudiantesProvider>
               <NotasProvider>
-                <CustomSnackbar />
-                <SweetAlert />
-                <Stack.Navigator initialRouteName="Drawer" screenOptions={{ headerShown: false }}>
-                  <Stack.Screen name="Login" component={LoginScreen} />
-                  <Stack.Screen name="Drawer" component={ProtectedRoute} />
-                </Stack.Navigator>
+                <PeriodoProvider>
+                  <CustomSnackbar />
+                  <SweetAlert />
+                  <Stack.Navigator initialRouteName="Drawer" screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="Login" component={LoginScreen} />
+                    <Stack.Screen name="Drawer" component={ProtectedRoute} />
+                  </Stack.Navigator>
+                </PeriodoProvider>
               </NotasProvider>
             </EstudiantesProvider>
           </AsistenciaProvider>
