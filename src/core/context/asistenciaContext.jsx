@@ -151,14 +151,23 @@ export const AsistenciaProvider = ({ children }) => {
     setLoadingAsistencias(true);
     try {
       const { data } = await getAsistenciasBySeccionFechaRequest(seccionId, fecha);
-      setAsistencias(data)
+      
+      // Ordenar las asistencias por apellido del estudiante
+      const sortedData = data.sort((a, b) => {
+        const apellidoA = a.estudiante?.apellido?.toLowerCase() || '';
+        const apellidoB = b.estudiante?.apellido?.toLowerCase() || '';
+        return apellidoA.localeCompare(apellidoB);
+      });
+  
+      // Establecer las asistencias ordenadas en el estado
+      setAsistencias(sortedData);
     } catch (error) {
-      console.log(error)
-      setError(error)
+      console.log(error);
+      setError(error);
     } finally {
       setLoadingAsistencias(false);
     }
-  }
+  };
 
   return (
     <AsistenciaContext.Provider 

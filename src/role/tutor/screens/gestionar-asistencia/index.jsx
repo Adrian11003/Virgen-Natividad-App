@@ -40,18 +40,17 @@ export const GestionarAsistencia = () => {
 
   const agregarAsistencia = () => {
     setDataType('create');
-    setModalVisible(true);
     setSelectedId(null);
+    setModalVisible(true);
   };
 
   const editarAsistencia = (id) => {
     setDataType('edit');
-    setModalVisible(true);
     setSelectedId(id);
+    setModalVisible(true);
   };
 
   const eliminarAsistencia = (id) => {
-    setModalVisible(true);
     setSelectedId(id);
   };
 
