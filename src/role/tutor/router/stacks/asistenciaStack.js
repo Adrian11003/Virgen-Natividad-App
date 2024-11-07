@@ -1,6 +1,5 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import { GestionarAsistencia } from '../../screens/gestionar-asistencia/index';
-import { GuardarAsistencia } from '../../screens/guardar-asistencia/index';
 
 const Stack = createStackNavigator();
 
