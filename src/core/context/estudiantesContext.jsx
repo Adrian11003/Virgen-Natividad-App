@@ -5,7 +5,6 @@ export const EstudiantesContext = createContext();
 
 export const EstudiantesProvider = ({ children }) => {
   const [error, setError] = useState(null);
-  const [estudiantes, setEstudiantes] = useState([]); // Agrega el estado de estudiantes
 
   const getEstudiantesBySeccion = async (seccionId) => {
     try {
@@ -13,7 +12,7 @@ export const EstudiantesProvider = ({ children }) => {
       const estudiantesOrdenados = data.sort((a, b) => 
         a.apellido.localeCompare(b.apellido)
       );
-      setEstudiantes(estudiantesOrdenados); // Actualiza el estado de estudiantes con los datos obtenidos
+      return estudiantesOrdenados
     } catch (error) {
       console.log(error);
       setError(error);
@@ -23,7 +22,6 @@ export const EstudiantesProvider = ({ children }) => {
   return (
     <EstudiantesContext.Provider 
       value={{ 
-        estudiantes,         // Asegúrate de pasar estudiantes en el contexto
         getEstudiantesBySeccion, 
         error
       }}
