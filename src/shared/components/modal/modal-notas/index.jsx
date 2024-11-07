@@ -6,24 +6,33 @@ import { useTheme } from '../../../../core/context/themeContext';
 import { CustomSelector } from '../../../../shared/components/custom/selector/index';
 import { TextInput } from 'react-native-paper';
 import { EstudiantesContext } from '../../../../core/context/estudiantesContext';
+import { AuthContext } from '../../../../core/context/authContext';
+import { useRoute } from '@react-navigation/native';
 
 export const ModalNuevaNota = ({ modalVisible, setModalVisible }) => {
-  const { bimestres, getBimestres,getSeccionesCursosByDocente, secciones, cursos, loadingSeccionesCursos } = useContext(NotasContext); 
-  const { theme } = useTheme();
-  const [selectedBimestre, setSelectedBimestre] = useState(null);
-  const [bimestresCargados, setBimestresCargados] = useState(false);
-  const [openSelector, setOpenSelector] = useState(null);
-  const [docenteId, setDocenteId] = useState(null);
-  const { estudiantes, getEstudiantesBySeccion, loading } = useContext(EstudiantesContext);
-  const { seccion, curso } = route.params;
-  // Opciones válidas de notas
-  const notaOptions = ["AD", "A", "B", "C"];
+ // Call useRoute here to get the route object
+ const route = useRoute();  // <-- Ensure this is at the top of your component
 
-  const [exposicion, setExposicion] = useState("");
-const [participacion, setParticipacion] = useState("");
-const [bimestral, setBimestral] = useState("");
-const [desempenoClase, setDesempenoClase] = useState("");
+ // Destructure the params from route
+ const { seccion, curso } = route.params; // <-- Now it will work
 
+ // Your context and other state hooks
+ const { bimestres, getBimestres, getSeccionesCursosByDocente, secciones, cursos, loadingSeccionesCursos } = useContext(NotasContext);
+ const { theme } = useTheme();
+ const [selectedBimestre, setSelectedBimestre] = useState(null);
+ const [bimestresCargados, setBimestresCargados] = useState(false);
+ const [openSelector, setOpenSelector] = useState(null);
+ const [docenteId, setDocenteId] = useState(null);
+ const { estudiantes, getEstudiantesBySeccion, loading } = useContext(EstudiantesContext);
+ const { user } = useContext(AuthContext);
+
+ // Other state hooks
+ const [exposicion, setExposicion] = useState("");
+ const [participacion, setParticipacion] = useState("");
+ const [bimestral, setBimestral] = useState("");
+ const [desempenoClase, setDesempenoClase] = useState("");
+
+ // Your useEffects, event handlers, and return JSX here...
 useEffect(() => {
   setDocenteId(user.perfil._id);
 }, [user]);
