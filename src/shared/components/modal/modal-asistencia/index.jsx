@@ -16,14 +16,14 @@ import formatMonth from '../../../constants/dates/format-month';
 export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, seccion = '', dataType = 'create', id, onAsistenciaGuardada }) => {
   const { 
     semanas, 
-    fetchSemanas, asistencias, createAsistencia, 
+    fetchSemanas,
     getResumenAsistencia, 
     createResumenAsistencia,
     getResumenAsistenciaById,
+    updateResumenAsistencia,
     getAsistenciasBySeccionFecha,
-    getResumenesAsistenciaBySeccion,
-    loadingAsistencias,
-    resumenAsistencia
+    createAsistencia,
+    updateAsistencia
   } = useContext(AsistenciaContext);
 
   const { user } = useContext(AuthContext);
@@ -70,6 +70,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
           setSelectedSemana(data.semana)
           getAsistenciasBySeccionFecha(data.seccion._id, data.fecha)
             .then((data) => {
+              console.log(data)
               setAsistencia(data.map(item => ({ ...item })));
               setLoading(false);
             })
@@ -79,24 +80,23 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
 
   const handleRadioChange = (index, tipo) => {
     if (dataType === 'edit') {
-      const newEditAsistencia = [...editAsistencia];
+      const newEditAsistencia = [...asistencia];
       newEditAsistencia[index].estado = tipo;
       setEditAsistencia(newEditAsistencia);
+      console.log(editAsistencia)
     } else {
       const newAsistencia = [...asistencia];
       newAsistencia[index] = tipo;
       setAsistencia(newAsistencia);
-      console.log(asistencia)
     }
   };
 
   const handleSemanaChange = (semana) => {
     setSelectedSemana(semana);
     if (dataType === 'edit') {
-      // Actualiza `editAsistencia` para cambiar la semana en edición
       const updatedEditAsistencia = editAsistencia.map(item => ({
         ...item,
-        semana_id: semana._id,
+        semana: semana._id,
       }));
       setEditAsistencia(updatedEditAsistencia);
     }
@@ -181,6 +181,8 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
       Promise.all(promises)
         .then(() => {
           setLoading(false);
+          setAsistencia([]);
+          setEditAsistencia([]);
           if (onAsistenciaGuardada) onAsistenciaGuardada();
         })
         .catch((error) => {
@@ -189,14 +191,57 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
         });
     }
     if (dataType === 'edit') {
-      console.log(editAsistencia)
+      const promises = editAsistencia.map((asistencia, index) => {
+        console.log(asistencia)
+        const asistenciaData = {
+          estudiante_id: asistencia.estudiante._id,
+          seccion_id: asistencia.seccion._id,
+          grado_id: asistencia.grado._id,
+          periodo_id: asistencia.periodo._id,
+          semana_id: asistencia.semana,
+          fecha: asistencia.fecha,
+          mes: asistencia.mes,
+          estado: asistencia.estado,
+        };
+    
+        return updateAsistencia(asistencia._id, asistenciaData) // Solo pasamos los datos necesarios
+          .then((dataAsistencia) => {
+            if (index === editAsistencia.length - 1) {
+              return getResumenAsistencia(dataAsistencia.seccion._id, dataAsistencia.fecha)
+                .then((dataRA) => {
+                  console.log(dataAsistencia)
+                  const resumenData = {
+                    semana_id: dataAsistencia.semana,
+                    seccion_id: dataAsistencia.seccion._id,
+                    fecha: dataRA.fecha,
+                    presentes: dataRA.totalPresentes,
+                    faltas: dataRA.totalFaltas,
+                    justificadas: dataRA.totalJustificados,
+                  };
+                  return updateResumenAsistencia(id, resumenData);
+                });
+            }
+          })
+          .catch((error) => {
+            console.log("Error al guardar asistencia:", error);
+            setLoading(false);
+          });
+      });
+    
+      Promise.all(promises)
+        .then(() => {
+          setLoading(false);
+          setAsistencia([]);
+          if (onAsistenciaGuardada) onAsistenciaGuardada();
+        })
+        .catch((error) => {
+          console.log(error);
+          setLoading(false);
+        });
     }
   };
 
   const handleModalClose = () => {
-    if(dataType === 'create') {
-
-    }
     setSelectedSemana(null)
     setAsistencia([]);
     setEditAsistencia([]);
@@ -251,7 +296,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
                     <CustomSelector
                       opciones={semanas}
                       selectedOption={selectedSemana}
-                      onSelect={(item) => setSelectedSemana(item)}
+                      onSelect={(item) => handleSemanaChange(item)}
                       getDisplayValue={(item) => item.nombre}
                       placeholder="Semana"
                       mobileWidth="20%"
