@@ -10,6 +10,7 @@ import { DataTable } from 'react-native-paper'; // Si usas DataTable directament
 import { useRoute } from '@react-navigation/native';
 import { ModalNuevaNota } from '../../../../shared/components/modal/modal-notas/index';
 
+import { ModalNuevaNota } from '../../../../shared/components/modal/modal-notas/index';
 
 export const GestionarNotas = () => {
   const { getSeccionesCursosByDocente, secciones, cursos, loadingSeccionesCursos } = useContext(NotasContext);
@@ -42,6 +43,7 @@ export const GestionarNotas = () => {
   const displayedEstudiantes = estudiantes.map(estudiante => ({
     nombreCompleto: `${estudiante.nombre} ${estudiante.apellido}`,
     dni: estudiante.numero_documento,
+    id: estudiante._id,
   }));
 
   if (loading) {
@@ -182,9 +184,7 @@ actionCell: {
   justifyContent: 'center',
   alignItems: 'center',
 },
-editButton: {
-  backgroundColor: '#1E88E5',
-},
+
 pagination: {
   justifyContent: 'flex-start',
   marginVertical: 7,
