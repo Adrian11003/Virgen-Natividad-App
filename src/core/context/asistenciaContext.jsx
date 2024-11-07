@@ -12,7 +12,8 @@ import {
   updateAsistenciaRequest,
   getAsistenciasBySeccionFechaRequest,
   getResumenAsistenciaRequest,
-  getAsistenciasByMesRequest
+  getAsistenciasByMesRequest,
+  deleteAsistenciasByFechaSeccionRequest
 } from '../api/asistencia'
 
 export const AsistenciaContext = createContext();
@@ -24,9 +25,9 @@ export const AsistenciaProvider = ({ children }) => {
   const [asistencias, setAsistencias] = useState([]);
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null);
-  const [loadingResumen, setLoadingResumen] = useState(false); // Nuevo estado de carga específico
+  const [loadingResumen, setLoadingResumen] = useState(false);
   const [loadingAsistencias, setLoadingAsistencias] = useState(false);
-  const [asistenciasMes, setAsistenciasMes] = useState([]);//mes?
+  const [asistenciasMes, setAsistenciasMes] = useState([]);
 
   const fetchSemanas = async () => {
     try {
@@ -72,6 +73,17 @@ const getAsistenciasByMes = async (estudianteId,periodoId) => {
     }
   };
 
+  const deleteAsistenciasByFechaSeccion = async (fecha, seccionId) => {
+    try {
+      const { data } = await deleteAsistenciasByFechaSeccionRequest(fecha, seccionId);
+      console.log(data)
+      return data
+    } catch (error) {
+      console.log(error)
+      setError(error)
+    }
+  }
+
   const createResumenAsistencia = async (createData) => {
     try {
       const { data } = await createResumenAsistenciaRequest(createData)
@@ -91,15 +103,15 @@ const getAsistenciasByMes = async (estudianteId,periodoId) => {
       console.log(error)
       setError(error)
     } finally {
-      setLoadingResumen(false); // Finalizar carga específica
+      setLoadingResumen(false);
     }
   }
 
   const updateResumenAsistencia = async (id, updateData) => {
     setLoading(true);
     try {
-      await updateResumenAsistenciaRequest(id, updateData);
-      getResumenesAsistenciaBySeccion();
+      const { data } = updateResumenAsistenciaRequest(id, updateData);
+      return data
     } catch (error) {
       console.log(error)
       setError(error)
@@ -134,7 +146,6 @@ const getAsistenciasByMes = async (estudianteId,periodoId) => {
   const createAsistencia = async (createData) => {
     try {
       const { data } = await createAsistenciaRequest(createData);
-      console.log(data)
       return data
     } catch (error) {
       console.log(error)
@@ -143,15 +154,12 @@ const getAsistenciasByMes = async (estudianteId,periodoId) => {
   }
 
   const updateAsistencia = async (id, updateData) => {
-    setLoading(true);
     try {
-      await updateAsistenciaRequest(id, updateData);
-      getAsistenciasBySeccionGradoPeriodo();
+      const { data } = await updateAsistenciaRequest(id, updateData);
+      return data
     } catch (error) {
       console.log(error)
       setError(error)
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -180,6 +188,7 @@ const getAsistenciasByMes = async (estudianteId,periodoId) => {
         getResumenesAsistenciaBySeccion,
         getAsistenciasByMes,//mes?
         asistenciasMes,//mes? 
+        deleteAsistenciasByFechaSeccion,
         resumenesAsistencia,
         createResumenAsistencia,
         getResumenAsistenciaById,
