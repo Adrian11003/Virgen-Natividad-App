@@ -67,6 +67,7 @@ export const GestionarAsistencia = () => {
   };
 
   const eliminarAsistencia = (id) => {
+    setLoading(true)
     setSelectedId(id);
     showSweetAlert({
       title: 'Eliminar Asistencia',
@@ -77,12 +78,14 @@ export const GestionarAsistencia = () => {
       onConfirm: () => {
         getResumenAsistenciaById(id)
           .then((data) => {
-            console.log(data)
             deleteAsistenciasByFechaSeccion(data.fecha, user.perfil.seccion._id)
               .then(() => {
                 deleteResumenAsistencia(id)
                   .then(() => {
                     getResumenesAsistenciaBySeccion(user.perfil.seccion._id)
+                      .then(() => {
+                        setLoading(false)
+                      })
                   })
               })
           })

@@ -52,7 +52,12 @@ export const AsistenciaProvider = ({ children }) => {
     setLoading(true);
     try {
       const { data } = await getResumenAsistenciaBySeccionRequest(seccionId);
-      setResumenesAsistencia(data);
+      const sortedData = data.sort((a, b) => {
+        const weekA = parseInt(a.semana.nombre.replace('Semana ', ''), 10);
+        const weekB = parseInt(b.semana.nombre.replace('Semana ', ''), 10);
+        return weekA - weekB;
+      });
+      setResumenesAsistencia(sortedData);
     } catch (error) {
       console.log(error)
       setError(error)
@@ -60,6 +65,7 @@ export const AsistenciaProvider = ({ children }) => {
       setLoading(false);
     }
   };
+  
 const getAsistenciasByMes = async (estudianteId,periodoId) => {
     setLoading(true);
     try {
@@ -76,7 +82,6 @@ const getAsistenciasByMes = async (estudianteId,periodoId) => {
   const deleteAsistenciasByFechaSeccion = async (fecha, seccionId) => {
     try {
       const { data } = await deleteAsistenciasByFechaSeccionRequest(fecha, seccionId);
-      console.log(data)
       return data
     } catch (error) {
       console.log(error)

@@ -70,7 +70,6 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
           setSelectedSemana(data.semana)
           getAsistenciasBySeccionFecha(data.seccion._id, data.fecha)
             .then((data) => {
-              console.log(data)
               setAsistencia(data.map(item => ({ ...item })));
               setLoading(false);
             })
@@ -83,7 +82,6 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
       const newEditAsistencia = [...asistencia];
       newEditAsistencia[index].estado = tipo;
       setEditAsistencia(newEditAsistencia);
-      console.log(editAsistencia)
     } else {
       const newAsistencia = [...asistencia];
       newAsistencia[index] = tipo;
@@ -204,12 +202,11 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
           estado: asistencia.estado,
         };
     
-        return updateAsistencia(asistencia._id, asistenciaData) // Solo pasamos los datos necesarios
+        return updateAsistencia(asistencia._id, asistenciaData)
           .then((dataAsistencia) => {
             if (index === editAsistencia.length - 1) {
               return getResumenAsistencia(dataAsistencia.seccion._id, dataAsistencia.fecha)
                 .then((dataRA) => {
-                  console.log(dataAsistencia)
                   const resumenData = {
                     semana_id: dataAsistencia.semana,
                     seccion_id: dataAsistencia.seccion._id,
