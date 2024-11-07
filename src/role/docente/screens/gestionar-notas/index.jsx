@@ -8,6 +8,7 @@ import isMediumScreen from '../../../../shared/constants/screen-width/md';
 import { EstudiantesContext } from '../../../../core/context/estudiantesContext';
 import { DataTable } from 'react-native-paper'; // Si usas DataTable directamente de react-native-paper
 import { useRoute } from '@react-navigation/native';
+import { ModalNuevaNota } from '../../../../shared/components/modal/modal-notas/index';
 
 
 export const GestionarNotas = () => {
@@ -17,9 +18,12 @@ export const GestionarNotas = () => {
   const { estudiantes, getEstudiantesBySeccion, loading } = useContext(EstudiantesContext);
   const { theme } = useTheme();
   const [page, setPage] = useState(0);
-  const [numberOfItemsPerPage, setNumberOfItemsPerPage] = useState(8); // Cambia este número según tus necesidades
+  const [numberOfItemsPerPage, setNumberOfItemsPerPage] = useState(8);
   const route = useRoute();
   const { seccion, curso } = route.params;
+
+ // Estado para controlar la visibilidad del modal
+  const [modalVisible, setModalVisible] = useState(false);
   
   useEffect(() => {
     setDocenteId(user.perfil._id);
@@ -72,20 +76,28 @@ export const GestionarNotas = () => {
         </DataTable.Header>
 
         {paginatedData.map((estudiante, index) => (
-          <DataTable.Row style={[styles.row, { width: isMediumScreen ? 1300 : 800 }]} key={index}>
-            <DataTable.Cell style={styles.tableCell}>{estudiante.nombreCompleto}</DataTable.Cell>
-            <DataTable.Cell style={styles.tableCell}>{estudiante.dni}</DataTable.Cell>
-            <DataTable.Cell style={styles.actionCell}>
-              <Button 
-                mode="contained" 
-                onPress={() => console.log("Editar Notas")} 
-                style={styles.editButton}
-                compact
-              >
-                Editar Notas
-              </Button>
-            </DataTable.Cell>
-          </DataTable.Row>
+         <DataTable.Row style={[styles.row, { width: isMediumScreen ? 1300 : 800 }]} key={index}>
+         <DataTable.Cell style={styles.tableCell}>{estudiante.nombreCompleto}</DataTable.Cell>
+         <DataTable.Cell style={styles.tableCell}>{estudiante.dni}</DataTable.Cell>
+         <DataTable.Cell style={styles.actionCell}>
+         <Button 
+                  mode="contained" 
+                  onPress={() => setModalVisible(true)} // Esto abre el modal
+                  style={styles.addButton} 
+                  compact
+                >
+                  Agregar Nota
+                </Button>
+                <Button 
+                  mode="contained" 
+                  onPress={() => setModalVisible(true)}  
+                  style={styles.editButton}
+                  compact
+                >
+             Editar Notas
+           </Button>
+         </DataTable.Cell>
+       </DataTable.Row>
         ))}
 
         <DataTable.Pagination
@@ -101,6 +113,11 @@ export const GestionarNotas = () => {
         />
       </DataTable>
     </ScrollView>
+    {/* Renderizar el ModalNuevaNota y pasarle el control de visibilidad */}
+    <ModalNuevaNota 
+        modalVisible={modalVisible} 
+        setModalVisible={setModalVisible} 
+      />
     <View>
       
     </View>
@@ -110,6 +127,13 @@ export const GestionarNotas = () => {
 
 // Estilos
 const styles = StyleSheet.create({
+  addButton: {
+    backgroundColor: '#4CAF50', // Puedes cambiar el color para diferenciarlo
+    marginRight: 5, // Para un poco de separación entre los botones
+  },
+  editButton: {
+    backgroundColor: '#1E88E5',
+  },
 container: {
   width: '100%',
   maxWidth: 1300,
