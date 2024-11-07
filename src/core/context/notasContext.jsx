@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from 'react';
-import { getNotasRequest, createNotaRequest, getSeccionesCursosByDocenteRequest,} from '../api/notas';
+import { getNotasRequest, createNotaRequest, getSeccionesCursosByDocenteRequest,getBimestresRequest} from '../api/notas';
+
 
 export const NotasContext = createContext();
 
@@ -8,8 +9,25 @@ export const NotasProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [seccionCursoDocente, setSeccionCursoDocente] = useState([]);
-  // const [secciones, setSecciones] = useState([]);
-  // const [cursos, setCursos] = useState([]); // JUAN
+  const [bimestres, setBimestres] = useState([]); // JUAN
+  
+
+  const getBimestres = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await getBimestresRequest();
+      console.log("Bimestres recibidos:", data);
+      setBimestres(data);
+    } catch (error) {
+      console.log(error)
+      setError(error)
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   
   const getNotas = async () => {
     setLoading(true);
@@ -70,9 +88,11 @@ export const NotasProvider = ({ children }) => {
     <NotasContext.Provider 
       value={{ 
         notas,
+        bimestres, // JUAN
         error,
         getNotas,
         createNota,
+        getBimestres,
         // secciones, // juan
         // cursos, // juan
         loading,
