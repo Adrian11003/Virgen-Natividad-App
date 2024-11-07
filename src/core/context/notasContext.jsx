@@ -14,7 +14,6 @@ export const NotasProvider = ({ children }) => {
     setError(null);
     try {
       const { data } = await getNotasRequest();
-      console.log("Notas recibidas:", data);
       setNotas(data);
     } catch (err) {
       setError(err.response?.data?.message || 'Error al cargar las notas');

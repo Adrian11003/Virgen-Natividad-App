@@ -1,84 +1,61 @@
-import React, { useContext } from 'react';
-import { View, Text, Image, useWindowDimensions,ScrollView } from 'react-native';
+import React, { useContext, useEffect } from 'react';
+import { View, ScrollView } from 'react-native';
 import { AuthContext } from '../../../../core/context/authContext';
 import { useTheme } from '../../../../core/context/themeContext';
-import { Card } from 'react-native-paper';
+import ProfileCard from '../../../../shared/components/card/ProfileCard';
+import { ApoderadosContext } from '../../../../core/context/apoderadosContext';
 
 const Perfil = () => {
+  const { getApoderado, apoderadosByEstudiante } = useContext(ApoderadosContext);
   const { user } = useContext(AuthContext);
-  const { width } = useWindowDimensions();
   const { theme, isDarkTheme } = useTheme();
-  const isMediumScreen = width >= 768;
 
-  const UserInfo = ({ label, value }) => (
-    <View style={{
-      flex: 1,
-      marginHorizontal: 5,
-      alignItems: 'center',
-      marginBottom: isMediumScreen ? 0 : 20, 
-    }}>
-      <Text style={{ fontSize: 16, fontWeight: 'bold', color: isDarkTheme ? theme.colors.text : theme.colors.primary, textAlign: 'center' }}>
-        {label}
-      </Text>
-      <Text style={{ fontSize: 16, color: theme.colors.paperText, textAlign: 'center' }}>
-        {value}
-      </Text>
-    </View>
-  );
-
+  useEffect(() => {
+    getApoderado(user.perfil._id);
+  }, [user]);
+console.log(apoderadosByEstudiante)
   return (
-      <ScrollView>
-        <View style={{ flex: 1, padding: 20 }}>
-      <Card style={{ padding: 20, marginHorizontal: isMediumScreen ? 50 : 0 }}>
-        <View style={{ flexDirection: isMediumScreen ? 'row' : 'column', alignItems: 'center' }}>
-          <View style={{ marginBottom: 10, alignItems: 'center', marginRight: isMediumScreen ? 100 : 0, marginBottom: isMediumScreen ? 0 : 40 }}>
-            <Image
-              style={{ height: 110, width: 110, borderRadius: 55 }}
-              source={{ uri: user.perfil.multimedia.url }}
-            />
-            <Text style={{
-              fontSize: 15,
-              fontWeight: 'bold',
-              color: isDarkTheme ? theme.colors.text : theme.colors.primary,
-              marginTop: 10,
-              textAlign: 'center'
-            }}>
-              {user.perfil.nombre} {user.perfil.apellido}
-            </Text>
-            <Text style={{
-              fontSize: 16,
-              color: theme.colors.paperText,
-              marginTop: 5,
-              textAlign: 'center'
-            }}>
-              {user.rol}
-            </Text>
-          </View>
-
-          <View style={{ flex: 1 }}>
-            <View style={{
-              flexDirection: isMediumScreen ? 'row' : 'column',
-              justifyContent: isMediumScreen ? 'space-between' : 'center',
-              alignItems: isMediumScreen ? 'flex-start' : 'center',
-              marginBottom: 10
-            }}>
-              <UserInfo label="Grado" value={user.perfil.grado.nombre} />
-              <UserInfo label="Periodo" value={user.perfil.periodo.anio} />
-              <UserInfo label="Número de Documento" value={user.perfil.numero_documento} />
-            </View>
-            <View style={{
-              flexDirection: isMediumScreen ? 'row' : 'column',
-              justifyContent: isMediumScreen ? 'space-between' : 'center',
-              alignItems: isMediumScreen ? 'flex-start' : 'center'
-            }}>
-              <UserInfo label="Sección" value={user.perfil.seccion.nombre} />
-              <UserInfo label="Dirección" value={user.perfil.direccion} />
-              <UserInfo label="Correo electrónico" value={user.email} />
-            </View>
-          </View>
+    <ScrollView>
+      <View style={{ flex: 1, padding: 20, marginBottom: -20 }}>
+        <ProfileCard
+          imageUri={user.perfil.multimedia.url}
+          title={`${user.perfil.nombre} ${user.perfil.apellido}`}
+          subtitle={user.rol}
+          firstRowFields={[
+            { label: 'Grado', value: user.perfil.grado.nombre },
+            { label: 'Periodo', value: user.perfil.periodo.anio },
+            { label: 'Número de Documento', value: user.perfil.numero_documento },
+          ]}
+          secondRowFields={[
+            { label: 'Sección', value: user.perfil.seccion.nombre },
+            { label: 'Dirección', value: user.perfil.direccion },
+            { label: 'Correo electrónico', value: user.email },
+          ]}
+          theme={theme}
+          isDarkTheme={isDarkTheme}
+        />
+      </View>
+      
+      {apoderadosByEstudiante.map((apoderado) => (
+        <View key={apoderado._id} style={{ flex: 1, padding: 20 ,marginBottom: -20}}>
+          <ProfileCard
+            title={`${apoderado.nombre} ${apoderado.apellido}`}
+            subtitle="Apoderado"
+            firstRowFields={[
+              { label: 'Número', value: apoderado.numero },
+              { label: 'Correo', value: apoderado.correo },
+              { label: 'Dirección', value: apoderado.direccion },
+            ]}
+            secondRowFields={[
+              { label: 'Número de Documento', value: apoderado.numero_documento },
+              { label: 'Tipo de Documento', value: apoderado.documento.type },
+              { label: 'Estado', value: apoderado.estudiante.estado },
+            ]}
+            theme={theme}
+            isDarkTheme={isDarkTheme}
+          />
         </View>
-      </Card>  
-    </View> 
+      ))}
     </ScrollView>
   );
 };

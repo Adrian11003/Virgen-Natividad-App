@@ -6,6 +6,7 @@ import { AsistenciaProvider } from './core/context/asistenciaContext';
 import { EstudiantesProvider } from './core/context/estudiantesContext';
 import { ProtectedRoute } from './core/context/protectedRoute';
 import { LoginScreen } from './auth/index';
+import { ApoderadosProvider } from './core/context/apoderadosContext';
 import { NotasProvider } from './core/context/notasContext';
 const Stack = createStackNavigator();
 
@@ -16,12 +17,14 @@ export default function App() {
         <HorariosProvider>
           <AsistenciaProvider>
             <EstudiantesProvider>
+              <ApoderadosProvider>
                <NotasProvider>
                 <Stack.Navigator initialRouteName="Drawer" screenOptions={{ headerShown: false }}>
                   <Stack.Screen name="Login" component={LoginScreen} />
                   <Stack.Screen name="Drawer" component={ProtectedRoute} />
                 </Stack.Navigator>
               </NotasProvider>
+              </ApoderadosProvider>
             </EstudiantesProvider>
           </AsistenciaProvider>
         </HorariosProvider>
