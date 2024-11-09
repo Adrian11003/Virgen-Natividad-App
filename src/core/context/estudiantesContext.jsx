@@ -13,7 +13,7 @@ export const EstudiantesProvider = ({ children }) => {
       const estudiantesOrdenados = data.sort((a, b) => 
         a.apellido.localeCompare(b.apellido)
       );
-      setEstudiantes(estudiantesOrdenados); // Actualiza el estado de estudiantes con los datos obtenidos
+      return estudiantesOrdenados // Actualiza el estado de estudiantes con los datos obtenidos
     } catch (error) {
       console.log(error);
       setError(error);
