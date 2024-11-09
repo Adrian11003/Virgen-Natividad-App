@@ -18,13 +18,6 @@ export const AsistenciaStack = () => {
           headerShown: false
         }}
       />
-      <Stack.Screen 
-        name="GuardarAsistencia" 
-        component={GuardarAsistencia}
-        options={{
-          headerShown: false
-        }}
-      />
     </Stack.Navigator>
   );
 };

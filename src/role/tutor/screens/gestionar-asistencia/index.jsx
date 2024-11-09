@@ -67,7 +67,6 @@ export const GestionarAsistencia = () => {
   };
 
   const eliminarAsistencia = (id) => {
-    setLoading(true)
     setSelectedId(id);
     showSweetAlert({
       title: 'Eliminar Asistencia',
@@ -76,6 +75,7 @@ export const GestionarAsistencia = () => {
       cancelButtonText: 'Cancelar',
       confirmButtonText: 'Confirmar',
       onConfirm: () => {
+        setLoading(true)
         getResumenAsistenciaById(id)
           .then((data) => {
             deleteAsistenciasByFechaSeccion(data.fecha, user.perfil.seccion._id)
@@ -101,6 +101,7 @@ export const GestionarAsistencia = () => {
   };
 
   const handleAsistenciaGuardada = () => {
+    setModalVisible(false); 
     const message = dataType === 'create' ? 'Asistencia Creada' : 'Asistencia Actualizada';
     const messageText = dataType === 'create'
       ? 'La asistencia ha sido registrada con éxito'
@@ -112,12 +113,14 @@ export const GestionarAsistencia = () => {
       showCancelButton: false,
       confirmButtonText: 'Ok',
       type: 'success',
+      onConfirm: () => {
+        setLoading(true)
+        getResumenesAsistenciaBySeccion(user.perfil.seccion._id)
+        .then(() => {
+          setLoading(false)
+        })
+      }
     });
-
-    getResumenesAsistenciaBySeccion(user.perfil.seccion._id)
-      .then(() => {
-        setModalVisible(false); 
-      })
   };
 
   if (loading) {

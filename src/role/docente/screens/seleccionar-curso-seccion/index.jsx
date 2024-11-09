@@ -13,9 +13,7 @@ export const SeleccionarCursoSeccion = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (user) {
       getSeccionesCursosByDocente(user.perfil._id);
-    }
   }, [user]);
 
   const handleNavigate = (item) => {
