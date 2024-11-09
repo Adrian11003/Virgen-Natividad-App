@@ -13,7 +13,7 @@ export const getResumenAsistenciaRequest = (seccionId, fecha) =>
   axios.get(`/asistencia/resumen/asistencia?fecha=${fecha}&seccion_id=${seccionId}`);
 
 export const getAsistenciasByMesRequest = (estudianteId,periodoId) =>
-  axios.get(`/asistencia/resumen/mensual?estudianteId=${estudianteId}&periodoId=${periodoId}`);
+  axios.get(`/asistencia/meses-unicos?estudianteId=${estudianteId}&periodoId=${periodoId}`);
 
 export const deleteAsistenciasByFechaSeccionRequest = (fecha, seccionId) =>
   axios.delete(`/asistencia/eliminar/${fecha}/${seccionId}`);

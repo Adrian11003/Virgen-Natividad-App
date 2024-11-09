@@ -66,16 +66,12 @@ export const AsistenciaProvider = ({ children }) => {
     }
   };
   
-const getAsistenciasByMes = async (estudianteId,periodoId) => {
-    setLoading(true);
+  const getAsistenciasByMes = async (estudianteId,periodoId) => {
     try {
       const { data } = await getAsistenciasByMesRequest(estudianteId,periodoId);
-      setAsistenciasMes(data);
+      return data
     } catch (error) {
       console.log(error)
-      setError(error)
-    } finally {
-      setLoading(false);
     }
   };
 
