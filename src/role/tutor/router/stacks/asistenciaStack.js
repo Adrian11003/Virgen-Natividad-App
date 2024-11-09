@@ -1,6 +1,5 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import { GestionarAsistencia } from '../../screens/gestionar-asistencia/index';
-import { GuardarAsistencia } from '../../screens/guardar-asistencia/index';
 
 const Stack = createStackNavigator();
 
@@ -15,13 +14,6 @@ export const AsistenciaStack = () => {
       <Stack.Screen 
         name="GestionarAsistencia" 
         component={GestionarAsistencia}
-        options={{
-          headerShown: false
-        }}
-      />
-      <Stack.Screen 
-        name="GuardarAsistencia" 
-        component={GuardarAsistencia}
         options={{
           headerShown: false
         }}

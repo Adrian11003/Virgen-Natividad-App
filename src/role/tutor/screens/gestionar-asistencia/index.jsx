@@ -13,15 +13,30 @@ import isMediumScreen from '../../../../shared/constants/screen-width/md';
 export const GestionarAsistencia = () => {
   const [selectedSemana, setSelectedSemana] = useState();
   const { user } = useContext(AuthContext);
-  const { semanas, fetchSemanas, getResumenesAsistenciaBySeccion, resumenesAsistencia, loading } = useContext(AsistenciaContext);
+  const { 
+    semanas, 
+    fetchSemanas, 
+    getResumenesAsistenciaBySeccion, 
+    resumenesAsistencia, 
+    deleteAsistenciasByFechaSeccion,
+    getResumenAsistenciaById,
+    deleteResumenAsistencia
+  } = useContext(AsistenciaContext);
   const { theme } = useTheme();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [dataType, setDataType] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchSemanas();
-    getResumenesAsistenciaBySeccion(user.perfil.seccion._id);
+    setLoading(true);
+    fetchSemanas()
+      .then(() => {
+        getResumenesAsistenciaBySeccion(user.perfil.seccion._id)
+          .then(() => {
+            setLoading(false)
+          }) 
+      })
   }, [user]);
 
   const columns = [
@@ -53,28 +68,59 @@ export const GestionarAsistencia = () => {
 
   const eliminarAsistencia = (id) => {
     setSelectedId(id);
+    showSweetAlert({
+      title: 'Eliminar Asistencia',
+      text: '¿Estás seguro de eliminar la asistencia?',
+      showCancelButton: true,
+      cancelButtonText: 'Cancelar',
+      confirmButtonText: 'Confirmar',
+      onConfirm: () => {
+        setLoading(true)
+        getResumenAsistenciaById(id)
+          .then((data) => {
+            deleteAsistenciasByFechaSeccion(data.fecha, user.perfil.seccion._id)
+              .then(() => {
+                deleteResumenAsistencia(id)
+                  .then(() => {
+                    getResumenesAsistenciaBySeccion(user.perfil.seccion._id)
+                      .then(() => {
+                        setLoading(false)
+                      })
+                  })
+              })
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      },
+      onClose: () => {
+        console.log('Closed');
+      },
+      type: 'success',
+    });
   };
 
   const handleAsistenciaGuardada = () => {
-    if (dataType === 'create') {
-      showSweetAlert({
-        title: 'Asistencia Creada',
-        text: 'La asistencia ha sido registrada con exito',
-        showCancelButton: false,
-        confirmButtonText: 'Ok',
-        type: 'success',
-      });
-    } else if (dataType === 'edit') {
-      showSweetAlert({
-        title: 'Asistencia Actualizada',
-        text: 'La asistencia ha sido actualizada con exito',
-        showCancelButton: false,
-        confirmButtonText: 'Ok',
-        type: 'success',
-      });
-    }
-    getResumenesAsistenciaBySeccion(user.perfil.seccion._id);
-    setModalVisible(false);
+    setModalVisible(false); 
+    const message = dataType === 'create' ? 'Asistencia Creada' : 'Asistencia Actualizada';
+    const messageText = dataType === 'create'
+      ? 'La asistencia ha sido registrada con éxito'
+      : 'La asistencia ha sido actualizada con éxito';
+
+    showSweetAlert({
+      title: message,
+      text: messageText,
+      showCancelButton: false,
+      confirmButtonText: 'Ok',
+      type: 'success',
+      onConfirm: () => {
+        setLoading(true)
+        getResumenesAsistenciaBySeccion(user.perfil.seccion._id)
+        .then(() => {
+          setLoading(false)
+        })
+      }
+    });
   };
 
   if (loading) {
