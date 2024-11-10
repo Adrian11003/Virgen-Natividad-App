@@ -328,14 +328,14 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
                             flex: 1, 
                             justifyContent: 'center', 
                             alignItems: 'center',
-                            width: 400
                           }}
                         >
                           <TouchableWithoutFeedback>
                             <View 
                               style={{ 
                                 backgroundColor: 'white', 
-                                padding: 5, borderRadius: 10,
+                                padding: 5, 
+                                borderRadius: 10,
                                 alignItems: 'center', 
                                 width: '70%',
                                 maxWidth: 400,
