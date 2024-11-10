@@ -4,16 +4,27 @@ import { useTheme } from '../../../../core/context/themeContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
 
-export const CustomSelector = ({ opciones, selectedOption, onSelect, placeholder = 'Selecciona una opción', mobileWidth, isModal }) => {
+export const CustomSelector = ({ 
+  opciones, 
+  selectedValue, 
+  onChange, 
+  placeholder = 'Selecciona una opción', 
+  mobileWidth, 
+  isModal,
+  field 
+}) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const { theme, themeType } = useTheme();
 
+  const handleSelect = (item) => {
+    onChange(item._id);
+    setIsSelectorOpen(false);
+    console.log(item);
+  }
+
   const renderItem = ({ item, index }) => (
     <TouchableOpacity
-      onPress={() => {
-        onSelect(item);
-        setIsSelectorOpen(false);
-      }}
+      onPress={() => { handleSelect(item)}}
       style={{
         padding: 15,
         borderBottomWidth: index === opciones.length - 1 ? 0 : 1,
@@ -39,7 +50,9 @@ export const CustomSelector = ({ opciones, selectedOption, onSelect, placeholder
       >
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 20 }}>
           <Text style={{ color: theme.colors.paperText }}>
-            {selectedOption ? selectedOption.nombre : placeholder}
+            {selectedValue 
+              ? opciones.find((opcion) => opcion._id === selectedValue)?.[field]
+              : placeholder}
           </Text>
           <Ionicons name="chevron-down" size={17} color={themeType === 'light' ? '#C0C0C0' : '#777'} />
         </View>

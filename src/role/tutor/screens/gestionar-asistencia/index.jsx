@@ -27,6 +27,7 @@ export const GestionarAsistencia = () => {
   const [selectedId, setSelectedId] = useState(null);
   const [dataType, setDataType] = useState(null);
   const [loading, setLoading] = useState(true);
+  const field = 'nombre';
 
   useEffect(() => {
     setLoading(true);
@@ -48,9 +49,9 @@ export const GestionarAsistencia = () => {
   ];
 
   const displayedResumenAsistencia = () => {
-    if (!selectedSemana || selectedSemana._id === 'all') return resumenesAsistencia;
+    if (!selectedSemana || selectedSemana === 'all') return resumenesAsistencia;
     return resumenesAsistencia.filter(item => 
-      item.semana._id === selectedSemana._id
+      item.semana._id === selectedSemana
     );
   };
 
@@ -155,12 +156,12 @@ export const GestionarAsistencia = () => {
 
         <CustomSelector
           opciones={[{ nombre: 'Todas las semanas', _id: 'all' }, ...semanas]}
-          selectedOption={selectedSemana}
-          onSelect={(item) => setSelectedSemana(item)}
-          getDisplayValue={(item) => item.nombre}
+          selectedValue={selectedSemana}
+          onChange={(item) => setSelectedSemana(item)}
           placeholder="Todas las semanas"
           mobileWidth="20%"
           isModal={false}
+          field={field}
         />
 
         <Button 
