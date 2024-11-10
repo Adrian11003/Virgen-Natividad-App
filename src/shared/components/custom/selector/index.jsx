@@ -32,7 +32,7 @@ export const CustomSelector = ({
         backgroundColor: themeType === 'light' ? '#fff' : '#333'
       }}
     >
-      <Text style={{ color: theme.colors.paperText }}>{item.nombre}</Text>
+      <Text style={{ color: theme.colors.paperText }}>{item[field]}</Text>
     </TouchableOpacity>
   );
   

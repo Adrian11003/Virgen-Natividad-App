@@ -5,71 +5,106 @@ import { AuthContext } from '../../../../core/context/authContext';
 import { AsistenciaContext } from '../../../../core/context/asistenciaContext';
 import { PeriodoContext } from '../../../../core/context/periodoContext';
 import { useTheme } from '../../../../core/context/themeContext';
+import { CustomSnackbar } from '../../../../shared/components/custom/snackbar/index';
+import { CustomSelector } from '../../../../shared/components/custom/selector/index';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
 
 export const Asistencia = () => {
   const { theme } = useTheme();
+  const field = 'anio';
   const { user } = useContext(AuthContext);
-  const { getAsistenciasByMes } = useContext(AsistenciaContext);
-  const { fetchPeriodo } = useContext(PeriodoContext);
+  const { getMesesFromAsistenciaByEstudiante,
+    getAsistenciaByPeriodoMesEstudiante
+   } = useContext(AsistenciaContext);
 
+  const { fetchPeriodo } = useContext(PeriodoContext);
+  const [snackbarVisible, setSnackbarVisible] = useState(false); 
+  const [snackbarMessage, setSnackbarMessage] = useState(''); 
   const [meses, setMeses] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [visible, setVisible] = useState(false);
   const [asistencias, setAsistencias] = useState([]);
+  const [selectedPeriodo, setSelectedPeriodo] = useState(null);
   const [periodos, setPeriodos] = useState([]);
 
   useEffect(() => {
     fetchPeriodo()
     .then((data) => { 
       setPeriodos(data) 
-      getAsistenciasByMes(user.perfil._id, user.perfil.periodo._id)
+      getMesesFromAsistenciaByEstudiante(user.perfil._id, user.perfil.periodo._id)
       .then((data) => {
         setMeses(data);
+        console.log(data)
       })
     })
   }, []);
 
   const handleMonthSelect = (month) => {
+    console.log(selectedPeriodo)
+    if (!selectedPeriodo) {
+      setSnackbarMessage('Seleccione un periodo');
+      setSnackbarVisible(true);
+      return;
+    }
     setSelectedMonth(month);
     setVisible(false);
     if (user?.perfil?._id) {
-      getAsistenciasByMes(user.perfil._id, month)
+      getAsistenciaByPeriodoMesEstudiante(selectedPeriodo, month, user.perfil._id)
         .then((data) => {
+          console.log(data)
           setAsistencias(data);
         })
     }
   };
 
   const getEstadoAsistencia = (item) => {
-    if (item.Presente) return "Presente";
-    if (item.Falta) return "Falta";
-    if (item.Justificado) return "Justificado";
+    console.log(item)
+    if (item.estado === 'Presente') return "Presente";
+    if (item.estado === 'Falta') return "Falta";
+    if (item.estado === 'Justificado') return "Justificado";
     return "No registrado";
   };
 
   return (
     <View style={{
+      flex: 1,
       width: '100%',
       maxWidth: 1300,
       marginTop: isMediumScreen ? 30 : 15,
       marginHorizontal: 'auto'
     }}>
-      {/* Título */}
+      <View style={{
+        marginHorizontal: 20,
+      }}>
+       {/* Título */}
       <Text style={{
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 20,
-        marginHorizontal: 20,
         color: theme.colors.paperText
       }}>
         Observaciones de la asistencia
       </Text>
+      <View style={{
+        flexDirection: 'row',
+        marginBottom: 20,
+        flexWrap: 'wrap',
+        zIndex: 2
+      }}>
+          <CustomSelector
+              opciones={periodos}
+              selectedValue={selectedPeriodo}
+              onChange={(item) => setSelectedPeriodo(item)}
+              placeholder="Todos los periodos"
+              mobileWidth="20%"
+              isModal={false}
+              field={field}
+            />
+      </View>
 
       {/* Selector de Mes */}
       <View style={{
         flexDirection: 'row',
-        marginHorizontal: 20,
         marginBottom: 20,
         flexWrap: 'wrap',
         gap: 8
@@ -103,16 +138,20 @@ export const Asistencia = () => {
           {/* Encabezados */}
           <DataTable.Header style={{ backgroundColor: theme.colors.surface }}>
             <DataTable.Title style={{ flex: 1 }}>
-              <Text style={{ fontWeight: 'bold', color: theme.colors.paperText }}>Fecha</Text>
+              <Text style={{ fontWeight: 'bold', 
+                color: theme.colors.paperText }}>Fecha</Text>
             </DataTable.Title>
             <DataTable.Title style={{ flex: 1 }}>
-              <Text style={{ fontWeight: 'bold', color: theme.colors.paperText }}>Estado</Text>
+              <Text style={{ fontWeight: 'bold', 
+                color: theme.colors.paperText }}>Estado</Text>
             </DataTable.Title>
           </DataTable.Header>
 
           {/* Filas de Asistencias */}
           {(asistencias || []).map((item, index) => (
-            <DataTable.Row key={index} style={{ borderBottomWidth: 1, borderBottomColor: theme.colors.border }}>
+            <DataTable.Row key={index} style={{ 
+              borderBottomWidth: 1, 
+              borderBottomColor: theme.colors.border }}>
               <DataTable.Cell style={{ flex: 1, color: theme.colors.paperText }}>
                 {item.fecha}
               </DataTable.Cell>
@@ -122,6 +161,12 @@ export const Asistencia = () => {
             </DataTable.Row>
           ))}
         </DataTable>
+      </View>
+      <CustomSnackbar
+            visible={snackbarVisible}
+            onDismiss={() => setSnackbarVisible(false)}
+            message={snackbarMessage}
+          />
     </View>
   );
 };

@@ -67,7 +67,7 @@ export const AsistenciaProvider = ({ children }) => {
     }
   };
   
-  const getAsistenciasByMes = async (estudianteId,periodoId) => {
+  const getMesesFromAsistenciaByEstudiante = async (estudianteId,periodoId) => {
     try {
       const { data } = await getAsistenciasByMesRequest(estudianteId,periodoId);
       return data
@@ -199,7 +199,7 @@ export const AsistenciaProvider = ({ children }) => {
         semanas: ordenarSemanas(semanas),
         fetchSemanas,
         getResumenesAsistenciaBySeccion,
-        getAsistenciasByMes,//mes?
+        getMesesFromAsistenciaByEstudiante,//mes?
         asistenciasMes,//mes? 
         getAsistenciaByPeriodoMesEstudiante,//mes
         deleteAsistenciasByFechaSeccion,

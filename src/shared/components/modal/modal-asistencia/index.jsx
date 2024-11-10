@@ -25,7 +25,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
     createAsistencia,
     updateAsistencia
   } = useContext(AsistenciaContext);
-
+  const field = 'nombre';  
   const { user } = useContext(AuthContext);
   const { getEstudiantesBySeccion } = useContext(EstudiantesContext);
   const { theme, isDarkTheme } = useTheme();
@@ -149,11 +149,12 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
           seccion_id: estudiante.seccion._id,
           grado_id: estudiante.grado._id,
           periodo_id: estudiante.periodo._id,
-          semana_id: selectedSemana._id,
+          semana_id: selectedSemana,
           fecha: formatDate(selectedDate),
           mes: formatMonth(selectedDate),
           estado: estado
         };
+        console.log(registro)
       
         return createAsistencia(registro)
           .then((dataAsistencia) => {
@@ -195,7 +196,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
           seccion_id: asistencia.seccion._id,
           grado_id: asistencia.grado._id,
           periodo_id: asistencia.periodo._id,
-          semana_id: selectedSemana._id,
+          semana_id: selectedSemana,
           fecha: asistencia.fecha,
           mes: asistencia.mes,
           estado: asistencia.estado,
@@ -207,7 +208,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
               return getResumenAsistencia(dataAsistencia.seccion._id, dataAsistencia.fecha)
                 .then((dataRA) => {
                   const resumenData = {
-                    semana_id: selectedSemana._id,
+                    semana_id: selectedSemana,
                     seccion_id: dataAsistencia.seccion._id,
                     fecha: dataRA.fecha,
                     presentes: dataRA.totalPresentes,
@@ -289,15 +290,14 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
                     <Text style={{ color: theme.colors.paperText }}>Semana: </Text>
                       
                     <CustomSelector
-                      opciones={semanas}
-                      selectedOption={selectedSemana}
-                      onSelect={(item) => handleSemanaChange(item)}
-                      getDisplayValue={(item) => item.nombre}
-                      placeholder="Semana"
-                      mobileWidth="20%"
-                      isModal={true}
-                    />
-
+                        opciones={semanas}
+                        selectedValue={selectedSemana}
+                        onChange={(item) => setSelectedSemana(item)}
+                        placeholder="Semanas"
+                        mobileWidth="20%"
+                        isModal={true}
+                        field={field}
+                      />
                     <TouchableOpacity 
                       onPress={showDatePicker} 
                       style={{ 
