@@ -17,9 +17,12 @@ export const Asistencia = () => {
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [visible, setVisible] = useState(false);
   const [asistencias, setAsistencias] = useState([]);
+  const [periodos, setPeriodos] = useState([]);
 
   useEffect(() => {
-    fetchPeriodo().then(() => {
+    fetchPeriodo()
+    .then((data) => { 
+      setPeriodos(data) 
       getAsistenciasByMes(user.perfil._id, user.perfil.periodo._id)
       .then((data) => {
         setMeses(data);
@@ -119,7 +122,6 @@ export const Asistencia = () => {
             </DataTable.Row>
           ))}
         </DataTable>
-
     </View>
   );
 };

@@ -13,7 +13,8 @@ import {
   getAsistenciasBySeccionFechaRequest,
   getResumenAsistenciaRequest,
   getAsistenciasByMesRequest,
-  deleteAsistenciasByFechaSeccionRequest
+  deleteAsistenciasByFechaSeccionRequest,
+  listarAsistenciaPorPeriodoMesYEstudianteRequest,
 } from '../api/asistencia'
 
 export const AsistenciaContext = createContext();
@@ -176,7 +177,18 @@ export const AsistenciaProvider = ({ children }) => {
       console.log(error);
       setError(error);
     }
+  }
+  
+  const getAsistenciaByPeriodoMesEstudiante = async (periodoId, mes, estudianteId) => {
+    try{
+    const { data} = await listarAsistenciaPorPeriodoMesYEstudianteRequest(periodoId, mes, estudianteId);
+    return data;
+    } catch (error) {
+      console.log(error);
+      setError(error);
+    }
   };
+
 
   return (
     <AsistenciaContext.Provider 
@@ -189,6 +201,7 @@ export const AsistenciaProvider = ({ children }) => {
         getResumenesAsistenciaBySeccion,
         getAsistenciasByMes,//mes?
         asistenciasMes,//mes? 
+        getAsistenciaByPeriodoMesEstudiante,//mes
         deleteAsistenciasByFechaSeccion,
         resumenesAsistencia,
         createResumenAsistencia,

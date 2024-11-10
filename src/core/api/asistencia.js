@@ -17,3 +17,6 @@ export const getAsistenciasByMesRequest = (estudianteId,periodoId) =>
 
 export const deleteAsistenciasByFechaSeccionRequest = (fecha, seccionId) =>
   axios.delete(`/asistencia/eliminar/${fecha}/${seccionId}`);
+
+export const listarAsistenciaPorPeriodoMesYEstudianteRequest = (periodoId, mes, estudianteId) =>
+  axios.get(`/asistencia/periodo/${periodoId}/mes/${mes}/estudiante/${estudianteId}`);
