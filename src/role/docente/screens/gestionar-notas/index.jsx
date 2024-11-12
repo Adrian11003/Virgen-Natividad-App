@@ -1,7 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, Text, StyleSheet,Dimensions ,ScrollView} from 'react-native';
-import { AuthContext } from '../../../../core/context/authContext';
-import { NotasContext } from '../../../../core/context/notasContext';
 import { Button, ProgressBar } from 'react-native-paper';
 import { useTheme } from '../../../../core/context/themeContext';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
@@ -9,120 +7,143 @@ import { EstudiantesContext } from '../../../../core/context/estudiantesContext'
 import { DataTable } from 'react-native-paper'; // Si usas DataTable directamente de react-native-paper
 import { useRoute } from '@react-navigation/native';
 import { ModalNuevaNota } from '../../../../shared/components/modal/modal-notas/index';
-
-
+import { showSweetAlert } from '../../../../shared/components/custom/swal/index';	
 
 export const GestionarNotas = () => {
-  const { getSeccionesCursosByDocente, secciones, cursos, loadingSeccionesCursos } = useContext(NotasContext);
-  const { user } = useContext(AuthContext);
-  const [docenteId, setDocenteId] = useState(null);
-  const { estudiantes, getEstudiantesBySeccion, loading } = useContext(EstudiantesContext);
+  const { getEstudiantesBySeccion, getEstudianteById } = useContext(EstudiantesContext); // Consumimos el contexto
   const { theme } = useTheme();
   const [page, setPage] = useState(0);
   const [numberOfItemsPerPage, setNumberOfItemsPerPage] = useState(8);
   const route = useRoute();
   const { seccion, curso } = route.params;
-
- // Estado para controlar la visibilidad del modal
   const [modalVisible, setModalVisible] = useState(false);
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const [estudiantes, setEstudiantes] = useState([]);
+  const [dataEstudiante, setDataEstudiante] = useState({});
   
   useEffect(() => {
-    setDocenteId(user.perfil._id);
-  }, [user]);
-  
-  useEffect(() => {
-    if (docenteId) {
-      getSeccionesCursosByDocente(docenteId);
-    }
-  }, [docenteId]);
+    setLoading(true);
+    getEstudiantesBySeccion(seccion._id)
+      .then((dataEstudiante) => {
+      const displayedEstudiantes = dataEstudiante ? dataEstudiante.map(estudiante => ({
+        nombreCompleto:` ${estudiante.nombre} ${estudiante.apellido}`,
+        dni: estudiante.numero_documento,
+        id: estudiante._id,
+      })) : [];
+      
+      setEstudiantes(displayedEstudiantes);
+      setLoading(false);
+    })
+  }, []);
 
-  useEffect(() => {
-    getEstudiantesBySeccion(seccion._id);
-  }, [secciones]);
+  const asignarNota = (id) => {
+    getEstudianteById(id)
+      .then((data) => {
+        // console.log(data)
+        setDataEstudiante(data);
+        setModalVisible(true);
+      })
+  }
 
-  const displayedEstudiantes = estudiantes.map(estudiante => ({
-    nombreCompleto: `${estudiante.nombre} ${estudiante.apellido}`,
-    dni: estudiante.numero_documento,
-    id: estudiante._id,
-  }));
+  const from = page * numberOfItemsPerPage;
+  const to = Math.min((page + 1) * numberOfItemsPerPage, estudiantes.length);
+  const paginatedData = estudiantes.slice(from, to);
+
+  const handleNotaGuardada = () => {
+    setModalVisible(false); 
+
+    showSweetAlert({
+      title: 'Nota Guardada',
+      text: 'La nota ha sido registrada con éxito',
+      showCancelButton: false,
+      confirmButtonText: 'Ok',
+      type: 'success',
+      onConfirm: () => {
+        // setLoading(true)
+        // .then(() => {
+        //   setLoading(false)
+        // })
+      }
+    });
+  };
 
   if (loading) {
     return <ProgressBar indeterminate />;
   }
 
-  const from = page * numberOfItemsPerPage;
-  const to = Math.min((page + 1) * numberOfItemsPerPage, displayedEstudiantes.length);
-  const paginatedData = displayedEstudiantes.slice(from, to);
-
+  const hasEstudiantes = estudiantes && estudiantes.length > 0;
   return (
     <View style={styles.container}>
-    <View style={styles.header}>
-      <Text style={[styles.sectionText, { color: theme.colors.paperText }]}>
-        Sección: {seccion.nombre} | Curso: {curso.nombre}
-      </Text>
-    </View>
+      <View style={styles.header}>
+        <Text style={[styles.sectionText, { color: theme.colors.paperText }]}>
+          Sección: {seccion.nombre} | Curso: {curso.nombre}
+        </Text>
+      </View>
 
-    <ScrollView horizontal style={styles.scrollView}>
-      <DataTable style={styles.table}>
-        <DataTable.Header 
-          style={{ 
-            width: isMediumScreen ? 1300 : 800, 
-            borderBottomWidth: 1, 
-            borderBottomColor: 'rgb(192, 192, 192)',
-          }}
-        >
-          <DataTable.Title style={styles.tableHeaderCell}>Alumno</DataTable.Title>
-          <DataTable.Title style={styles.tableHeaderCell}>DNI</DataTable.Title>
-        
-          <DataTable.Title style={styles.tableHeaderCell}>Acciones</DataTable.Title>
-        </DataTable.Header>
+      {/* Mostrar Spinner o mensaje de Cargando */}
+      {loading ? (
+        <ProgressBar indeterminate />
+      ) : (
+        <ScrollView horizontal style={styles.scrollView}>
+          <DataTable style={styles.table}>
+            <DataTable.Header
+              style={{
+                width: isMediumScreen ? 1300 : 800,
+                borderBottomWidth: 1,
+                borderBottomColor: 'rgb(192, 192, 192)',
+              }}
+            >
+              <DataTable.Title style={styles.tableHeaderCell}>Alumno</DataTable.Title>
+              <DataTable.Title style={styles.tableHeaderCell}>DNI</DataTable.Title>
+              <DataTable.Title style={styles.tableHeaderCell}>Acciones</DataTable.Title>
+            </DataTable.Header>
 
-        {paginatedData.map((estudiante, index) => (
-         <DataTable.Row style={[styles.row, { width: isMediumScreen ? 1300 : 800 }]} key={index}>
-         <DataTable.Cell style={styles.tableCell}>{estudiante.nombreCompleto}</DataTable.Cell>
-         <DataTable.Cell style={styles.tableCell}>{estudiante.dni}</DataTable.Cell>
-         <DataTable.Cell style={styles.actionCell}>
-         <Button 
-                  mode="contained" 
-                  onPress={() => setModalVisible(true)} // Esto abre el modal
-                  style={styles.addButton} 
-                  compact
-                >
-                  Agregar Nota
-                </Button>
-                <Button 
-                  mode="contained" 
-                  onPress={() => setModalVisible(true)}  
-                  style={styles.editButton}
-                  compact
-                >
-             Editar Notas
-           </Button>
-         </DataTable.Cell>
-       </DataTable.Row>
-        ))}
+            {/* Verificar si hay estudiantes antes de mapearlos */}
+            {hasEstudiantes ? (
+             estudiantes.map((estudiante, index) => (
+                <DataTable.Row style={[styles.row, { width: isMediumScreen ? 1300 : 800 }]} key={estudiante.id}>
+                  <DataTable.Cell style={styles.tableCell}>{estudiante.nombreCompleto}</DataTable.Cell>
+                  <DataTable.Cell style={styles.tableCell}>{estudiante.dni}</DataTable.Cell>
+                  <DataTable.Cell style={styles.actionCell}>
+                    <Button
+                      mode="contained"
+                      onPress={() => asignarNota(estudiante.id)}
+                      style={styles.addButton}
+                      compact
+                      
+                    >
+                      Asignar Nota
+                    </Button>
+                </DataTable.Cell>
+              </DataTable.Row>
+            ))
+          ) : (
+            <Text style={{ textAlign: 'center', marginTop: 20 }}>No hay estudiantes disponibles.</Text>
+          )}
 
-        <DataTable.Pagination
-          page={page}
-          numberOfPages={Math.ceil(displayedEstudiantes.length / numberOfItemsPerPage)}
-          onPageChange={newPage => setPage(newPage)}
-          label={`${from + 1}-${to} de ${displayedEstudiantes.length}`}
-          numberOfItemsPerPage={numberOfItemsPerPage}
-          onItemsPerPageChange={setNumberOfItemsPerPage}
-          showFastPaginationControls
-          selectPageDropdownLabel={'Filas por página'}
-          style={styles.pagination}
-        />
-      </DataTable>
-    </ScrollView>
-    {/* Renderizar el ModalNuevaNota y pasarle el control de visibilidad */}
-    <ModalNuevaNota 
-        modalVisible={modalVisible} 
-        setModalVisible={setModalVisible} 
-      />
-    <View>
-      
-    </View>
+          <DataTable.Pagination
+            page={page}
+            numberOfPages={Math.ceil(estudiantes.length / numberOfItemsPerPage)}
+            onPageChange={newPage => setPage(newPage)}
+            label={`${from + 1}-${to} de ${estudiantes.length}`}
+            numberOfItemsPerPage={numberOfItemsPerPage}
+            onItemsPerPageChange={setNumberOfItemsPerPage}
+            showFastPaginationControls
+            selectPageDropdownLabel={'Filas por página'}
+            style={styles.pagination}
+          />
+        </DataTable>
+      </ScrollView>
+    )}
+
+    <ModalNuevaNota
+      modalVisible={modalVisible}
+      setModalVisible={setModalVisible}
+      estudiante={dataEstudiante}
+      seccion={seccion._id}
+      curso={curso._id}
+      onNotaGuardada={handleNotaGuardada}
+    />
   </View>
 );
 };
@@ -190,63 +211,3 @@ pagination: {
   marginVertical: 7,
 },
 });
-
-// ADRIAAAAAAN !!!!!!!!!!!!!!!
-
-// import { View, Text, FlatList, ActivityIndicator } from 'react-native';
-// import { useContext, useEffect } from 'react';
-// import { NotasContext } from '../../../../core/context/notasContext';
-// import { AuthContext } from '../../../../core/context/authContext';
-// import { useTheme } from '../../../../core/context/themeContext';
-// import { Card } from 'react-native-paper';
-
-
-// export const GestionarNotas = () => {
-//   const { getSeccionCursoDocente, seccionGradoDocente, loadingNotas, error } = useContext(NotasContext);
-//   const { user } = useContext(AuthContext);
-//   const { theme, isDarkTheme } = useTheme();
-  
-
-//   useEffect(() => {
-//     if (user) {
-//       getSeccionCursoDocente(user.perfil._id);
-//     }
-//   }, [user]);
-
-//   return (
-//     <View style={{
-//       marginTop: 10,
-//       alignItems: 'center',
-//       justifyContent: 'center',
-//       backgroundColor: theme.backgroundColor, 
-//       padding: 20,
-//       borderRadius: 10,
-//     }}>
-//       <Text style={{  fontSize: 16, fontWeight: 'bold', color: isDarkTheme ? theme.colors.text : theme.colors.primary, textAlign: 'center' }}>Gestionar Notas</Text>
-      
-//       {loadingNotas ? (
-//         <ActivityIndicator size="large" color={theme.primaryColor} />
-//       ) : error ? (
-//         <Text style={{ color: 'red' }}>Error: {error}</Text>
-//       ) : (
-//         <FlatList
-//           data={seccionGradoDocente}
-//           keyExtractor={(item) => item._id}
-//           renderItem={({ item }) => (
-//             <Card style={{
-//               marginVertical: 5,
-//               padding: 10,
-//               backgroundColor: theme.cardColor,
-//               borderRadius: 5,
-//               width: '100%',
-//             }}>
-//               <Text style={{fontSize: 16, color: theme.colors.paperText, textAlign: 'center'}}>{item.curso.nombre} - {item.seccion.nombre}</Text>
-//               <Text  style={{fontSize: 16, color: theme.colors.paperText, textAlign: 'center'}}>Aula: {item.seccion.aula}</Text>
-//               <Text  style={{fontSize: 16, color: theme.colors.paperText, textAlign: 'center'}}>Docente: {item.docente.nombre} {item.docente.apellido}</Text>
-//             </Card>
-//           )}
-//         />
-//       )}
-//     </View>
-//   );
-// };

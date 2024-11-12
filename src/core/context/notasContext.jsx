@@ -46,30 +46,13 @@ export const NotasProvider = ({ children }) => {
 
   // JUAN
   const getSeccionesCursosByDocente = async (docenteId) => {
-    setLoading(true);
     try {
       const { data } = await getSeccionesCursosByDocenteRequest(docenteId);
-      setSeccionCursoDocente(data)
-      // // Separar secciones y cursos
-      // const seccionesData = data.map(item => ({
-      //   id: item.seccion._id,
-      //   nombre: item.seccion.nombre,
-      // }));
-      
-      // const cursosData = data.map(item => ({
-      //   id: item.curso._id,
-      //   nombre: item.curso.nombre,
-      // }));
-
-      // // Guardar datos en los estados correspondientes
-      // setSecciones(seccionesData);
-      // setCursos(cursosData);
+      return data
     } catch (error) {
       console.log(error)
       setError(error)
-    } finally {
-      setLoading(false);
-    }
+    }
   };
 
   const createNota = async (nota) => {

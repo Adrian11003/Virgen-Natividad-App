@@ -8,99 +8,120 @@ import { TextInput } from 'react-native-paper';
 import { EstudiantesContext } from '../../../../core/context/estudiantesContext';
 import { AuthContext } from '../../../../core/context/authContext';
 import { useRoute } from '@react-navigation/native';
+import {listaTiposNota} from '../../../constants/custom/item-tipo-nota';
+import isMediumScreen from '../../../constants/screen-width/md';
+import { CustomSnackbar } from '../../../components/custom/snackbar/index';
+import { letraANumero } from '../../../constants/custom/item-tipo-letra';
+import { ProgressBar } from 'react-native-paper';
 
-export const ModalNuevaNota = ({ modalVisible, setModalVisible }) => {
- // Call useRoute here to get the route object
- const route = useRoute();  // <-- Ensure this is at the top of your component
+export const ModalNuevaNota = ({ modalVisible, setModalVisible, seccion, curso, estudiante, onNotaGuardada }) => {
 
- // Destructure the params from route
- const { seccion, curso } = route.params; // <-- Now it will work
+  const { bimestres, getBimestres, getSeccionesCursosByDocente, createNota } = useContext(NotasContext);
+  const { user } = useContext(AuthContext);
+  const { theme } = useTheme();
 
- // Your context and other state hooks
- const { bimestres, getBimestres, getSeccionesCursosByDocente, secciones, cursos, loadingSeccionesCursos } = useContext(NotasContext);
- const { theme } = useTheme();
- const [selectedBimestre, setSelectedBimestre] = useState(null);
- const [bimestresCargados, setBimestresCargados] = useState(false);
- const [openSelector, setOpenSelector] = useState(null);
- const [docenteId, setDocenteId] = useState(null);
- const { estudiantes, getEstudiantesBySeccion, loading } = useContext(EstudiantesContext);
- const { user } = useContext(AuthContext);
+  const [selectedBimestre, setSelectedBimestre] = useState(null);
+  const [selectedTipoNota, setSelectedTipoNota ] = useState('');
+  const [snackbarVisible, setSnackbarVisible] = useState(false); 
+  const [snackbarMessage, setSnackbarMessage] = useState(''); 
+  const [loading, setLoading] = useState(false);
+  const [nota, setNota] = useState("");
+  
 
- // Other state hooks
- const [exposicion, setExposicion] = useState("");
- const [participacion, setParticipacion] = useState("");
- const [bimestral, setBimestral] = useState("");
- const [desempenoClase, setDesempenoClase] = useState("");
+  const field = 'nombre';
+ 
+  useEffect(() => {
+    if(modalVisible) {
+    setSelectedBimestre(null);
+    setSelectedTipoNota(null)
+    setNota("");
+    getSeccionesCursosByDocente(user.perfil._id)
+      .then(() => {
+        getBimestres();
+      });
+    }
+  }, [modalVisible]);
 
- // Your useEffects, event handlers, and return JSX here...
-useEffect(() => {
-  setDocenteId(user.perfil._id);
-}, [user]);
+  const handleGuardar = () => {
+    setLoading(true);
+    const notaNumerica = letraANumero[nota] 
+    const nuevaNota = {
+      estudiante_id: estudiante._id,
+      periodo_id:estudiante.periodo._id,
+      docente_id: user.perfil._id,
+      seccion_id: seccion, 
+      grado_id: estudiante.grado._id,
+      curso_id: curso, 
+      bimestre_id: selectedBimestre._id,
+      nota: notaNumerica,
+      notaLetra: nota,
+      tipoNota: selectedTipoNota.nombre
+    };
 
-useEffect(() => {
-  if (docenteId) {
-    getSeccionesCursosByDocente(docenteId);
-  }
-}, [docenteId]);
+    if (!["AD", "A", "B", "C"].includes(nuevaNota.notaLetra)) {
+      setSnackbarMessage("Solo se permiten notas AD, A, B o C.");
+      setSnackbarVisible(true);
+      setLoading(false);
+      return;
+    }
 
-useEffect(() => {
-  getEstudiantesBySeccion(seccion._id);
-}, [secciones]);
+    createNota(nuevaNota)
+      .then(() => {
+        setLoading(false);
+        if (onNotaGuardada) onNotaGuardada();
+      })
+  };
 
-useEffect(() => {
-  if (modalVisible && !bimestresCargados) {
-    getBimestres();
-    setBimestresCargados(true);
-  }
-}, [modalVisible, bimestresCargados, getBimestres]);
 
-const handleBimestreSelect = (bimestre) => {
-  setSelectedBimestre(bimestre);
+      // try {
+    //   // Realizar la solicitud para guardar la nueva nota
+    //   const response = createNota(nuevaNota);
+    //   console.log('Nota guardada correctamente:', response);
+    //   setSnackbarMessage('Nota guardada correctamente');
+    //   setSnackbarVisible(true);
+    //   setModalVisible(false); // Cerrar el modal
+    // } catch (error) {
+    //   console.error('Error al guardar la nota:', error.response?.data || error.message);
+    //   setSnackbarMessage('Hubo un error al guardar la nota');
+    //   setSnackbarVisible(true);
+    // }
+
+ const handleCancel = () => {
+  setNota("");  // Limpiar campos
+  setSelectedBimestre(null); // Limpiar selección de bimestre
+  setModalVisible(false); // Cerrar el modal
 };
-
-const handleSelectorOpen = (selectorName) => {
-  setOpenSelector(openSelector === selectorName ? null : selectorName);
-};
-
-const handleNotaChange = (text, setter) => {
-  // Permite el valor vacío (""), o valida si es un valor permitido
-  if (text === "" || notaOptions.includes(text)) {
-    setter(text);
-  }
-};
-
-const handleGuardar = () => {
-  // Aquí podrías realizar la acción de guardar, como llamar a una API o actualizar el estado de la aplicación
-  console.log("Datos guardados:", { exposicion, participacion, bimestral, desempenoClase, selectedBimestre });
-  setModalVisible(false); // Cerrar el modal después de guardar
-};
-
-// Función para manejar el cancelamiento
-const handleCancel = () => {
-  // Opcional: Restablece los campos de entrada
-  setExposicion("");
-  setParticipacion("");
-  setBimestral("");
-  setDesempenoClase("");
-  setSelectedBimestre(null);
-  setModalVisible(false);
-};
-
+  const handleMonthSelect = (tipoNota) => {
+    if (!selectedBimestre) {
+      setSnackbarMessage('Seleccione un bimestre');
+      setSnackbarVisible(true);
+    } else {
+      setSelectedTipoNota(tipoNota); // Aquí seleccionamos el objeto completo
+      console.log(selectedTipoNota);  
+    
+    }
+  };
 
   return (
+
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent={true}
       visible={modalVisible}
       onRequestClose={() => setModalVisible(false)}
     >
       <View style={styles.modalOverlay}>
-        <View style={[styles.modalContainer, { backgroundColor: theme.colors.modalBackground }]}>
+        <View style={ { backgroundColor: theme.colors.modalBackground, 
+        width: isMediumScreen ? 500 : '90%',
+        borderRadius: 10,
+        padding: 20, 
+        
+        }}>
 
           {/* Selector de Bimestre */}
           <View style={styles.bimestreContainer}>
             <Text style={[styles.sectionTitle, { color: theme.colors.paperText }]}></Text>
-            <CustomSelector
+            {/* <CustomSelector
               opciones={bimestres}
               selectedOption={selectedBimestre}
               onSelect={handleBimestreSelect}
@@ -108,19 +129,57 @@ const handleCancel = () => {
               getDisplayValue={(item) => item.nombre}
               isOpen={openSelector === 'bimestre'}
               onOpen={() => handleSelectorOpen('bimestre')}
-            />
+            /> */}
+            { loading && <ProgressBar indeterminate /> }
+
+  <View style={{ zIndex: 1000 }}>
+            <View style={{ zIndex: 13,marginBottom: 20}}>
+             <CustomSelector
+                        opciones={bimestres}
+                        selectedValue={selectedBimestre}
+                        onChange={(item) => setSelectedBimestre(item)}
+                        placeholder="Bimestres"
+                        
+                        isModal={true}
+                        field={field}
+                        modalwidth='100%'
+              />
+            </View>
+            <View style={{ marginBottom: 20, zIndex: 12 }}>
+              
+              <CustomSelector
+                     opciones={listaTiposNota}
+                     selectedValue={selectedTipoNota}
+                     onChange={handleMonthSelect}
+                     placeholder="Tipo de Nota"
+                     isModal={true}
+                     field={field}
+                     modalwidth='100%'
+              />  
+          </View>
+          </View>
           </View>
 
-          <Text style={[styles.sectionTitle, { color: theme.colors.paperText }]}>Notas:</Text>
+          <Text style={[styles.sectionTitle, { color: theme.colors.paperText }]}>Tipo de Notas:</Text>
 
           {/* Input para cada nota */}
           {/* Exposición */}
-          <View style={[styles.notasContainer, { position: 'relative', zIndex: openSelector === 'exposicion' ? 100 : 1 }]}>
-            <Text style={[styles.notaLabel, { color: theme.colors.paperText }]}>• Exposición :</Text>
+          <View style={ {
+            alignItems: 'center',
+            marginBottom: 8,
+            width: '100%', 
+            marginTop: 20
+            
+            }}>
+              
             <TextInput
-              label="Nota de Exposición" // Usa label en lugar de placeholder
-              value={exposicion}
-              onChangeText={text => handleNotaChange(text, setExposicion)}
+              placeholder={
+                selectedTipoNota 
+                  ? `Ingrese la nota `
+                  : 'Seleccione un tipo de nota'
+              }
+              value={nota}
+              onChangeText={text => setNota(text)}
               mode="outlined"
               right={
                 <TextInput.Icon
@@ -129,64 +188,36 @@ const handleCancel = () => {
                   size={24}
                 />
               }
+              style={{ width: '100%' }}
             />
           </View>
+          <View style={styles.buttonContainer}>
+             {/* Botón de Enviar Solicitud */}
+          <Button
+            mode="contained"
+            onPress={() => {
+              // Función para enviar solicitud
+              console.log("Solicitud enviada");
+            }}
+            contentStyle={styles.enviarButtonContent}
+            labelStyle={styles.enviarButtonLabel}
+            color={theme.colors.primary} // Color personalizado del botón de enviar solicitud
+          >
+            Enviar Solicitud
+          </Button>
+          <Button
+            mode="contained"
+            onPress={handleGuardar}
+            contentStyle={styles.guardarButtonContent}
+            labelStyle={styles.guardarButtonLabel}
+            color={theme.colors.primary} // Color personalizado del botón de guardar
+            style={{ marginTop: 10 }} // Margen superior para separar de Enviar Solicitud
+          >
+            Guardar
+          </Button>
 
-          {/* Participación */}
-          <View style={[styles.notasContainer, { position: 'relative', zIndex: openSelector === 'participacion' ? 99 : 1 }]}>
-            <Text style={[styles.notaLabel, { color: theme.colors.paperText }]}>• Participación :</Text>
-            <TextInput
-              label="Nota de Participación"
-              value={participacion}
-              onChangeText={text => handleNotaChange(text, setParticipacion)}
-              mode="outlined"
-              right={
-                <TextInput.Icon
-                  icon="pencil"
-                  color={theme.colors.customIcon}
-                  size={24}
-                />
-              }
-            />
-          </View>
-
-          {/* Bimestral */}
-          <View style={[styles.notasContainer, { position: 'relative', zIndex: openSelector === 'bimestral' ? 98 : 1 }]}>
-            <Text style={[styles.notaLabel, { color: theme.colors.paperText }]}>• Bimestral :</Text>
-            <TextInput
-              label="Nota Bimestral"
-              value={bimestral}
-              onChangeText={text =>handleNotaChange(text, setBimestral)}
-              mode="outlined"
-              right={
-                <TextInput.Icon
-                  icon="pencil"
-                  color={theme.colors.customIcon}
-                  size={24}
-                />
-              }
-            />
-          </View>
-
-          {/* Desempeño en Clase */}
-          <View style={[styles.notasContainer, { position: 'relative', zIndex: openSelector === 'desempenoClase' ? 97 : 1 }]}>
-            <Text style={[styles.notaLabel, { color: theme.colors.paperText }]}>• Desempeño en clase :</Text>
-            <TextInput
-              label="Nota de Desempeño en Clase"
-              value={desempenoClase}
-              onChangeText={text => handleNotaChange(text, setDesempenoClase)}
-              mode="outlined"
-              right={
-                <TextInput.Icon
-                  icon="pencil"
-                  color={theme.colors.customIcon}
-                  size={24}
-                />
-              }
-            />
-          </View>
            {/* Botón de Cancelar */}
-           <View style={styles.buttonContainer}>
+         
             <Button
               mode="contained"
               onPress={handleCancel}
@@ -197,28 +228,38 @@ const handleCancel = () => {
               Cancelar
             </Button>
           </View>
+          
+
         </View>
+        <View style={{width:'100%',position: 'absolute', bottom: 0, padding: 16}}>
+          <CustomSnackbar
+            visible={snackbarVisible}
+            onDismiss={() => setSnackbarVisible(false)}
+            message={snackbarMessage}
+          />
+          </View>
+       
       </View>
+
+      
     </Modal>
+
   );
 };
 
 const styles = StyleSheet.create({
   bimestreContainer: {
     zIndex:10,
-    width: '50%',
+    width: '100%',
   },
   modalOverlay: {
-    flex: 1,
+    
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+    height: '100%',
   },
-  modalContainer: {
-    width: '90%',
-    borderRadius: 10,
-    padding: 20,
-  },
+
   closeButton: {
     borderRadius: 15,
     padding: 5,
@@ -232,13 +273,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 5,
   },
-  notasContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-    width: '50%',
-    zIndex:9,
-  },
+ 
   notaLabel: {
     fontSize: 14,
     marginRight: 8,
@@ -257,6 +292,8 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: 20, // Espacio superior para separar del último input
     alignItems: 'flex-end', // Alinea el botón a la derecha; puedes cambiar a 'center' si prefieres
+    flexDirection: 'row', // Asegura que los botones estén en la misma fila
+    gap: 10, // Espacio entre los botones
   },
   cancelButtonContent: {
     height: 48, // Altura del botón
@@ -265,5 +302,29 @@ const styles = StyleSheet.create({
   cancelButtonLabel: {
     fontSize: 16,
     color: 'white', // Color del texto del botón
+  },
+  cancelButtonContent: {
+    height: 48, // Altura del botón
+    justifyContent: 'center',
+  },
+  cancelButtonLabel: {
+    fontSize: 16,
+    color: 'white', // Color del texto del botón
+  },
+  enviarButtonContent: {
+    height: 48,
+    justifyContent: 'center',
+  },
+  enviarButtonLabel: {
+    fontSize: 16,
+    color: 'white', // Ajusta el color del texto del botón
+  },
+  guardarButtonContent: {
+    height: 48,
+    justifyContent: 'center',
+  },
+  guardarButtonLabel: {
+    fontSize: 16,
+    color: 'white',
   },
 });
