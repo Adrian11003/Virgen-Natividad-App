@@ -1,11 +1,10 @@
 import { createContext, useState } from 'react';
-import { getEstudiantesBySeccionRequest } from '../api/estudiantes';
+import { getEstudiantesBySeccionRequest, getEstudianteByIdRequest } from '../api/estudiantes';
 
 export const EstudiantesContext = createContext();
 
 export const EstudiantesProvider = ({ children }) => {
   const [error, setError] = useState(null);
-  const [estudiantes, setEstudiantes] = useState([]); // Agrega el estado de estudiantes
 
   const getEstudiantesBySeccion = async (seccionId) => {
     try {
@@ -14,17 +13,28 @@ export const EstudiantesProvider = ({ children }) => {
         a.apellido.localeCompare(b.apellido)
       );
       return estudiantesOrdenados // Actualiza el estado de estudiantes con los datos obtenidos
+      return estudiantesOrdenados
     } catch (error) {
       console.log(error);
       setError(error);
     }
   };
 
+  const getEstudianteById = async (id) => {
+    try {
+      const { data } = await getEstudianteByIdRequest(id);
+      return data
+    } catch (error) {
+      console.log(error);
+      setError(error);
+    }
+  }
+
   return (
     <EstudiantesContext.Provider 
       value={{ 
-        estudiantes,         // Asegúrate de pasar estudiantes en el contexto
         getEstudiantesBySeccion, 
+        getEstudianteById,
         error
       }}
     >

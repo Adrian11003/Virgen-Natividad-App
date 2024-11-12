@@ -11,7 +11,8 @@ export const CustomSelector = ({
   placeholder = 'Selecciona una opción', 
   mobileWidth, 
   isModal,
-  field 
+  field ,
+  modalwidth
 }) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const { theme, themeType } = useTheme();
@@ -21,7 +22,7 @@ export const CustomSelector = ({
   }, []);
 
   const handleSelect = (item) => {
-    onChange(item._id);
+    onChange(item);
     setIsSelectorOpen(false);
     console.log(item);
   }
@@ -41,7 +42,7 @@ export const CustomSelector = ({
   );
   
   return (
-    <View style={{ position: 'relative', zIndex: 1, width: isMediumScreen ? mobileWidth : (isModal ? '15%' : '100%') }}>
+    <View style={{ position: 'relative', zIndex: 1, width: isMediumScreen ? mobileWidth : (isModal ? modalwidth : '100%') }}>
       <TouchableOpacity
         onPress={() => setIsSelectorOpen(!isSelectorOpen)}
         style={{
@@ -54,9 +55,7 @@ export const CustomSelector = ({
       >
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 20 }}>
           <Text style={{ color: theme.colors.paperText }}>
-            {selectedValue !== null
-              ? opciones.find((opcion) => opcion._id === selectedValue)?.[field]
-              : placeholder}
+            {selectedValue ? selectedValue[field] : placeholder}
           </Text>
           <Ionicons name="chevron-down" size={17} color={themeType === 'light' ? '#C0C0C0' : '#777'} />
         </View>

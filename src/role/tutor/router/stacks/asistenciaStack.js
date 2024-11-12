@@ -1,6 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import { GestionarAsistencia } from '../../screens/gestionar-asistencia/index';
 
+
 const Stack = createStackNavigator();
 
 export const AsistenciaStack = () => {
@@ -18,6 +19,7 @@ export const AsistenciaStack = () => {
           headerShown: false
         }}
       />
+      
     </Stack.Navigator>
   );
 };

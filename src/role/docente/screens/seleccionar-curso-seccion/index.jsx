@@ -1,5 +1,5 @@
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect,useState } from 'react';
 import { NotasContext } from '../../../../core/context/notasContext';
 import { AuthContext } from '../../../../core/context/authContext';
 import { useTheme } from '../../../../core/context/themeContext';
@@ -7,14 +7,18 @@ import { Card, ProgressBar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 
 export const SeleccionarCursoSeccion = () => {
-  const { getSeccionesCursosByDocente, seccionCursoDocente, loading } = useContext(NotasContext);
+  const { getSeccionesCursosByDocente, loading, } = useContext(NotasContext);
   const { user } = useContext(AuthContext);
   const { theme, isDarkTheme } = useTheme();
   const navigation = useNavigation();
+  const [seccionCursoDocente, setSeccionCursoDocente] = useState(false);
 
   useEffect(() => {
-      getSeccionesCursosByDocente(user.perfil._id);
-  }, [user]);
+    getSeccionesCursosByDocente(user.perfil._id)
+      .then((data) => {
+        setSeccionCursoDocente(data)
+      })
+  }, [user]);
 
   const handleNavigate = (item) => {
     navigation.navigate('Notas', { // Nombre del stack en tu Drawer
