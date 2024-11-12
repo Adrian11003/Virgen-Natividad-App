@@ -25,7 +25,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
     createAsistencia,
     updateAsistencia
   } = useContext(AsistenciaContext);
-
+  const field = 'nombre';  
   const { user } = useContext(AuthContext);
   const { getEstudiantesBySeccion } = useContext(EstudiantesContext);
   const { theme, isDarkTheme } = useTheme();
@@ -55,6 +55,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
     if (dataType === 'create') {
       setAsistencia([]);
       setEditAsistencia([]);
+      console.log(user)
       getEstudiantesBySeccion(user.perfil.seccion._id)
         .then((data) => {
           setEstudiantes(data);
@@ -63,9 +64,9 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
     }
   
     if (dataType === 'edit') {
-      setAsistencia([]);
       getResumenAsistenciaById(id)
         .then((data) => {
+          setAsistencia([]);
           setSelectedDate(convertirFecha(data.fecha))
           setSelectedSemana(data.semana)
           getAsistenciasBySeccionFecha(data.seccion._id, data.fecha)
@@ -82,6 +83,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
       const newEditAsistencia = [...asistencia];
       newEditAsistencia[index].estado = tipo;
       setEditAsistencia(newEditAsistencia);
+      console.log(editAsistencia)
     } else {
       const newAsistencia = [...asistencia];
       newAsistencia[index] = tipo;
@@ -147,11 +149,12 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
           seccion_id: estudiante.seccion._id,
           grado_id: estudiante.grado._id,
           periodo_id: estudiante.periodo._id,
-          semana_id: selectedSemana._id,
+          semana_id: selectedSemana,
           fecha: formatDate(selectedDate),
           mes: formatMonth(selectedDate),
           estado: estado
         };
+        console.log(registro)
       
         return createAsistencia(registro)
           .then((dataAsistencia) => {
@@ -179,8 +182,6 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
       Promise.all(promises)
         .then(() => {
           setLoading(false);
-          setAsistencia([]);
-          setEditAsistencia([]);
           if (onAsistenciaGuardada) onAsistenciaGuardada();
         })
         .catch((error) => {
@@ -190,13 +191,12 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
     }
     if (dataType === 'edit') {
       const promises = editAsistencia.map((asistencia, index) => {
-        console.log(asistencia)
         const asistenciaData = {
           estudiante_id: asistencia.estudiante._id,
           seccion_id: asistencia.seccion._id,
           grado_id: asistencia.grado._id,
           periodo_id: asistencia.periodo._id,
-          semana_id: asistencia.semana,
+          semana_id: selectedSemana,
           fecha: asistencia.fecha,
           mes: asistencia.mes,
           estado: asistencia.estado,
@@ -208,7 +208,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
               return getResumenAsistencia(dataAsistencia.seccion._id, dataAsistencia.fecha)
                 .then((dataRA) => {
                   const resumenData = {
-                    semana_id: dataAsistencia.semana,
+                    semana_id: selectedSemana,
                     seccion_id: dataAsistencia.seccion._id,
                     fecha: dataRA.fecha,
                     presentes: dataRA.totalPresentes,
@@ -228,7 +228,6 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
       Promise.all(promises)
         .then(() => {
           setLoading(false);
-          setAsistencia([]);
           if (onAsistenciaGuardada) onAsistenciaGuardada();
         })
         .catch((error) => {
@@ -291,15 +290,14 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
                     <Text style={{ color: theme.colors.paperText }}>Semana: </Text>
                       
                     <CustomSelector
-                      opciones={semanas}
-                      selectedOption={selectedSemana}
-                      onSelect={(item) => handleSemanaChange(item)}
-                      getDisplayValue={(item) => item.nombre}
-                      placeholder="Semana"
-                      mobileWidth="20%"
-                      isModal={true}
-                    />
-
+                        opciones={semanas}
+                        selectedValue={selectedSemana}
+                        onChange={(item) => setSelectedSemana(item)}
+                        placeholder="Semanas"
+                        mobileWidth="20%"
+                        isModal={true}
+                        field={field}
+                      />
                     <TouchableOpacity 
                       onPress={showDatePicker} 
                       style={{ 
@@ -330,16 +328,17 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
                             flex: 1, 
                             justifyContent: 'center', 
                             alignItems: 'center',
-                            width: 400
                           }}
                         >
                           <TouchableWithoutFeedback>
                             <View 
                               style={{ 
                                 backgroundColor: 'white', 
-                                padding: 5, borderRadius: 10,
+                                padding: 5, 
+                                borderRadius: 10,
                                 alignItems: 'center', 
                                 width: '70%',
+                                maxWidth: 400,
                                 zIndex: 25 
                               }}
                             >

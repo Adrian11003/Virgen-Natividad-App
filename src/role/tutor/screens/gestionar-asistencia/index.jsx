@@ -27,6 +27,7 @@ export const GestionarAsistencia = () => {
   const [selectedId, setSelectedId] = useState(null);
   const [dataType, setDataType] = useState(null);
   const [loading, setLoading] = useState(true);
+  const field = 'nombre';
 
   useEffect(() => {
     setLoading(true);
@@ -48,9 +49,9 @@ export const GestionarAsistencia = () => {
   ];
 
   const displayedResumenAsistencia = () => {
-    if (!selectedSemana || selectedSemana._id === 'all') return resumenesAsistencia;
+    if (!selectedSemana || selectedSemana === 'all') return resumenesAsistencia;
     return resumenesAsistencia.filter(item => 
-      item.semana._id === selectedSemana._id
+      item.semana._id === selectedSemana
     );
   };
 
@@ -67,7 +68,6 @@ export const GestionarAsistencia = () => {
   };
 
   const eliminarAsistencia = (id) => {
-    setLoading(true)
     setSelectedId(id);
     showSweetAlert({
       title: 'Eliminar Asistencia',
@@ -76,6 +76,7 @@ export const GestionarAsistencia = () => {
       cancelButtonText: 'Cancelar',
       confirmButtonText: 'Confirmar',
       onConfirm: () => {
+        setLoading(true)
         getResumenAsistenciaById(id)
           .then((data) => {
             deleteAsistenciasByFechaSeccion(data.fecha, user.perfil.seccion._id)
@@ -101,6 +102,7 @@ export const GestionarAsistencia = () => {
   };
 
   const handleAsistenciaGuardada = () => {
+    setModalVisible(false); 
     const message = dataType === 'create' ? 'Asistencia Creada' : 'Asistencia Actualizada';
     const messageText = dataType === 'create'
       ? 'La asistencia ha sido registrada con éxito'
@@ -112,12 +114,14 @@ export const GestionarAsistencia = () => {
       showCancelButton: false,
       confirmButtonText: 'Ok',
       type: 'success',
+      onConfirm: () => {
+        setLoading(true)
+        getResumenesAsistenciaBySeccion(user.perfil.seccion._id)
+        .then(() => {
+          setLoading(false)
+        })
+      }
     });
-
-    getResumenesAsistenciaBySeccion(user.perfil.seccion._id)
-      .then(() => {
-        setModalVisible(false); 
-      })
   };
 
   if (loading) {
@@ -152,12 +156,12 @@ export const GestionarAsistencia = () => {
 
         <CustomSelector
           opciones={[{ nombre: 'Todas las semanas', _id: 'all' }, ...semanas]}
-          selectedOption={selectedSemana}
-          onSelect={(item) => setSelectedSemana(item)}
-          getDisplayValue={(item) => item.nombre}
+          selectedValue={selectedSemana}
+          onChange={(item) => setSelectedSemana(item)}
           placeholder="Todas las semanas"
           mobileWidth="20%"
           isModal={false}
+          field={field}
         />
 
         <Button 

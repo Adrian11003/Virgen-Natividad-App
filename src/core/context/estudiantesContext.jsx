@@ -12,6 +12,7 @@ export const EstudiantesProvider = ({ children }) => {
       const estudiantesOrdenados = data.sort((a, b) => 
         a.apellido.localeCompare(b.apellido)
       );
+      return estudiantesOrdenados // Actualiza el estado de estudiantes con los datos obtenidos
       return estudiantesOrdenados
     } catch (error) {
       console.log(error);

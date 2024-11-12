@@ -41,6 +41,7 @@ export const AuthProvider = ({ children }) => {
 
   const handleLogin = async (loginRequestInstance, navigation) => {
     try {
+      setLoading(true);
       const { identificador, password } = loginRequestInstance;
 
       const { data } = await loginRequest({ 
@@ -66,6 +67,8 @@ export const AuthProvider = ({ children }) => {
       navigation.navigate('Drawer');
     } catch (error) {
       setError(error)
+    } finally {
+      setLoading(false);
     }
   };
 

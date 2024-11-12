@@ -13,7 +13,8 @@ import {
   getAsistenciasBySeccionFechaRequest,
   getResumenAsistenciaRequest,
   getAsistenciasByMesRequest,
-  deleteAsistenciasByFechaSeccionRequest
+  deleteAsistenciasByFechaSeccionRequest,
+  listarAsistenciaPorPeriodoMesYEstudianteRequest,
 } from '../api/asistencia'
 
 export const AsistenciaContext = createContext();
@@ -66,16 +67,12 @@ export const AsistenciaProvider = ({ children }) => {
     }
   };
   
-const getAsistenciasByMes = async (estudianteId,periodoId) => {
-    setLoading(true);
+  const getMesesFromAsistenciaByEstudiante = async (estudianteId,periodoId) => {
     try {
       const { data } = await getAsistenciasByMesRequest(estudianteId,periodoId);
-      setAsistenciasMes(data);
+      return data
     } catch (error) {
       console.log(error)
-      setError(error)
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -180,7 +177,18 @@ const getAsistenciasByMes = async (estudianteId,periodoId) => {
       console.log(error);
       setError(error);
     }
+  }
+  
+  const getAsistenciaByPeriodoMesEstudiante = async (periodoId, mes, estudianteId) => {
+    try{
+    const { data} = await listarAsistenciaPorPeriodoMesYEstudianteRequest(periodoId, mes, estudianteId);
+    return data;
+    } catch (error) {
+      console.log(error);
+      setError(error);
+    }
   };
+
 
   return (
     <AsistenciaContext.Provider 
@@ -191,8 +199,9 @@ const getAsistenciasByMes = async (estudianteId,periodoId) => {
         semanas: ordenarSemanas(semanas),
         fetchSemanas,
         getResumenesAsistenciaBySeccion,
-        getAsistenciasByMes,//mes?
+        getMesesFromAsistenciaByEstudiante,//mes?
         asistenciasMes,//mes? 
+        getAsistenciaByPeriodoMesEstudiante,//mes
         deleteAsistenciasByFechaSeccion,
         resumenesAsistencia,
         createResumenAsistencia,
