@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import { useTheme } from '../../../../core/context/themeContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -15,6 +15,10 @@ export const CustomSelector = ({
 }) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const { theme, themeType } = useTheme();
+
+  useEffect(() => {
+    console.log(selectedValue)
+  }, []);
 
   const handleSelect = (item) => {
     onChange(item._id);
@@ -50,7 +54,7 @@ export const CustomSelector = ({
       >
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 20 }}>
           <Text style={{ color: theme.colors.paperText }}>
-            {selectedValue 
+            {selectedValue !== null
               ? opciones.find((opcion) => opcion._id === selectedValue)?.[field]
               : placeholder}
           </Text>

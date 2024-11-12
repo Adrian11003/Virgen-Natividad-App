@@ -1,4 +1,4 @@
-import { View, Text, Modal, ScrollView, SafeAreaView, TouchableOpacity, TouchableWithoutFeedback, Animated} from 'react-native';
+import { View, Text, Modal, ScrollView, SafeAreaView, TouchableOpacity, TouchableWithoutFeedback, Platform} from 'react-native';
 import { useContext, useEffect, useState } from 'react';
 import { useTheme } from '../../../../core/context/themeContext';
 import { CustomSelector } from '../../custom/selector/index';
@@ -55,7 +55,6 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
     if (dataType === 'create') {
       setAsistencia([]);
       setEditAsistencia([]);
-      console.log(user)
       getEstudiantesBySeccion(user.perfil.seccion._id)
         .then((data) => {
           setEstudiantes(data);
@@ -68,7 +67,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
         .then((data) => {
           setAsistencia([]);
           setSelectedDate(convertirFecha(data.fecha))
-          setSelectedSemana(data.semana)
+          setSelectedSemana(data.semana);
           getAsistenciasBySeccionFecha(data.seccion._id, data.fecha)
             .then((data) => {
               setAsistencia(data.map(item => ({ ...item })));
@@ -84,21 +83,11 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
       newEditAsistencia[index].estado = tipo;
       setEditAsistencia(newEditAsistencia);
       console.log(editAsistencia)
+      console.log(selectedSemana)
     } else {
       const newAsistencia = [...asistencia];
       newAsistencia[index] = tipo;
       setAsistencia(newAsistencia);
-    }
-  };
-
-  const handleSemanaChange = (semana) => {
-    setSelectedSemana(semana);
-    if (dataType === 'edit') {
-      const updatedEditAsistencia = editAsistencia.map(item => ({
-        ...item,
-        semana: semana._id,
-      }));
-      setEditAsistencia(updatedEditAsistencia);
     }
   };
   
@@ -106,7 +95,11 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
   const hideDatePicker = () => setDatePickerVisible(false);
 
   const handleDateChange = (date) => {
-    const newDate = new Date(date);
+    console.log("Original date:", date);
+
+    const formattedDate = date.replace(/\//g, "-");
+    const newDate = new Date(formattedDate);
+  
     setSelectedDate(newDate);
     hideDatePicker();
   
@@ -196,7 +189,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
           seccion_id: asistencia.seccion._id,
           grado_id: asistencia.grado._id,
           periodo_id: asistencia.periodo._id,
-          semana_id: selectedSemana,
+          semana_id: selectedSemana._id,
           fecha: asistencia.fecha,
           mes: asistencia.mes,
           estado: asistencia.estado,
@@ -208,7 +201,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
               return getResumenAsistencia(dataAsistencia.seccion._id, dataAsistencia.fecha)
                 .then((dataRA) => {
                   const resumenData = {
-                    semana_id: selectedSemana,
+                    semana_id: selectedSemana._id,
                     seccion_id: dataAsistencia.seccion._id,
                     fecha: dataRA.fecha,
                     presentes: dataRA.totalPresentes,
@@ -290,14 +283,15 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
                     <Text style={{ color: theme.colors.paperText }}>Semana: </Text>
                       
                     <CustomSelector
-                        opciones={semanas}
-                        selectedValue={selectedSemana}
-                        onChange={(item) => setSelectedSemana(item)}
-                        placeholder="Semanas"
-                        mobileWidth="20%"
-                        isModal={true}
-                        field={field}
-                      />
+                      opciones={semanas}
+                      selectedValue={selectedSemana}
+                      onChange={(item) => setSelectedSemana(item)}
+                      placeholder={ dataType === 'edit' ? selectedSemana.nombre : 'Semanas' }
+                      mobileWidth="20%"
+                      isModal={true}
+                      field={field}
+                    />
+
                     <TouchableOpacity 
                       onPress={showDatePicker} 
                       style={{ 
