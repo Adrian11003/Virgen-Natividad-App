@@ -1,5 +1,5 @@
 import { createContext, useState } from 'react';
-import { getEstudiantesBySeccionRequest } from '../api/estudiantes';
+import { getEstudiantesBySeccionRequest, getEstudianteByIdRequest } from '../api/estudiantes';
 
 export const EstudiantesContext = createContext();
 
@@ -20,10 +20,21 @@ export const EstudiantesProvider = ({ children }) => {
     }
   };
 
+  const getEstudianteById = async (id) => {
+    try {
+      const { data } = await getEstudianteByIdRequest(id);
+      return data
+    } catch (error) {
+      console.log(error);
+      setError(error);
+    }
+  }
+
   return (
     <EstudiantesContext.Provider 
       value={{ 
         getEstudiantesBySeccion, 
+        getEstudianteById,
         error
       }}
     >

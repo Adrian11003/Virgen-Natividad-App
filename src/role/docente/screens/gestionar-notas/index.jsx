@@ -1,7 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, Text, StyleSheet,Dimensions ,ScrollView} from 'react-native';
-import { AuthContext } from '../../../../core/context/authContext';
-import { NotasContext } from '../../../../core/context/notasContext';
 import { Button, ProgressBar } from 'react-native-paper';
 import { useTheme } from '../../../../core/context/themeContext';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
@@ -9,13 +7,10 @@ import { EstudiantesContext } from '../../../../core/context/estudiantesContext'
 import { DataTable } from 'react-native-paper'; // Si usas DataTable directamente de react-native-paper
 import { useRoute } from '@react-navigation/native';
 import { ModalNuevaNota } from '../../../../shared/components/modal/modal-notas/index';
-
-
+import { showSweetAlert } from '../../../../shared/components/custom/swal/index';	
 
 export const GestionarNotas = () => {
-  const { getSeccionesCursosByDocente, secciones, cursos, loadingSeccionesCursos } = useContext(NotasContext);
-  const { user } = useContext(AuthContext);
-  const { getEstudiantesBySeccion } = useContext(EstudiantesContext); // Consumimos el contexto
+  const { getEstudiantesBySeccion, getEstudianteById } = useContext(EstudiantesContext); // Consumimos el contexto
   const { theme } = useTheme();
   const [page, setPage] = useState(0);
   const [numberOfItemsPerPage, setNumberOfItemsPerPage] = useState(8);
@@ -23,11 +18,9 @@ export const GestionarNotas = () => {
   const { seccion, curso } = route.params;
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(true); // Estado de carga
-  const [seccionCursoDocente, setSeccionCursoDocente] = useState([]);
-  const [estudiantes, setEstudiantes] = useState(null);
+  const [estudiantes, setEstudiantes] = useState([]);
+  const [dataEstudiante, setDataEstudiante] = useState({});
   
-  
-
   useEffect(() => {
     setLoading(true);
     getEstudiantesBySeccion(seccion._id)
@@ -43,17 +36,40 @@ export const GestionarNotas = () => {
     })
   }, []);
 
-
-
-  if (loading) {
-    return <ProgressBar indeterminate />;
+  const asignarNota = (id) => {
+    getEstudianteById(id)
+      .then((data) => {
+        // console.log(data)
+        setDataEstudiante(data);
+        setModalVisible(true);
+      })
   }
 
-  // Manejo de la paginación
   const from = page * numberOfItemsPerPage;
   const to = Math.min((page + 1) * numberOfItemsPerPage, estudiantes.length);
   const paginatedData = estudiantes.slice(from, to);
 
+  const handleNotaGuardada = () => {
+    setModalVisible(false); 
+
+    showSweetAlert({
+      title: 'Nota Guardada',
+      text: 'La nota ha sido registrada con éxito',
+      showCancelButton: false,
+      confirmButtonText: 'Ok',
+      type: 'success',
+      onConfirm: () => {
+        // setLoading(true)
+        // .then(() => {
+        //   setLoading(false)
+        // })
+      }
+    });
+  };
+
+  if (loading) {
+    return <ProgressBar indeterminate />;
+  }
 
   const hasEstudiantes = estudiantes && estudiantes.length > 0;
   return (
@@ -91,19 +107,12 @@ export const GestionarNotas = () => {
                   <DataTable.Cell style={styles.actionCell}>
                     <Button
                       mode="contained"
-                      onPress={() => setModalVisible(true)}
+                      onPress={() => asignarNota(estudiante.id)}
                       style={styles.addButton}
                       compact
+                      
                     >
-                      Agregar Nota
-                    </Button>
-                    <Button
-                      mode="contained"
-                      onPress={() => setModalVisible(true)}
-                      style={styles.editButton}
-                      compact
-                    >
-                      Editar Notas
+                      Asignar Nota
                     </Button>
                 </DataTable.Cell>
               </DataTable.Row>
@@ -130,6 +139,10 @@ export const GestionarNotas = () => {
     <ModalNuevaNota
       modalVisible={modalVisible}
       setModalVisible={setModalVisible}
+      estudiante={dataEstudiante}
+      seccion={seccion._id}
+      curso={curso._id}
+      onNotaGuardada={handleNotaGuardada}
     />
   </View>
 );
