@@ -1,5 +1,5 @@
 import { createContext, useState } from 'react';
-import { getSemanasRequest } from '../api/semanas';
+import { getSemanasRequest, getSemanaByIdRequest } from '../api/semanas';
 import { 
   createResumenAsistenciaRequest,
   getResumenAsistenciaBySeccionRequest, 
@@ -32,8 +32,8 @@ export const AsistenciaProvider = ({ children }) => {
 
   const fetchSemanas = async () => {
     try {
-      const response = await getSemanasRequest();
-      setSemanas(response.data);
+      const { data } = await getSemanasRequest();
+      setSemanas(data);
     } catch (error) {
       console.log(error)
     } finally {
@@ -48,6 +48,16 @@ export const AsistenciaProvider = ({ children }) => {
       return numeroA - numeroB;
     });
   };
+
+  const getSemanaById = async (semanaId) => {
+    try {
+      const { data } = await getSemanaByIdRequest(semanaId);
+      return data;
+    } catch (error) {
+      console.log(error)
+      setError(error)
+    }
+  }
 
   const getResumenesAsistenciaBySeccion = async (seccionId) => {
     setLoading(true);
@@ -197,6 +207,7 @@ export const AsistenciaProvider = ({ children }) => {
         loadingResumen,
         loadingAsistencias,
         semanas: ordenarSemanas(semanas),
+        getSemanaById,
         fetchSemanas,
         getResumenesAsistenciaBySeccion,
         getMesesFromAsistenciaByEstudiante,//mes?

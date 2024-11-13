@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import { useTheme } from '../../../../core/context/themeContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -16,6 +16,10 @@ export const CustomSelector = ({
 }) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const { theme, themeType } = useTheme();
+
+  useEffect(() => {
+    console.log(selectedValue)
+  }, []);
 
   const handleSelect = (item) => {
     onChange(item);
