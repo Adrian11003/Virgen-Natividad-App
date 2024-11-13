@@ -9,18 +9,27 @@ import { EstudiantesContext } from '../../../../core/context/estudiantesContext'
 import { CustomRadio } from '../../custom/radio-button/index';
 import { CustomSnackbar } from '../../custom/snackbar/index'; 
 import isMediumScreen from '../../../constants/screen-width/md';
-import fechaFormateada from '../../../constants/dates/today-date-time';
-import obtenerFechaActual from '../../../constants/dates/today-date-dash';
-import diaSemana from '../../../constants/dates/today-day-word';
 import DatePicker from 'react-native-modern-datepicker';
+import formatDate from '../../../constants/dates/format-date';
+import formatMonth from '../../../constants/dates/format-month';
 
 export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, dataType }) => {
+  const { 
+    semanas, 
+    fetchSemanas, asistencias,
+    loading, createAsistencia, 
+    getResumenAsistencia, 
+    resumenAsistencia,
+    createResumenAsistencia,
+    getAsistenciasBySeccionFecha,
+  } = useContext(AsistenciaContext);
+
+  const { user } = useContext(AuthContext);
+  const { getEstudiantesBySeccion, estudiantes } = useContext(EstudiantesContext);
+  const { theme, isDarkTheme } = useTheme();
+
   const [selectedSemana, setSelectedSemana] = useState();
   const [seccionId, setSeccionId] = useState(null);
-  const { user } = useContext(AuthContext);
-  const { semanas, fetchSemanas, loading, createAsistencia, getResumenAsistencia, createResumenAsistencia } = useContext(AsistenciaContext);
-  const { getEstudiantesBySeccion, estudiantes } = useContext(EstudiantesContext);
-  const { theme } = useTheme();
   const [asistencia, setAsistencia] = useState([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false); 
   const [snackbarMessage, setSnackbarMessage] = useState(''); 
@@ -39,28 +48,30 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
   }, [seccionId]);
 
   useEffect(() => {
-    if (estudiantes && estudiantes.length > 0) {
-      setAsistencia(estudiantes.map(() => ""));
+    if (dataType === 'edit') {
+      console.log()
+      getAsistenciasBySeccionFecha(resumenAsistencia.seccion._id, resumenAsistencia.fecha);
     }
-  }, [estudiantes]);
+  }, [dataType]);
 
   const handleRadioChange = (index, tipo) => {
     const newAsistencia = [...asistencia];
     newAsistencia[index] = tipo;
     setAsistencia(newAsistencia);
   };
+
   const showDatePicker = () => {
-  setDatePickerVisible(true);
-};
+    setDatePickerVisible(true);
+  };
 
-const hideDatePicker = () => {
-  setDatePickerVisible(false);
-};
+  const hideDatePicker = () => {
+    setDatePickerVisible(false);
+  };
 
-const handleDateChange = (date) => {
-  setSelectedDate(new Date(date));
-  hideDatePicker();
-};
+  const handleDateChange = (date) => {
+    setSelectedDate(new Date(date));
+    hideDatePicker();
+  };
 
   const guardarInformacion = async () => {
     if (dataType === 'create') {
@@ -84,8 +95,8 @@ const handleDateChange = (date) => {
           grado_id: estudiante.grado._id,
           periodo_id: estudiante.periodo._id,
           semana_id: selectedSemana._id,
-          fecha: selectedDate,
-          mes: new Date().toLocaleString('default', { month: 'long' }),
+          fecha: formatDate(selectedDate),
+          mes: formatMonth(selectedDate), 
           estado: asistencia[index]
         };
 
@@ -101,14 +112,16 @@ const handleDateChange = (date) => {
             faltas: response2.data.totalFaltas,
             justificadas: response2.data.totalJustificados,
           }
-          console.log(data)
           createResumenAsistencia(data)
-          // console.log("asistencia guardada :D")
         }
       });
 
+      setModalVisible(false);
+
       try {
         await Promise.all(promises);
+        setSnackbarMessage("asistencia guardada :D");
+        setSnackbarVisible(true);
       } catch (error) {
         console.error("Hubo un error al registrar la asistencia:", error);
       }
@@ -163,56 +176,74 @@ const handleDateChange = (date) => {
                     Sección: {seccion}
                   </Text>
                 <View style={{zIndex: 2}}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
-                      <Text style={{ color: theme.colors.paperText }}>Semana: </Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
+                    <Text style={{ color: theme.colors.paperText }}>Semana: </Text>
                       
-                      <CustomSelector
-                        opciones={semanas}
-                        selectedOption={selectedSemana}
-                        onSelect={(item) => setSelectedSemana(item)}
-                        placeholder="Semana"
-                        mobileWidth="20%"
-                        isModal={true}
-                      />
+                    <CustomSelector
+                      opciones={semanas}
+                      selectedOption={selectedSemana}
+                      onSelect={(item) => setSelectedSemana(item)}
+                      placeholder="Semana"
+                      mobileWidth="20%"
+                      isModal={true}
+                    />
 
-                      <TouchableOpacity onPress={showDatePicker} style={{ marginLeft: 10, zIndex: 25 }}>
-                        <Text style={{ color: theme.colors.paperText }}>
-                          Fecha: {selectedDate.toLocaleDateString('es-ES', 
-                            { day: '2-digit', month: '2-digit', year: 'numeric' })}
-                        </Text>
-                      </TouchableOpacity>
+                    <TouchableOpacity 
+                      onPress={showDatePicker} 
+                      style={{ 
+                        marginLeft: 10, 
+                        zIndex: 25,
+                        padding: 15,
+                        backgroundColor: isDarkTheme ? '#363636' : '#E0E0E0', 
+                        borderRadius: 10,
+                        borderWidth: 1,
+                        borderColor: isDarkTheme ? '#777' : '#C0C0C0', 
+                      }}
+                    >
+                      <Text style={{ color: theme.colors.paperText }}>
+                      Fecha: {formatDate(selectedDate)}
+                      </Text>
+                    </TouchableOpacity>
 
-                      {isDatePickerVisible && (
-                        <Modal
+                    {isDatePickerVisible && (
+                      <Modal
                         style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-                          transparent={true}
-                          animationType="fade"
-                          visible={isDatePickerVisible}
-                          onRequestClose={hideDatePicker}
+                        transparent={true}
+                        animationType="fade"
+                        visible={isDatePickerVisible}
+                        onRequestClose={hideDatePicker}
+                      >
+                        <SafeAreaView 
+                          style={{ 
+                            flex: 1, 
+                            justifyContent: 'center', 
+                            alignItems: 'center',
+                            width: 400
+                          }}
                         >
-                            <View style={{ flex: 1, 
-                              justifyContent: 'center', 
-                              alignItems: 'center',
-                              width:'70%', }}>
-                              <TouchableWithoutFeedback>
-                                <View style={{ backgroundColor: 'white', 
-                                  padding: 5, borderRadius: 10,
-                                  alignItems: 'center', 
-                                  width: '70%',
-                                  zIndex: 25 }}>
-                                  <DatePicker
-                                    selected={selectedDate}
-                                    onDateChange={handleDateChange}
-                                    mode="calendar"
-                                  />
-                                  <Button mode="contained" onPress={hideDatePicker}>
-                                    Cerrar
-                                  </Button>
-                                </View>
-                              </TouchableWithoutFeedback>
+                          <TouchableWithoutFeedback>
+                            <View 
+                              style={{ 
+                                backgroundColor: 'white', 
+                                padding: 5, borderRadius: 10,
+                                alignItems: 'center', 
+                                width: '70%',
+                                zIndex: 25 
+                              }}
+                            >
+                              <DatePicker
+                                selected={selectedDate.toISOString()}
+                                onDateChange={handleDateChange}
+                                mode="calendar"
+                              />
+                              <Button mode="contained" onPress={hideDatePicker}>
+                                Cerrar
+                              </Button>
                             </View>
-                        </Modal>
-                      )}
+                          </TouchableWithoutFeedback>
+                        </SafeAreaView>
+                      </Modal>
+                    )} 
                     </View>
                   </View>
 
@@ -283,7 +314,6 @@ const handleDateChange = (date) => {
                 </View>
               </ScrollView>
             </ScrollView>
-            {/** Aquí colocamos el Snackbar dentro del Modal, sin Portal */}
             {snackbarVisible && (
               <View style={{ marginBottom: -20 }}>
                 <CustomSnackbar

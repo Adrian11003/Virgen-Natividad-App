@@ -8,6 +8,7 @@ import { ProtectedRoute } from './core/context/protectedRoute';
 import { LoginScreen } from './auth/index';
 import { ApoderadosProvider } from './core/context/apoderadosContext';
 import { NotasProvider } from './core/context/notasContext';
+
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -18,12 +19,12 @@ export default function App() {
           <AsistenciaProvider>
             <EstudiantesProvider>
               <ApoderadosProvider>
-               <NotasProvider>
-                <Stack.Navigator initialRouteName="Drawer" screenOptions={{ headerShown: false }}>
-                  <Stack.Screen name="Login" component={LoginScreen} />
-                  <Stack.Screen name="Drawer" component={ProtectedRoute} />
-                </Stack.Navigator>
-              </NotasProvider>
+                <NotasProvider>
+                  <Stack.Navigator initialRouteName="Drawer" screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="Login" component={LoginScreen} />
+                    <Stack.Screen name="Drawer" component={ProtectedRoute} />
+                  </Stack.Navigator>
+                </NotasProvider>
               </ApoderadosProvider>
             </EstudiantesProvider>
           </AsistenciaProvider>
