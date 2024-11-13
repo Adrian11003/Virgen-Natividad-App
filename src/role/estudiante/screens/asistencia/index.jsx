@@ -49,7 +49,7 @@ export const Asistencia = () => {
     setSelectedMonth(month);
     setVisible(false);
     if (user?.perfil?._id) {
-      getAsistenciaByPeriodoMesEstudiante(selectedPeriodo, month, user.perfil._id)
+      getAsistenciaByPeriodoMesEstudiante(selectedPeriodo._id, month, user.perfil._id)
         .then((data) => {
           console.log(data)
           setAsistencias(data);

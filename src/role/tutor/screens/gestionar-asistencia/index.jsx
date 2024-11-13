@@ -49,9 +49,9 @@ export const GestionarAsistencia = () => {
   ];
 
   const displayedResumenAsistencia = () => {
-    if (!selectedSemana || selectedSemana === 'all') return resumenesAsistencia;
+    if (!selectedSemana || selectedSemana._id === 'all') return resumenesAsistencia;
     return resumenesAsistencia.filter(item => 
-      item.semana._id === selectedSemana
+      item.semana._id === selectedSemana._id
     );
   };
 

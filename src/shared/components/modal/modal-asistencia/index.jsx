@@ -142,7 +142,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
           seccion_id: estudiante.seccion._id,
           grado_id: estudiante.grado._id,
           periodo_id: estudiante.periodo._id,
-          semana_id: selectedSemana,
+          semana_id: selectedSemana._id,
           fecha: formatDate(selectedDate),
           mes: formatMonth(selectedDate),
           estado: estado
@@ -286,7 +286,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
                       opciones={semanas}
                       selectedValue={selectedSemana}
                       onChange={(item) => setSelectedSemana(item)}
-                      placeholder={ dataType === 'edit' ? selectedSemana.nombre : 'Semanas' }
+                      placeholder={ dataType === 'edit' ? selectedSemana : 'Semanas' }
                       mobileWidth="20%"
                       isModal={true}
                       field={field}
