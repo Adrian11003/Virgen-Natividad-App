@@ -34,7 +34,6 @@ export const NotasProvider = ({ children }) => {
     setError(null);
     try {
       const { data } = await getNotasRequest();
-      console.log("Notas recibidas:", data);
       setNotas(data);
     } catch (error) {
       console.log(error)
