@@ -49,6 +49,7 @@ export const paperDarkTheme = {
       "level4": "rgb(44, 48, 58)",
       "level5": "rgb(47, 51, 62)"
     },
+    "backgroundnota": 'rgb(22, 46, 83)',
     "radioButtonColor": "#fff",
     "tableBackgroundColor": "#363636",
     "customIcon": "#CFCFCF",

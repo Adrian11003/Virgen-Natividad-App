@@ -1,19 +1,35 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import { useTheme } from '../../../../core/context/themeContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
 
-export const CustomSelector = ({ opciones, selectedOption, onSelect, placeholder = 'Selecciona una opción', mobileWidth, isModal }) => {
+export const CustomSelector = ({ 
+  opciones, 
+  selectedValue, 
+  onChange, 
+  placeholder = 'Selecciona una opción', 
+  mobileWidth, 
+  isModal,
+  field ,
+  modalwidth
+}) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const { theme, themeType } = useTheme();
 
+  useEffect(() => {
+    console.log(selectedValue)
+  }, []);
+
+  const handleSelect = (item) => {
+    onChange(item);
+    setIsSelectorOpen(false);
+    console.log(item);
+  }
+
   const renderItem = ({ item, index }) => (
     <TouchableOpacity
-      onPress={() => {
-        onSelect(item);
-        setIsSelectorOpen(false);
-      }}
+      onPress={() => { handleSelect(item)}}
       style={{
         padding: 15,
         borderBottomWidth: index === opciones.length - 1 ? 0 : 1,
@@ -21,12 +37,12 @@ export const CustomSelector = ({ opciones, selectedOption, onSelect, placeholder
         backgroundColor: themeType === 'light' ? '#fff' : '#333'
       }}
     >
-      <Text style={{ color: theme.colors.paperText }}>{item.nombre}</Text>
+      <Text style={{ color: theme.colors.paperText }}>{item[field]}</Text>
     </TouchableOpacity>
   );
   
   return (
-    <View style={{ position: 'relative', zIndex: 1, width: isMediumScreen ? mobileWidth : (isModal ? '15%' : '100%') }}>
+    <View style={{ position: 'relative', zIndex: 1, width: isMediumScreen ? mobileWidth : (isModal ? modalwidth : '100%') }}>
       <TouchableOpacity
         onPress={() => setIsSelectorOpen(!isSelectorOpen)}
         style={{
@@ -39,7 +55,7 @@ export const CustomSelector = ({ opciones, selectedOption, onSelect, placeholder
       >
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 20 }}>
           <Text style={{ color: theme.colors.paperText }}>
-            {selectedOption ? selectedOption.nombre : placeholder}
+            {selectedValue ? selectedValue[field] : placeholder}
           </Text>
           <Ionicons name="chevron-down" size={17} color={themeType === 'light' ? '#C0C0C0' : '#777'} />
         </View>

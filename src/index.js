@@ -8,6 +8,8 @@ import { ProtectedRoute } from './core/context/protectedRoute';
 import { LoginScreen } from './auth/index';
 import { ApoderadosProvider } from './core/context/apoderadosContext';
 import { NotasProvider } from './core/context/notasContext';
+import { PeriodoProvider } from './core/context/periodoContext';
+import SweetAlert from './shared/components/custom/swal';
 
 const Stack = createStackNavigator();
 
@@ -20,10 +22,13 @@ export default function App() {
             <EstudiantesProvider>
               <ApoderadosProvider>
                 <NotasProvider>
-                  <Stack.Navigator initialRouteName="Drawer" screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="Login" component={LoginScreen} />
-                    <Stack.Screen name="Drawer" component={ProtectedRoute} />
-                  </Stack.Navigator>
+                  <PeriodoProvider>
+                    <SweetAlert />
+                    <Stack.Navigator initialRouteName="Drawer" screenOptions={{ headerShown: false }}>
+                      <Stack.Screen name="Login" component={LoginScreen} />
+                      <Stack.Screen name="Drawer" component={ProtectedRoute} />
+                    </Stack.Navigator>
+                  </PeriodoProvider>
                 </NotasProvider>
               </ApoderadosProvider>
             </EstudiantesProvider>
