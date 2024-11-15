@@ -8,6 +8,9 @@ import { DataTable } from 'react-native-paper'; // Si usas DataTable directament
 import { useRoute } from '@react-navigation/native';
 import { ModalNuevaNota } from '../../../../shared/components/modal/modal-notas/index';
 import { showSweetAlert } from '../../../../shared/components/custom/swal/index';	
+import { ButtonIcon } from '../../../../shared/components/custom/button-icon/index';
+import Icon from 'react-native-vector-icons/AntDesign'; // Asegúrate de importar la familia correcta
+
 
 export const GestionarNotas = () => {
   const { getEstudiantesBySeccion, getEstudianteById } = useContext(EstudiantesContext); // Consumimos el contexto
@@ -20,6 +23,7 @@ export const GestionarNotas = () => {
   const [loading, setLoading] = useState(true); // Estado de carga
   const [estudiantes, setEstudiantes] = useState([]);
   const [dataEstudiante, setDataEstudiante] = useState({});
+  const styles = useStyles(theme);
   
   useEffect(() => {
     setLoading(true);
@@ -73,19 +77,46 @@ export const GestionarNotas = () => {
 
   const hasEstudiantes = estudiantes && estudiantes.length > 0;
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={{ width: '100%', maxWidth: 1300, marginTop: isMediumScreen ? 30 : 15, marginHorizontal: 'auto' }}>
+      <View
+        style={{
+          flexDirection: isMediumScreen ? 'row' : 'column',  
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 12,
+          marginBottom: 20,
+          marginHorizontal: 20,
+          zIndex: 2
+        }}
+      >
+        
         <Text style={[styles.sectionText, { color: theme.colors.paperText }]}>
           Sección: {seccion.nombre} | Curso: {curso.nombre}
         </Text>
       </View>
 
+      
       {/* Mostrar Spinner o mensaje de Cargando */}
       {loading ? (
         <ProgressBar indeterminate />
       ) : (
-        <ScrollView horizontal style={styles.scrollView}>
-          <DataTable style={styles.table}>
+        <View style={{marginHorizontal:20}}> 
+        <View style={{  
+          width: '100%', 
+          borderWidth: 1,
+          borderColor: 'rgb(192, 192, 192)',
+          borderRadius: 8,
+          justifyContent: 'center',
+          marginBottom: 40,
+          backgroundColor: theme.colors.tableBackgroundColor,
+        
+          
+         }}>
+        <ScrollView horizontal>
+          <DataTable style={{ 
+            
+            }}>
             <DataTable.Header
               style={{
                 width: isMediumScreen ? 1300 : 800,
@@ -98,28 +129,30 @@ export const GestionarNotas = () => {
               <DataTable.Title style={styles.tableHeaderCell}>Acciones</DataTable.Title>
             </DataTable.Header>
 
+
             {/* Verificar si hay estudiantes antes de mapearlos */}
             {hasEstudiantes ? (
-             estudiantes.map((estudiante, index) => (
+              paginatedData.map((estudiante, index) => (
                 <DataTable.Row style={[styles.row, { width: isMediumScreen ? 1300 : 800 }]} key={estudiante.id}>
                   <DataTable.Cell style={styles.tableCell}>{estudiante.nombreCompleto}</DataTable.Cell>
                   <DataTable.Cell style={styles.tableCell}>{estudiante.dni}</DataTable.Cell>
                   <DataTable.Cell style={styles.actionCell}>
-                    <Button
+                    <ButtonIcon 
+                      iconName="add-circle" 
                       mode="contained"
+                      color="#007bff" 
+                      size={20}
                       onPress={() => asignarNota(estudiante.id)}
                       style={styles.addButton}
                       compact
-                      
-                    >
-                      Asignar Nota
-                    </Button>
-                </DataTable.Cell>
-              </DataTable.Row>
-            ))
-          ) : (
-            <Text style={{ textAlign: 'center', marginTop: 20 }}>No hay estudiantes disponibles.</Text>
-          )}
+                    />
+                    
+                  </DataTable.Cell>
+                </DataTable.Row>
+              ))
+            ) : (
+              <Text style={{ textAlign: 'center', marginTop: 20 }}>No hay estudiantes disponibles.</Text>
+            )}
 
           <DataTable.Pagination
             page={page}
@@ -134,8 +167,10 @@ export const GestionarNotas = () => {
           />
         </DataTable>
       </ScrollView>
-    )}
-
+    </View>
+    </View>)}
+    
+  
     <ModalNuevaNota
       modalVisible={modalVisible}
       setModalVisible={setModalVisible}
@@ -144,12 +179,13 @@ export const GestionarNotas = () => {
       curso={curso._id}
       onNotaGuardada={handleNotaGuardada}
     />
+    
   </View>
 );
 };
 
 // Estilos
-const styles = StyleSheet.create({
+const useStyles = (theme)=> StyleSheet.create({
   addButton: {
     backgroundColor: '#4CAF50', // Puedes cambiar el color para diferenciarlo
     marginRight: 5, // Para un poco de separación entre los botones
@@ -157,14 +193,7 @@ const styles = StyleSheet.create({
   editButton: {
     backgroundColor: '#1E88E5',
   },
-container: {
-  width: '100%',
-  maxWidth: 1300,
-  marginTop: 20,
-  marginHorizontal: 'auto', // Centra el contenido horizontalmente
-  paddingHorizontal: 10,
-  alignItems: 'center', // Centra el contenido
-},
+
 header: {
   flexDirection: 'row',
   alignItems: 'center',
@@ -176,16 +205,8 @@ sectionText: {
   fontSize: 15,
   fontWeight: 'bold',
 },
-scrollView: {
-  width: '50%', // Asegúrate de que el ScrollView ocupe todo el ancho
-},
-table: {
-  width: '100%', // Asegúrate de que la tabla ocupe todo el ancho del contenedor
-  borderWidth: 1,
-  borderColor: '#e0e0e0',
-  borderRadius: 5,
-  overflow: 'hidden',
-},
+
+
 tableHeaderCell: {
   flex: 1,
   justifyContent: 'center',
