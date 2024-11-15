@@ -58,6 +58,8 @@ export const ModalNuevaNota = ({ modalVisible, setModalVisible, seccion, curso, 
       tipoNota: selectedTipoNota.nombre
     };
 
+    console.log(nuevaNota);
+
     if (!["AD", "A", "B", "C"].includes(nuevaNota.notaLetra)) {
       setSnackbarMessage("Solo se permiten notas AD, A, B o C.");
       setSnackbarVisible(true);
@@ -91,11 +93,12 @@ export const ModalNuevaNota = ({ modalVisible, setModalVisible, seccion, curso, 
   setSelectedBimestre(null); // Limpiar selección de bimestre
   setModalVisible(false); // Cerrar el modal
 };
-  const handleMonthSelect = (tipoNota) => {
+  const handleSelect = (tipoNota) => {
     if (!selectedBimestre) {
       setSnackbarMessage('Seleccione un bimestre');
       setSnackbarVisible(true);
     } else {
+      ///// AQUIII
       setSelectedTipoNota(tipoNota); // Aquí seleccionamos el objeto completo
       console.log(selectedTipoNota);  
     
@@ -115,6 +118,8 @@ export const ModalNuevaNota = ({ modalVisible, setModalVisible, seccion, curso, 
         width: isMediumScreen ? 500 : '90%',
         borderRadius: 10,
         padding: 20, 
+        borderColor: 'rgb(192, 192, 192)',
+        borderRadius: 8,
         
         }}>
 
@@ -150,7 +155,7 @@ export const ModalNuevaNota = ({ modalVisible, setModalVisible, seccion, curso, 
               <CustomSelector
                      opciones={listaTiposNota}
                      selectedValue={selectedTipoNota}
-                     onChange={handleMonthSelect}
+                     onChange={handleSelect}
                      placeholder="Tipo de Nota"
                      isModal={true}
                      field={field}

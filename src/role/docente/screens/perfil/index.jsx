@@ -4,7 +4,7 @@ import { AuthContext } from '../../../../core/context/authContext';
 import { useTheme } from '../../../../core/context/themeContext';
 import ProfileCard from '../../../../shared/components/card/ProfileCard';
 
-const Perfil = () => {
+export const Perfil = () => {
   const { user } = useContext(AuthContext);
   const { theme, isDarkTheme } = useTheme();
 
@@ -36,5 +36,3 @@ const Perfil = () => {
     </ScrollView>
   );
 };
-
-export default Perfil;
