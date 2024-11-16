@@ -1,4 +1,4 @@
-import { View, Text, Modal, ScrollView, SafeAreaView, TouchableOpacity, TouchableWithoutFeedback} from 'react-native';
+import { View, Text, Modal, ScrollView, SafeAreaView, TouchableOpacity, TouchableWithoutFeedback, Platform} from 'react-native';
 import { useContext, useEffect, useState } from 'react';
 import { useTheme } from '../../../../core/context/themeContext';
 import { CustomSelector } from '../../custom/selector/index';
@@ -6,89 +6,137 @@ import { AsistenciaContext } from '../../../../core/context/asistenciaContext';
 import { AuthContext } from '../../../../core/context/authContext';
 import { Button, ProgressBar, DataTable } from 'react-native-paper';
 import { EstudiantesContext } from '../../../../core/context/estudiantesContext';
-import { CustomRadio } from '../../custom/radio-button/index';
-import { CustomSnackbar } from '../../custom/snackbar/index'; 
+import { CustomRadio } from '../../custom/radio-button/index'; 
+import { CustomSnackbar } from '../../custom/snackbar/index';
 import isMediumScreen from '../../../constants/screen-width/md';
 import DatePicker from 'react-native-modern-datepicker';
 import formatDate from '../../../constants/dates/format-date';
 import formatMonth from '../../../constants/dates/format-month';
 
-export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, dataType }) => {
+export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, seccion = '', dataType = 'create', id, onAsistenciaGuardada }) => {
   const { 
     semanas, 
-    fetchSemanas, asistencias,
-    loading, createAsistencia, 
+    fetchSemanas,
     getResumenAsistencia, 
-    resumenAsistencia,
     createResumenAsistencia,
+    getResumenAsistenciaById,
+    updateResumenAsistencia,
     getAsistenciasBySeccionFecha,
+    createAsistencia,
+    updateAsistencia
   } = useContext(AsistenciaContext);
-
+  const field = 'nombre';  
   const { user } = useContext(AuthContext);
-  const { getEstudiantesBySeccion, estudiantes } = useContext(EstudiantesContext);
+  const { getEstudiantesBySeccion } = useContext(EstudiantesContext);
   const { theme, isDarkTheme } = useTheme();
 
-  const [selectedSemana, setSelectedSemana] = useState();
-  const [seccionId, setSeccionId] = useState(null);
+  const [selectedSemana, setSelectedSemana] = useState(null);
   const [asistencia, setAsistencia] = useState([]);
+  const [estudiantes, setEstudiantes] = useState([]);
+  const [editAsistencia, setEditAsistencia] = useState([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false); 
   const [snackbarMessage, setSnackbarMessage] = useState(''); 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const convertirFecha = (fechaString) => {
+    const [dia, mes, anio] = fechaString.split('-');
+    return new Date(anio, mes - 1, dia);
+  };  
+
+  if (dataType === undefined) {
+    return null;
+  }
 
   useEffect(() => {
+    setLoading(true);
     fetchSemanas();
-    setSeccionId(user.perfil.seccion._id);
-  }, [user]);
-
-  useEffect(() => {
-    if (seccionId) {
-      getEstudiantesBySeccion(seccionId);
+    if (dataType === 'create') {
+      setAsistencia([]);
+      setEditAsistencia([]);
+      getEstudiantesBySeccion(user.perfil.seccion._id)
+        .then((data) => {
+          setEstudiantes(data);
+          setLoading(false);
+        })
     }
-  }, [seccionId]);
-
-  useEffect(() => {
+  
     if (dataType === 'edit') {
-      console.log()
-      getAsistenciasBySeccionFecha(resumenAsistencia.seccion._id, resumenAsistencia.fecha);
+      getResumenAsistenciaById(id)
+        .then((data) => {
+          setAsistencia([]);
+          setSelectedDate(convertirFecha(data.fecha))
+          setSelectedSemana(data.semana);
+          getAsistenciasBySeccionFecha(data.seccion._id, data.fecha)
+            .then((data) => {
+              setAsistencia(data.map(item => ({ ...item })));
+              setLoading(false);
+            })
+        })
     }
-  }, [dataType]);
+  }, [dataType, id]);
 
   const handleRadioChange = (index, tipo) => {
-    const newAsistencia = [...asistencia];
-    newAsistencia[index] = tipo;
-    setAsistencia(newAsistencia);
+    if (dataType === 'edit') {
+      const newEditAsistencia = [...asistencia];
+      newEditAsistencia[index].estado = tipo;
+      setEditAsistencia(newEditAsistencia);
+      console.log(editAsistencia)
+      console.log(selectedSemana)
+    } else {
+      const newAsistencia = [...asistencia];
+      newAsistencia[index] = tipo;
+      setAsistencia(newAsistencia);
+    }
   };
-
-  const showDatePicker = () => {
-    setDatePickerVisible(true);
-  };
-
-  const hideDatePicker = () => {
-    setDatePickerVisible(false);
-  };
+  
+  const showDatePicker = () => setDatePickerVisible(true);
+  const hideDatePicker = () => setDatePickerVisible(false);
 
   const handleDateChange = (date) => {
-    setSelectedDate(new Date(date));
-    hideDatePicker();
-  };
+    console.log("Original date:", date);
 
+    const formattedDate = date.replace(/\//g, "-");
+    const newDate = new Date(formattedDate);
+  
+    setSelectedDate(newDate);
+    hideDatePicker();
+  
+    if (dataType === 'edit') {
+      const updatedEditAsistencia = editAsistencia.map(item => ({
+        ...item,
+        fecha: formatDate(newDate),
+        mes: formatMonth(newDate), 
+      }));
+      setEditAsistencia(updatedEditAsistencia);
+    }
+  };
+  
   const guardarInformacion = async () => {
+    setLoading(true);
     if (dataType === 'create') {
       if (!selectedSemana) {
         setSnackbarMessage('Por favor, selecciona una semana.');
         setSnackbarVisible(true);
+        setLoading(false);
         return;
       }
 
-      const todosSeleccionados = asistencia.every(estado => estado !== "");
-      if (!todosSeleccionados) {
+      if (asistencia.length !== estudiantes.length || asistencia.some(estado => estado === "")) {
         setSnackbarMessage('Debe seleccionar la asistencia de todos los estudiantes');
         setSnackbarVisible(true);
+        setLoading(false);
         return;
       }
-
-      const promises = estudiantes.map(async (estudiante, index) => {
+    
+      const promises = estudiantes.map((estudiante, index) => {
+        const estado = asistencia[index];
+        if (estado === "" || estado === null) {
+          console.log(`El estudiante ${estudiante.nombre} no tiene estado asignado.`);
+          return Promise.reject(`El estudiante ${estudiante.nombre} no tiene estado asignado.`);
+        }
+      
         const registro = {
           estudiante_id: estudiante._id,
           seccion_id: estudiante.seccion._id,
@@ -96,44 +144,98 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
           periodo_id: estudiante.periodo._id,
           semana_id: selectedSemana._id,
           fecha: formatDate(selectedDate),
-          mes: formatMonth(selectedDate), 
-          estado: asistencia[index]
+          mes: formatMonth(selectedDate),
+          estado: estado
         };
-
-        const response = await createAsistencia(registro);
-
-        if (index === 0) {
-          const response2 = await getResumenAsistencia(response.data.seccion._id, response.data.fecha);
-          data = {
-            semana_id: response.data.semana._id,
-            seccion_id: response.data.seccion._id,
-            fecha: response2.data.fecha,
-            presentes: response2.data.totalPresentes,
-            faltas: response2.data.totalFaltas,
-            justificadas: response2.data.totalJustificados,
-          }
-          createResumenAsistencia(data)
-        }
+        console.log(registro)
+      
+        return createAsistencia(registro)
+          .then((dataAsistencia) => {
+            if (index === estudiantes.length - 1) {
+              return getResumenAsistencia(dataAsistencia.seccion._id, dataAsistencia.fecha)
+                .then((dataRA) => {
+                  const resumenData = {
+                    semana_id: dataAsistencia.semana._id,
+                    seccion_id: dataAsistencia.seccion._id,
+                    fecha: dataRA.fecha,
+                    presentes: dataRA.totalPresentes,
+                    faltas: dataRA.totalFaltas,
+                    justificadas: dataRA.totalJustificados,
+                  };
+                  return createResumenAsistencia(resumenData);
+                });
+            }
+          })
+          .catch((error) => {
+            console.log("Error al guardar asistencia:", error);
+            setLoading(false);
+          });
       });
-
-      setModalVisible(false);
-
-      try {
-        await Promise.all(promises);
-        setSnackbarMessage("asistencia guardada :D");
-        setSnackbarVisible(true);
-      } catch (error) {
-        console.error("Hubo un error al registrar la asistencia:", error);
-      }
+      
+      Promise.all(promises)
+        .then(() => {
+          setLoading(false);
+          if (onAsistenciaGuardada) onAsistenciaGuardada();
+        })
+        .catch((error) => {
+          console.log(error);
+          setLoading(false);
+        });
     }
     if (dataType === 'edit') {
-      console.log('Editar asistencia');
+      const promises = editAsistencia.map((asistencia, index) => {
+        const asistenciaData = {
+          estudiante_id: asistencia.estudiante._id,
+          seccion_id: asistencia.seccion._id,
+          grado_id: asistencia.grado._id,
+          periodo_id: asistencia.periodo._id,
+          semana_id: selectedSemana._id,
+          fecha: asistencia.fecha,
+          mes: asistencia.mes,
+          estado: asistencia.estado,
+        };
+    
+        return updateAsistencia(asistencia._id, asistenciaData)
+          .then((dataAsistencia) => {
+            if (index === editAsistencia.length - 1) {
+              return getResumenAsistencia(dataAsistencia.seccion._id, dataAsistencia.fecha)
+                .then((dataRA) => {
+                  const resumenData = {
+                    semana_id: selectedSemana._id,
+                    seccion_id: dataAsistencia.seccion._id,
+                    fecha: dataRA.fecha,
+                    presentes: dataRA.totalPresentes,
+                    faltas: dataRA.totalFaltas,
+                    justificadas: dataRA.totalJustificados,
+                  };
+                  return updateResumenAsistencia(id, resumenData);
+                });
+            }
+          })
+          .catch((error) => {
+            console.log("Error al guardar asistencia:", error);
+            setLoading(false);
+          });
+      });
+    
+      Promise.all(promises)
+        .then(() => {
+          setLoading(false);
+          if (onAsistenciaGuardada) onAsistenciaGuardada();
+        })
+        .catch((error) => {
+          console.log(error);
+          setLoading(false);
+        });
     }
   };
 
-  if (loading) {
-    return <ProgressBar indeterminate />;
-  }
+  const handleModalClose = () => {
+    setSelectedSemana(null)
+    setAsistencia([]);
+    setEditAsistencia([]);
+    setModalVisible(false);
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -141,9 +243,7 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
         animationType="fade"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(false);
-        }}
+        onRequestClose={handleModalClose}
       >
         <SafeAreaView
           style={{
@@ -151,6 +251,7 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
             justifyContent: 'center',
             alignItems: 'center',
             backgroundColor: 'rgba(0,0,0,0.5)',
+            zIndex: 1000,
           }}
         >
           <View
@@ -160,8 +261,10 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
               padding: 20,
               backgroundColor: theme.colors.modalBackground,
               borderRadius: 10,
+              zIndex: 1000,
             }}
           >
+            { loading && <ProgressBar indeterminate /> }
             <ScrollView style={{ flex: 1 }} vertical>
               <ScrollView horizontal>
                 <View style={{ width: 940 }}>
@@ -181,11 +284,12 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
                       
                     <CustomSelector
                       opciones={semanas}
-                      selectedOption={selectedSemana}
-                      onSelect={(item) => setSelectedSemana(item)}
-                      placeholder="Semana"
+                      selectedValue={selectedSemana}
+                      onChange={(item) => setSelectedSemana(item)}
+                      placeholder={ dataType === 'edit' ? selectedSemana : 'Semanas' }
                       mobileWidth="20%"
                       isModal={true}
+                      field={field}
                     />
 
                     <TouchableOpacity 
@@ -218,16 +322,17 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
                             flex: 1, 
                             justifyContent: 'center', 
                             alignItems: 'center',
-                            width: 400
                           }}
                         >
                           <TouchableWithoutFeedback>
                             <View 
                               style={{ 
                                 backgroundColor: 'white', 
-                                padding: 5, borderRadius: 10,
+                                padding: 5, 
+                                borderRadius: 10,
                                 alignItems: 'center', 
                                 width: '70%',
+                                maxWidth: 400,
                                 zIndex: 25 
                               }}
                             >
@@ -258,16 +363,16 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
                       width: '100%',
                     }}
                   >
-                    {estudiantes && estudiantes.length > 0 ? (
+                    {(dataType === 'edit' ? asistencia : estudiantes) ? (
                       <DataTable>
                         <DataTable.Header>
                           <DataTable.Title style={{ flex: 2 }}>Apellidos y Nombres</DataTable.Title>
                           <DataTable.Title style={{ flex: 2, justifyContent: 'center' }}>Estado de Asistencia</DataTable.Title>
                         </DataTable.Header>
-                        {estudiantes.map((item, index) => (
+                        {(dataType === 'edit' ? asistencia : estudiantes).map((item, index) => (
                           <DataTable.Row key={index}>
                             <DataTable.Cell style={{ flex: 2 }}>
-                              {item.apellido}, {item.nombre}
+                              {dataType === 'edit' ? `${item.estudiante.apellido}, ${item.estudiante.nombre}` : `${item.apellido}, ${item.nombre}`}
                             </DataTable.Cell>
                             <DataTable.Cell style={{ flex: 2 }}>
                               <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10 }}>
@@ -277,7 +382,7 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
                                     { label: 'Falta', value: 'Falta' },
                                     { label: 'Justificado', value: 'Justificado' },
                                   ]}
-                                  checkedValue={asistencia[index]}
+                                  checkedValue={ dataType === 'edit' ? asistencia[index].estado : asistencia[index]}
                                   onChange={(value) => handleRadioChange(index, value)}
                                 />
                               </View>
@@ -290,8 +395,8 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
                     )}
                   </View>
 
-                  <View style={{ width: '100%', marginTop: 25 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                  <View style={{ width: '100%', marginTop: 20 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 10 }}>
                       <Button
                         mode="contained"
                         title="Registrar Asistencia"
@@ -299,7 +404,7 @@ export const ModalNuevaAsistencia = ({ modalVisible, setModalVisible, seccion, d
                           guardarInformacion();
                         }}
                       >
-                        Registrar Asistencia
+                        { dataType === 'edit' ? 'Guardar Asistencia' : 'Registrar Asistencia' }
                       </Button>
                       <Button
                         mode="contained"

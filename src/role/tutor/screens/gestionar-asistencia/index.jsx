@@ -1,5 +1,5 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { useState, useContext, useEffect } from 'react';
+import { View, Text } from 'react-native';
 import { AuthContext } from '../../../../core/context/authContext';
 import { AsistenciaContext } from '../../../../core/context/asistenciaContext';
 import { Button, ProgressBar } from 'react-native-paper';
@@ -7,28 +7,38 @@ import { CustomSelector } from '../../../../shared/components/custom/selector/in
 import { useTheme } from '../../../../core/context/themeContext';
 import { ModalNuevaAsistencia } from '../../../../shared/components/modal/modal-asistencia/index';
 import { CustomTable } from '../../../../shared/components/custom/table/index';
+import { showSweetAlert } from '../../../../shared/components/custom/swal';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
 
 export const GestionarAsistencia = () => {
   const [selectedSemana, setSelectedSemana] = useState();
   const { user } = useContext(AuthContext);
-  const { semanas, fetchSemanas, getResumenesAsistenciaBySeccion, resumenesAsistencia, loading, getResumenAsistenciaById } = useContext(AsistenciaContext);
+  const { 
+    semanas, 
+    fetchSemanas, 
+    getResumenesAsistenciaBySeccion, 
+    resumenesAsistencia, 
+    deleteAsistenciasByFechaSeccion,
+    getResumenAsistenciaById,
+    deleteResumenAsistencia
+  } = useContext(AsistenciaContext);
   const { theme } = useTheme();
   const [modalVisible, setModalVisible] = useState(false);
-  const [seccionId, setSeccionId] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
   const [dataType, setDataType] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const field = 'nombre';
 
   useEffect(() => {
-    fetchSemanas();
-    setSeccionId(user.perfil.seccion._id);
+    setLoading(true);
+    fetchSemanas()
+      .then(() => {
+        getResumenesAsistenciaBySeccion(user.perfil.seccion._id)
+          .then(() => {
+            setLoading(false)
+          }) 
+      })
   }, [user]);
-
-  useEffect(() => {
-    if (seccionId) {
-      getResumenesAsistenciaBySeccion(seccionId);
-    }
-  }, [seccionId]);
 
   const columns = [
     { header: 'Semana', field: 'semana.nombre' },
@@ -47,19 +57,71 @@ export const GestionarAsistencia = () => {
 
   const agregarAsistencia = () => {
     setDataType('create');
-    setModalVisible(true);
     setSelectedId(null);
+    setModalVisible(true);
   };
 
   const editarAsistencia = (id) => {
-    setModalVisible(true);
     setDataType('edit');
-    getResumenAsistenciaById(id);
+    setSelectedId(id);
+    setModalVisible(true);
   };
 
   const eliminarAsistencia = (id) => {
-    setModalVisible(true);
     setSelectedId(id);
+    showSweetAlert({
+      title: 'Eliminar Asistencia',
+      text: '¿Estás seguro de eliminar la asistencia?',
+      showCancelButton: true,
+      cancelButtonText: 'Cancelar',
+      confirmButtonText: 'Confirmar',
+      onConfirm: () => {
+        setLoading(true)
+        getResumenAsistenciaById(id)
+          .then((data) => {
+            deleteAsistenciasByFechaSeccion(data.fecha, user.perfil.seccion._id)
+              .then(() => {
+                deleteResumenAsistencia(id)
+                  .then(() => {
+                    getResumenesAsistenciaBySeccion(user.perfil.seccion._id)
+                      .then(() => {
+                        setLoading(false)
+                      })
+                  })
+              })
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      },
+      onClose: () => {
+        console.log('Closed');
+      },
+      type: 'success',
+    });
+  };
+
+  const handleAsistenciaGuardada = () => {
+    setModalVisible(false); 
+    const message = dataType === 'create' ? 'Asistencia Creada' : 'Asistencia Actualizada';
+    const messageText = dataType === 'create'
+      ? 'La asistencia ha sido registrada con éxito'
+      : 'La asistencia ha sido actualizada con éxito';
+
+    showSweetAlert({
+      title: message,
+      text: messageText,
+      showCancelButton: false,
+      confirmButtonText: 'Ok',
+      type: 'success',
+      onConfirm: () => {
+        setLoading(true)
+        getResumenesAsistenciaBySeccion(user.perfil.seccion._id)
+        .then(() => {
+          setLoading(false)
+        })
+      }
+    });
   };
 
   if (loading) {
@@ -94,11 +156,12 @@ export const GestionarAsistencia = () => {
 
         <CustomSelector
           opciones={[{ nombre: 'Todas las semanas', _id: 'all' }, ...semanas]}
-          selectedOption={selectedSemana}
-          onSelect={(item) => setSelectedSemana(item)}
+          selectedValue={selectedSemana}
+          onChange={(item) => setSelectedSemana(item)}
           placeholder="Todas las semanas"
           mobileWidth="20%"
           isModal={false}
+          field={field}
         />
 
         <Button 
@@ -128,7 +191,10 @@ export const GestionarAsistencia = () => {
         setModalVisible={setModalVisible}
         dataType={dataType}
         seccion={user.perfil.seccion.nombre}
+        id={selectedId}
+        onAsistenciaGuardada={handleAsistenciaGuardada}
       />
+
     </View>
   );
 };

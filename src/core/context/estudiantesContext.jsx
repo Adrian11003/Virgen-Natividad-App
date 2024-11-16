@@ -1,35 +1,40 @@
 import { createContext, useState } from 'react';
-import { getEstudiantesBySeccionRequest } from '../api/estudiantes';
+import { getEstudiantesBySeccionRequest, getEstudianteByIdRequest } from '../api/estudiantes';
 
 export const EstudiantesContext = createContext();
 
 export const EstudiantesProvider = ({ children }) => {
-  const [estudiantes, setEstudiantes] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const getEstudiantesBySeccion = async (seccionId) => {
-    setLoading(true);
     try {
       const { data } = await getEstudiantesBySeccionRequest(seccionId);
       const estudiantesOrdenados = data.sort((a, b) => 
         a.apellido.localeCompare(b.apellido)
       );
-      setEstudiantes(estudiantesOrdenados);
+      return estudiantesOrdenados // Actualiza el estado de estudiantes con los datos obtenidos
+      return estudiantesOrdenados
     } catch (error) {
-      console.log(error)
-      setError(error)
-    } finally {
-      setLoading(false);
+      console.log(error);
+      setError(error);
     }
   };
+
+  const getEstudianteById = async (id) => {
+    try {
+      const { data } = await getEstudianteByIdRequest(id);
+      return data
+    } catch (error) {
+      console.log(error);
+      setError(error);
+    }
+  }
 
   return (
     <EstudiantesContext.Provider 
       value={{ 
-        estudiantes, 
         getEstudiantesBySeccion, 
-        loading, 
+        getEstudianteById,
         error
       }}
     >
