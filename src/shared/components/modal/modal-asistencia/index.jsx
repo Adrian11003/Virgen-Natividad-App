@@ -6,6 +6,7 @@ import { AsistenciaContext } from '../../../../core/context/asistenciaContext';
 import { AuthContext } from '../../../../core/context/authContext';
 import { Button, ProgressBar, DataTable } from 'react-native-paper';
 import { EstudiantesContext } from '../../../../core/context/estudiantesContext';
+import { PeriodoContext } from '../../../../core/context/periodoContext';
 import { CustomRadio } from '../../custom/radio-button/index'; 
 import { CustomSnackbar } from '../../custom/snackbar/index';
 import isMediumScreen from '../../../constants/screen-width/md';
@@ -29,6 +30,8 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
   const { user } = useContext(AuthContext);
   const { getEstudiantesBySeccion } = useContext(EstudiantesContext);
   const { theme, isDarkTheme } = useTheme();
+
+  const { fetchPeriodoByAnio, selectedPeriodo } = useContext(PeriodoContext);
 
   const [selectedSemana, setSelectedSemana] = useState(null);
   const [asistencia, setAsistencia] = useState([]);
@@ -114,6 +117,9 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
   };
   
   const guardarInformacion = async () => {
+    const response = await fetchPeriodoByAnio(selectedDate.getFullYear().toString());
+    console.log(response)
+
     setLoading(true);
     if (dataType === 'create') {
       if (!selectedSemana) {
@@ -129,7 +135,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
         setLoading(false);
         return;
       }
-    
+
       const promises = estudiantes.map((estudiante, index) => {
         const estado = asistencia[index];
         if (estado === "" || estado === null) {
@@ -141,7 +147,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
           estudiante_id: estudiante._id,
           seccion_id: estudiante.seccion._id,
           grado_id: estudiante.grado._id,
-          periodo_id: estudiante.periodo._id,
+          periodo_id: response._id,
           semana_id: selectedSemana._id,
           fecha: formatDate(selectedDate),
           mes: formatMonth(selectedDate),
@@ -188,7 +194,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
           estudiante_id: asistencia.estudiante._id,
           seccion_id: asistencia.seccion._id,
           grado_id: asistencia.grado._id,
-          periodo_id: asistencia.periodo._id,
+          periodo_id: response._id,
           semana_id: selectedSemana._id,
           fecha: asistencia.fecha,
           mes: asistencia.mes,
