@@ -1,9 +1,6 @@
 import axios from './axios'
 
-export const getNotasRequest = () => axios.get(`/notas`)
-
 export const createNotaRequest = nota => axios.post('/notas', nota)
 
-export const getSeccionesCursosByDocenteRequest = (docenteId) =>  
-  axios.get(`/seccion-curso-docente/docente/${docenteId}`);
-export const getBimestresRequest = () => axios.get('/bimestre');
+export const getNotaByEstudianteCursoBimestreSeccionTipoNota = (estudianteId, cursoId, bimestreId, seccionId, tipoNota) =>
+  axios.get(`/notas/${estudianteId}/${cursoId}/${bimestreId}/${seccionId}/${tipoNota}`)
