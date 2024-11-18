@@ -1,4 +1,3 @@
-// ProfileCard.js
 import React from 'react';
 import { View, Text, Image, useWindowDimensions } from 'react-native';
 import { Card } from 'react-native-paper';
