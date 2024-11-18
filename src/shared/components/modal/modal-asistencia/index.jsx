@@ -425,8 +425,9 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
                 </View>
               </ScrollView>
             </ScrollView>
-            {snackbarVisible && (
-              <View style={{ marginBottom: -20 }}>
+          </View>
+          {snackbarVisible && (
+              <View style={{ width:'100%',position: 'absolute', bottom: 0, padding: 16 }}>
                 <CustomSnackbar
                   visible={snackbarVisible}
                   onDismiss={() => setSnackbarVisible(false)}
@@ -434,7 +435,6 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
                 />
               </View>
             )}
-          </View>
         </SafeAreaView>
       </Modal>
     </View>
