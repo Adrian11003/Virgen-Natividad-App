@@ -263,7 +263,7 @@ export const ModalNuevaAsistencia = ({ modalVisible = false, setModalVisible, se
           <View
             style={{
               width: isMediumScreen ? '60%' : '90%',
-              height: '82%',
+              height: '75%',
               padding: 20,
               backgroundColor: theme.colors.modalBackground,
               borderRadius: 10,
