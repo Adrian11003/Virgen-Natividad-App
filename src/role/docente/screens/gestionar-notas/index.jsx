@@ -1,28 +1,27 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, StyleSheet,Dimensions ,ScrollView} from 'react-native';
+import { View, Text, StyleSheet ,ScrollView} from 'react-native';
 import { Button, ProgressBar } from 'react-native-paper';
 import { useTheme } from '../../../../core/context/themeContext';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
 import { EstudiantesContext } from '../../../../core/context/estudiantesContext';
-import { DataTable } from 'react-native-paper'; // Si usas DataTable directamente de react-native-paper
+import { DataTable } from 'react-native-paper';
 import { useRoute } from '@react-navigation/native';
 import { ModalNuevaNota } from '../../../../shared/components/modal/modal-notas/index';
 import { showSweetAlert } from '../../../../shared/components/custom/swal/index';	
 import { ButtonIcon } from '../../../../shared/components/custom/button-icon/index';
-import Icon from 'react-native-vector-icons/AntDesign'; // Asegúrate de importar la familia correcta
-
 
 export const GestionarNotas = () => {
-  const { getEstudiantesBySeccion, getEstudianteById } = useContext(EstudiantesContext); // Consumimos el contexto
+  const { getEstudiantesBySeccion, getEstudianteById } = useContext(EstudiantesContext);
   const { theme } = useTheme();
   const [page, setPage] = useState(0);
   const [numberOfItemsPerPage, setNumberOfItemsPerPage] = useState(8);
   const route = useRoute();
   const { seccion, curso } = route.params;
   const [modalVisible, setModalVisible] = useState(false);
-  const [loading, setLoading] = useState(true); // Estado de carga
+  const [loading, setLoading] = useState(true);
   const [estudiantes, setEstudiantes] = useState([]);
   const [dataEstudiante, setDataEstudiante] = useState({});
+
   const styles = useStyles(theme);
   
   useEffect(() => {
@@ -57,17 +56,12 @@ export const GestionarNotas = () => {
     setModalVisible(false); 
 
     showSweetAlert({
-      title: 'Nota Guardada',
-      text: 'La nota ha sido registrada con éxito',
+      title: 'Solicitud Enviada',
+      text: 'La solicitud de cambio de nota ha sido enviada con éxito',
       showCancelButton: false,
       confirmButtonText: 'Ok',
       type: 'success',
-      onConfirm: () => {
-        // setLoading(true)
-        // .then(() => {
-        //   setLoading(false)
-        // })
-      }
+      onConfirm: () => {}
     });
   };
 
@@ -76,6 +70,7 @@ export const GestionarNotas = () => {
   }
 
   const hasEstudiantes = estudiantes && estudiantes.length > 0;
+  
   return (
     <View style={{ width: '100%', maxWidth: 1300, marginTop: isMediumScreen ? 30 : 15, marginHorizontal: 'auto' }}>
       <View
