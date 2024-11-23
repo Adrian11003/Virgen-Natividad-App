@@ -1,6 +1,6 @@
-import { useEffect, useContext, useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { Menu, DataTable } from 'react-native-paper';
+import { DataTable } from 'react-native-paper';
 import { AuthContext } from '../../../../core/context/authContext';
 import { AsistenciaContext } from '../../../../core/context/asistenciaContext';
 import { PeriodoContext } from '../../../../core/context/periodoContext';
@@ -13,10 +13,7 @@ export const Asistencia = () => {
   const { theme } = useTheme();
   const field = 'anio';
   const { user } = useContext(AuthContext);
-  const { getMesesFromAsistenciaByEstudiante,
-    getAsistenciaByPeriodoMesEstudiante
-   } = useContext(AsistenciaContext);
-
+  const { getAsistenciaByPeriodoMesEstudiante, getMesesFromAsistenciaByEstudiante } = useContext(AsistenciaContext);
   const { fetchPeriodo } = useContext(PeriodoContext);
   const [snackbarVisible, setSnackbarVisible] = useState(false); 
   const [snackbarMessage, setSnackbarMessage] = useState(''); 
@@ -29,18 +26,26 @@ export const Asistencia = () => {
 
   useEffect(() => {
     fetchPeriodo()
-    .then((data) => { 
-      setPeriodos(data) 
-      getMesesFromAsistenciaByEstudiante(user.perfil._id, user.perfil.periodo._id)
+      .then((data) => { 
+        setPeriodos(data);
+      });
+  }, [fetchPeriodo]);
+
+  const handlePeriodoSelect = (item) => {
+    console.log(item);
+    console.log(user);
+    const periodoId = item._id; // Asegúrate de que estás obteniendo el ID correctamente
+    setSelectedPeriodo(item);
+    setSelectedMonth(null); // Limpiar la selección de mes
+    setAsistencias([]); // Limpiar las asistencias
+    getMesesFromAsistenciaByEstudiante(user.perfil._id, periodoId)
       .then((data) => {
         setMeses(data);
-        console.log(data)
+        console.log(data);
       })
-    })
-  }, []);
+  };
 
   const handleMonthSelect = (month) => {
-    console.log(selectedPeriodo)
     if (!selectedPeriodo) {
       setSnackbarMessage('Seleccione un periodo');
       setSnackbarVisible(true);
@@ -51,14 +56,13 @@ export const Asistencia = () => {
     if (user?.perfil?._id) {
       getAsistenciaByPeriodoMesEstudiante(selectedPeriodo._id, month, user.perfil._id)
         .then((data) => {
-          console.log(data)
+          console.log(data);
           setAsistencias(data);
         })
     }
   };
 
   const getEstadoAsistencia = (item) => {
-    console.log(item)
     if (item.estado === 'Presente') return "Presente";
     if (item.estado === 'Falta') return "Falta";
     if (item.estado === 'Justificado') return "Justificado";
@@ -94,7 +98,7 @@ export const Asistencia = () => {
           <CustomSelector
               opciones={periodos}
               selectedValue={selectedPeriodo}
-              onChange={(item) => setSelectedPeriodo(item)}
+              onChange={(item) => handlePeriodoSelect(item)}
               placeholder="Todos los periodos"
               mobileWidth="20%"
               isModal={false}
@@ -109,7 +113,7 @@ export const Asistencia = () => {
         flexWrap: 'wrap',
         gap: 8
       }}>
-        {meses.map((month, index) => (
+        {(meses || []).map((month, index) => (
           <TouchableOpacity
             key={index}
             onPress={() => handleMonthSelect(month)}

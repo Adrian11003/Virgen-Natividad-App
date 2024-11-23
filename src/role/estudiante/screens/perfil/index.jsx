@@ -11,7 +11,7 @@ const Perfil = () => {
   const { theme, isDarkTheme } = useTheme();
 
   useEffect(() => {
-    getApoderado(user.perfil._id);
+    getApoderado(user.perfil._id)
   }, [user]);
 console.log(apoderadosByEstudiante)
   return (

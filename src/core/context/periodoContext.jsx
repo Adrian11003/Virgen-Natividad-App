@@ -1,9 +1,10 @@
-import { createContext } from 'react';
-import { getPeriodoRequest } from '../api/periodo';
+import { createContext, useState } from 'react';
+import { getPeriodoRequest, getPeriodoByAnioRequest } from '../api/periodo';
 
 export const PeriodoContext = createContext();
 
 export const PeriodoProvider = ({ children }) => {
+
   const fetchPeriodo = async () => {
     try {
       const { data } = await getPeriodoRequest();
@@ -11,12 +12,23 @@ export const PeriodoProvider = ({ children }) => {
     } catch (error) {
       console.log(error)
     } 
-  };
+  }
+  const fetchPeriodoByAnio = async (anio) => {
+    try {
+      const { data } = await getPeriodoByAnioRequest(anio);
+      return data
+    } catch (error) {
+      console.log(error)
+    } 
+  }
+  ;
+
 
   return (
     <PeriodoContext.Provider 
       value={{ 
-        fetchPeriodo
+        fetchPeriodo,
+        fetchPeriodoByAnio,
       }}
     >
       {children}
