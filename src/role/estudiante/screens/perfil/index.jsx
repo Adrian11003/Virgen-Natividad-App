@@ -16,7 +16,7 @@ const Perfil = () => {
 console.log(apoderadosByEstudiante)
   return (
     <ScrollView>
-      <View style={{ flex: 1, padding: 20, marginBottom: -20 }}>
+      <View style={{ flex: 1, padding: 20 }}>
         <ProfileCard
           imageUri={user.perfil.multimedia.url}
           title={`${user.perfil.nombre} ${user.perfil.apellido}`}
@@ -37,7 +37,7 @@ console.log(apoderadosByEstudiante)
       </View>
       
       {apoderadosByEstudiante.map((apoderado) => (
-        <View key={apoderado._id} style={{ flex: 1, padding: 20 ,marginBottom: -20}}>
+        <View key={apoderado._id} style={{ flex: 1, padding: 20 ,marginBottom: -25}}>
           <ProfileCard
             title={`${apoderado.nombre} ${apoderado.apellido}`}
             subtitle="Apoderado"
