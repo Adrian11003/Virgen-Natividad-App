@@ -3,7 +3,10 @@ import {
   changeNotaStateProcessedRequest, 
   createNotaRequest, updateNotaRequest,
   getNotaByEstudianteCursoBimestreSeccionTipoNota,
-  changeNotaStateNullRequest
+  changeNotaStateNullRequest,
+  getCursoByEstudiante,
+  getCursoByEstudianteRequest,
+  getNotaByEstudianteCursoBimestreSeccionTipoNotaRequest
 } from '../api/notas';
 import { 
   createSolicitudNotaRequest, 
@@ -58,11 +61,21 @@ export const NotasProvider = ({ children }) => {
     }
   }
 
+  const getCursoByEstudiante = async (estudianteId) => {
+    try {
+      const { data } = await getCursoByEstudianteRequest(estudianteId);
+      return data
+    } catch (error) {
+      console.log(error)
+      setError(error)
+    }
+  }
+
   const getNotasByEstudianteCursoBimestreSeccionTipoNota = async (
     estudianteId, cursoId, bimestreId, seccionId, tipoNota
   ) => {
     try {
-      const { data } = await getNotaByEstudianteCursoBimestreSeccionTipoNota(
+      const { data } = await getNotaByEstudianteCursoBimestreSeccionTipoNotaRequest(
         estudianteId, cursoId, bimestreId, seccionId, tipoNota
       );
       return data
@@ -141,6 +154,7 @@ export const NotasProvider = ({ children }) => {
         deleteSolicitudNota,
         getSeccionesCursosByDocente,
         getNotasByEstudianteCursoBimestreSeccionTipoNota,
+        getCursoByEstudiante,
         changeNotaStateProcessed,
         changeNotaStateNull
       }}

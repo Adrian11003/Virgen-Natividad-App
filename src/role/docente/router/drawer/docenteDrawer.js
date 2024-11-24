@@ -47,6 +47,7 @@ export const DocenteDrawer = () => {
           drawerIcon: () => <Ionicons name="person-circle-outline" size={22} color="white" />
         }}
       />
+      
     </Drawer.Navigator>
   );
 }
