@@ -13,10 +13,9 @@ const Perfil = () => {
   useEffect(() => {
     getApoderado(user.perfil._id);
   }, [user]);
-console.log(apoderadosByEstudiante)
   return (
     <ScrollView>
-      <View style={{ flex: 1, padding: 20, marginBottom: -20 }}>
+      <View style={{ flex: 1, padding: 20}}>
         <ProfileCard
           imageUri={user.perfil.multimedia.url}
           title={`${user.perfil.nombre} ${user.perfil.apellido}`}

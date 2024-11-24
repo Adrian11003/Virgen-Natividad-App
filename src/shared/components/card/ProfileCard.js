@@ -1,6 +1,6 @@
 // ProfileCard.js
 import React from 'react';
-import { View, Text, Image, useWindowDimensions } from 'react-native';
+import { View, Text, Image, useWindowDimensions,Platform } from 'react-native';
 import { Card } from 'react-native-paper';
 
 const ProfileCard = ({ imageUri, title, subtitle, firstRowFields, secondRowFields, theme, isDarkTheme }) => {
@@ -9,7 +9,7 @@ const ProfileCard = ({ imageUri, title, subtitle, firstRowFields, secondRowField
 
   const UserInfo = ({ label, value }) => (
     <View style={{
-      flex: 1,
+      flex: Platform.OS === 'web' ? 1 : isMediumScreen ? 1 : 0, 
       marginHorizontal: 5,
       alignItems: 'center',
       marginBottom: isMediumScreen ? 0 : 20, 
@@ -37,7 +37,7 @@ const ProfileCard = ({ imageUri, title, subtitle, firstRowFields, secondRowField
       <View style={{ flexDirection: isMediumScreen ? 'row' : 'column', alignItems: 'center' }}>
         <View style={{ alignItems: 'center', marginRight: isMediumScreen ? 100 : 0, marginBottom: isMediumScreen ? 0 : 40 }}>
           <Image
-            style={{ height: 110, width: 110, borderRadius: 55 }}
+            style={{ height: 110, width: 110, borderRadius: 55,overflow: 'hidden' }}
             source={imageUri ? { uri: imageUri } : require('../../../assets/icons/favicon.png')}
           />
           <Text style={{
@@ -45,6 +45,7 @@ const ProfileCard = ({ imageUri, title, subtitle, firstRowFields, secondRowField
             fontWeight: 'bold',
             color: isDarkTheme ? theme.colors.text : theme.colors.primary,
             marginTop: 10,
+            maxWidth:120,
             textAlign: 'center'
           }}>
             {title}
