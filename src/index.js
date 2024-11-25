@@ -9,7 +9,7 @@ import { LoginScreen } from './auth/index';
 import { ApoderadosProvider } from './core/context/apoderadosContext';
 import { NotasProvider } from './core/context/notasContext';
 import { PeriodoProvider } from './core/context/periodoContext';
-import { StripeProvider } from '@stripe/stripe-react-native';
+// import { StripeProvider } from '@stripe/stripe-react-native';
 import { PaymentProvider } from './core/context/paymentContext';
 import SweetAlert from './shared/components/custom/swal';
 
@@ -17,7 +17,7 @@ const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <StripeProvider publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY}>
+    // <StripeProvider publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY}>
       <PaymentProvider>
         <ThemeContextProvider>
           <AuthProvider>
@@ -41,6 +41,6 @@ export default function App() {
           </AuthProvider>
         </ThemeContextProvider>
       </PaymentProvider>
-    </StripeProvider>
+    // </StripeProvider>
   );
 }
