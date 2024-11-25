@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, useWindowDimensions } from 'react-native';
+import { View, Text, Image, useWindowDimensions, Platform} from 'react-native';
 import { Card } from 'react-native-paper';
 
 const ProfileCard = ({ imageUri, title, subtitle, firstRowFields, secondRowFields, theme, isDarkTheme }) => {
@@ -8,7 +8,7 @@ const ProfileCard = ({ imageUri, title, subtitle, firstRowFields, secondRowField
 
   const UserInfo = ({ label, value }) => (
     <View style={{
-      flex: 1,
+      flex: Platform.OS === 'web' ? 1 : isMediumScreen ? 1 : 0, 
       marginHorizontal: 5,
       alignItems: 'center',
       marginBottom: isMediumScreen ? 0 : 20, 
@@ -44,7 +44,8 @@ const ProfileCard = ({ imageUri, title, subtitle, firstRowFields, secondRowField
             fontWeight: 'bold',
             color: isDarkTheme ? theme.colors.text : theme.colors.primary,
             marginTop: 10,
-            textAlign: 'center'
+            textAlign: 'center',
+            maxWidth: 120,
           }}>
             {title}
           </Text>
