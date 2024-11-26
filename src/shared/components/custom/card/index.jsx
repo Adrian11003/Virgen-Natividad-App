@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, useWindowDimensions, Platform} from 'react-native';
 import { Card } from 'react-native-paper';
 
-const ProfileCard = ({ imageUri, title, subtitle, firstRowFields, secondRowFields, theme, isDarkTheme }) => {
+export const ProfileCard = ({ imageUri, title, subtitle, firstRowFields, secondRowFields, theme, isDarkTheme }) => {
   const { width } = useWindowDimensions();
   const isMediumScreen = width >= 768;
 
@@ -37,7 +37,7 @@ const ProfileCard = ({ imageUri, title, subtitle, firstRowFields, secondRowField
         <View style={{ alignItems: 'center', marginRight: isMediumScreen ? 100 : 0, marginBottom: isMediumScreen ? 0 : 40 }}>
           <Image
             style={{ height: 110, width: 110, borderRadius: 55 }}
-            source={imageUri ? { uri: imageUri } : require('../../../assets/icons/favicon.png')}
+            source={imageUri ? { uri: imageUri } : require('../../../../assets/icons/favicon.png')}
           />
           <Text style={{
             fontSize: 15,
@@ -86,5 +86,3 @@ const ProfileCard = ({ imageUri, title, subtitle, firstRowFields, secondRowField
     </Card>
   );
 };
-
-export default ProfileCard;
