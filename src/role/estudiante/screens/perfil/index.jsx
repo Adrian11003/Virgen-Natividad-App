@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import { View, ScrollView } from 'react-native';
 import { AuthContext } from '../../../../core/context/authContext';
 import { useTheme } from '../../../../core/context/themeContext';
-import ProfileCard from '../../../../shared/components/card/ProfileCard';
+import { ProfileCard } from '../../../../shared/components/custom/card/index';
 import { ApoderadosContext } from '../../../../core/context/apoderadosContext';
 
 const Perfil = () => {
@@ -13,7 +13,7 @@ const Perfil = () => {
   useEffect(() => {
     getApoderado(user.perfil._id)
   }, [user]);
-console.log(apoderadosByEstudiante)
+
   return (
     <ScrollView>
       <View style={{ flex: 1, padding: 20 }}>
