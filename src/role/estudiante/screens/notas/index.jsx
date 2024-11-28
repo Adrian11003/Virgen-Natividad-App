@@ -10,19 +10,19 @@ import { ModalVisualizarNotas } from '../../../../shared/components/modal/modal-
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
 
 export const Notas = () => {
-  const { 
+  const {
     getEstudianteCursoPeriodoById,
     getEstudianteCursoPeriodoByEstudiantePeriodo,
     getPeriodosByEstudiante
-   } = useContext(NotasContext);
+  } = useContext(NotasContext);
   const { getPeriodoById } = useContext(PeriodoContext)
-  const { user } = useContext(AuthContext); 
+  const { user } = useContext(AuthContext);
   const { theme } = useTheme();
 
   const [enp, setEnp] = useState(null);
   const [periodos, setPeriodos] = useState([]);
   const [selectedPeriodo, setSelectedPeriodo] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalData, setModalData] = useState(null);
 
@@ -31,7 +31,7 @@ export const Notas = () => {
   useEffect(() => {
     setLoading(true);
     getPeriodosByEstudiante(user.perfil._id)
-      .then((periodoIds) => 
+      .then((periodoIds) =>
         Promise.all(periodoIds.map((id) => getPeriodoById(id)))
       )
       .then((results) => {
@@ -130,6 +130,6 @@ export const Notas = () => {
         setModalVisible={setModalVisible}
         data={modalData}
       />
-    </View>
-  )
+    </View>
+  )
 }

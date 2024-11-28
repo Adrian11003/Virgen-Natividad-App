@@ -16,7 +16,7 @@ import {
   getEstudianteCursoPeriodoByIdRequest,
   getEstudianteCursoPeriodoByEstudiantePeriodoRequest,
   getPeriodosByEstudianteRequest
- } from '../api/estudiante-curso-periodo'
+} from '../api/estudiante-curso-periodo'
 import { getSeccionesCursosByDocenteRequest } from '../api/seccion-curso-docente';
 
 export const NotasContext = createContext();

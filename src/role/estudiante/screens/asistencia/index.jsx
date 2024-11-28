@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { DataTable } from 'react-native-paper';
 import { AuthContext } from '../../../../core/context/authContext';
@@ -77,9 +77,7 @@ export const Asistencia = () => {
       marginTop: isMediumScreen ? 30 : 15,
       marginHorizontal: 'auto'
     }}>
-      <View style={{
-        marginHorizontal: 20,
-      }}>
+      <View style={{ marginHorizontal: 20 }}>
        {/* Título */}
       <Text style={{
         fontSize: 20,
@@ -89,55 +87,55 @@ export const Asistencia = () => {
       }}>
         Observaciones de la asistencia
       </Text>
-      <View style={{
-        flexDirection: 'row',
-        marginBottom: 20,
-        flexWrap: 'wrap',
-        zIndex: 2
-      }}>
+        <View style={{
+          flexDirection: 'row',
+          marginBottom: 20,
+          flexWrap: 'wrap',
+          zIndex: 2
+        }}>
           <CustomSelector
-              opciones={periodos}
-              selectedValue={selectedPeriodo}
-              onChange={(item) => handlePeriodoSelect(item)}
-              placeholder="Todos los periodos"
-              mobileWidth="20%"
-              isModal={false}
-              field={field}
-            />
-      </View>
+            opciones={periodos}
+            selectedValue={selectedPeriodo}
+            onChange={(item) => handlePeriodoSelect(item)}
+            placeholder="Todos los periodos"
+            mobileWidth="20%"
+            isModal={false}
+            field={field}
+          />
+        </View>
 
-      {/* Selector de Mes */}
-      <View style={{
-        flexDirection: 'row',
-        marginBottom: 20,
-        flexWrap: 'wrap',
-        gap: 8
-      }}>
-        {(meses || []).map((month, index) => (
-          <TouchableOpacity
-            key={index}
-            onPress={() => handleMonthSelect(month)}
-            style={{
-              paddingHorizontal: 16,
-              paddingVertical: 8,
-              backgroundColor: selectedMonth === month ? 
-                theme.colors.primary : theme.colors.surface,
-              borderRadius: 8,
-              borderWidth: 1,
-              borderColor: theme.colors.border
-            }}
-          >
-            <Text style={{
-              color: selectedMonth === month ? 
-                theme.colors.onPrimary : theme.colors.paperText
-            }}>
-              {month}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+        {/* Selector de Mes */}
+        <View style={{
+          flexDirection: 'row',
+          marginBottom: 20,
+          flexWrap: 'wrap',
+          gap: 8
+        }}>
+          {(meses || []).map((month, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => handleMonthSelect(month)}
+              style={{
+                paddingHorizontal: 16,
+                paddingVertical: 8,
+                backgroundColor: selectedMonth === month ? 
+                  theme.colors.primary : theme.colors.surface,
+                borderRadius: 8,
+                borderWidth: 1,
+                borderColor: theme.colors.border
+              }}
+            >
+              <Text style={{
+                color: selectedMonth === month ? 
+                  theme.colors.onPrimary : theme.colors.paperText
+              }}>
+                {month}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-    {/* Tabla de Asistencias */}
+        {/* Tabla de Asistencias */}
         <DataTable>
           {/* Encabezados */}
           <DataTable.Header style={{ backgroundColor: theme.colors.surface }}>
@@ -167,10 +165,10 @@ export const Asistencia = () => {
         </DataTable>
       </View>
       <CustomSnackbar
-            visible={snackbarVisible}
-            onDismiss={() => setSnackbarVisible(false)}
-            message={snackbarMessage}
-          />
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}
+        message={snackbarMessage}
+      />
     </View>
   );
 };
