@@ -37,13 +37,13 @@ export const ModalVisualizarNotas = ({ modalVisible, setModalVisible, data }) =>
       .then((notasObtenidas) => {
         setLoading(false);
         setSelectedBimestre(item);
-  
+
         // Normalizar las notas asegurando que siempre existan las 4 con '-'
         const tiposNota = ['Exposicion', 'Participacion', 'Bimestral', 'Desempeño en clase'];
         const notasNormalizadas = tiposNota.map((tipo) =>
           notasObtenidas.find((nota) => nota.tipoNota === tipo) || { tipoNota: tipo, nota: '-' }
         );
-  
+
         setNotas(notasNormalizadas);
       })
       .catch(() => {
@@ -78,7 +78,7 @@ export const ModalVisualizarNotas = ({ modalVisible, setModalVisible, data }) =>
       visible={modalVisible}
       onRequestClose={() => setModalVisible(false)}
     >
-      <View 
+      <View
         style={{
           backgroundColor: 'rgba(0, 0, 0, 0.5)',
           justifyContent: 'center',
@@ -86,29 +86,29 @@ export const ModalVisualizarNotas = ({ modalVisible, setModalVisible, data }) =>
           height: '100%',
         }}
       >
-        <View 
-          style={{ 
-            backgroundColor: theme.colors.modalBackground, 
+        <View
+          style={{
+            backgroundColor: theme.colors.modalBackground,
             width: isMediumScreen ? 500 : '90%',
             borderRadius: 10,
-            padding: 20, 
+            padding: 20,
             borderColor: 'rgb(192, 192, 192)',
             borderRadius: 8,
           }}
         >
-          <View 
+          <View
             style={{
               zIndex: 10,
               width: '100%'
             }}
           >
-            { loading && (
+            {loading && (
               <View style={{ position: 'absolute', top: -20, left: 0, right: 0, zIndex: 20 }}>
                 <ProgressBar indeterminate />
               </View>
             )}
             <View style={{ zIndex: 1000 }}>
-              <View style={{ zIndex: 13,marginBottom: 20}}>
+              <View style={{ zIndex: 13, marginBottom: 20 }}>
                 <CustomSelector
                   opciones={bimestres}
                   selectedValue={selectedBimestre}
@@ -122,21 +122,21 @@ export const ModalVisualizarNotas = ({ modalVisible, setModalVisible, data }) =>
             </View>
             <View style={{ marginTop: 5, marginBottom: 15 }}>
               {/* Tabla */}
-              <View 
-                style={{ 
+              <View
+                style={{
                   borderWidth: 1,
-                  borderColor: themeType === 'light' ? '#DDD' : '#555', 
-                  borderRadius: 8, 
-                  overflow: 'hidden' 
+                  borderColor: themeType === 'light' ? '#DDD' : '#555',
+                  borderRadius: 8,
+                  overflow: 'hidden'
                 }}
               >
-                <View 
-                  style={{ 
-                    flexDirection: 'row', 
-                    backgroundColor: themeType === 'light' ? '#fff' : '#333', 
-                    paddingVertical: 8, 
-                    borderBottomWidth: 1, 
-                    borderColor: themeType === 'light' ? '#DDD' : '#555' 
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    backgroundColor: themeType === 'light' ? '#fff' : '#333',
+                    paddingVertical: 8,
+                    borderBottomWidth: 1,
+                    borderColor: themeType === 'light' ? '#DDD' : '#555'
                   }}
                 >
                   <Text style={{ flex: 1, fontWeight: 'bold', textAlign: 'center', color: theme.colors.paperText }}>
@@ -154,7 +154,7 @@ export const ModalVisualizarNotas = ({ modalVisible, setModalVisible, data }) =>
                       flexDirection: 'row',
                       paddingVertical: 8,
                       backgroundColor: themeType === 'light' ? '#fff' : '#333',
-                      borderBottomWidth: 1, 
+                      borderBottomWidth: 1,
                       borderColor: themeType === 'light' ? '#DDD' : '#555'
                     }}
                   >
@@ -174,6 +174,6 @@ export const ModalVisualizarNotas = ({ modalVisible, setModalVisible, data }) =>
           </View>
         </View>
       </View>
-    </Modal>
-  )
+    </Modal>
+  )
 }
