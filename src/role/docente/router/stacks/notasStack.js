@@ -9,21 +9,21 @@ export const NotasStack = () => {
     <Stack.Navigator
       initialRouteName="SeleccionarCursoSeccion"
       screenOptions={{
-        headerShown: true,
+        headerShown: false,
       }}
     >
       <Stack.Screen 
         name="SeleccionarCursoSeccion" 
         component={SeleccionarCursoSeccion}
         options={{
-          headerShown: true
+          headerShown: false
         }}
       />
       <Stack.Screen 
         name="GestionarNotas" 
         component={GestionarNotas}
         options={{
-          headerShown: true
+          headerShown: false
         }}
       />
     </Stack.Navigator>

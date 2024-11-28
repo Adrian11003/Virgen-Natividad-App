@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, StyleSheet ,ScrollView} from 'react-native';
+import { View, Text, StyleSheet ,ScrollView,Pressable} from 'react-native';
 import { Button, ProgressBar } from 'react-native-paper';
 import { useTheme } from '../../../../core/context/themeContext';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
@@ -9,6 +9,7 @@ import { useRoute } from '@react-navigation/native';
 import { ModalGestionarNota } from '../../../../shared/components/modal/modal-gestionar-notas/index';
 import { showSweetAlert } from '../../../../shared/components/custom/swal/index';	
 import { ButtonIcon } from '../../../../shared/components/custom/button-icon/index';
+import { useNavigation } from '@react-navigation/native';
 
 export const GestionarNotas = () => {
   const { getEstudiantesBySeccion, getEstudianteById } = useContext(EstudiantesContext);
@@ -17,6 +18,7 @@ export const GestionarNotas = () => {
   const [numberOfItemsPerPage, setNumberOfItemsPerPage] = useState(8);
   const route = useRoute();
   const { seccion, curso } = route.params;
+  const navigation = useNavigation(); 
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
   const [estudiantes, setEstudiantes] = useState([]);
@@ -174,6 +176,21 @@ export const GestionarNotas = () => {
         curso={curso._id}
         onNotaGuardada={handleNotaGuardada}
       />
+       <Pressable
+            style={{
+              backgroundColor: theme.colors.loginButton,
+              width: '25%',
+              paddingVertical: 12,
+              paddingHorizontal: 10,
+              borderRadius: 25,
+              marginLeft: 15
+            }}
+            onPress={() => navigation.navigate('SeleccionarCursoSeccion')} 
+         > 
+         <Text style={{ color: theme.colors.onPrimary, fontSize: 15, textAlign: 'center' }}>
+         Volver
+       </Text>
+     </Pressable>
     </View>
   );
 };
