@@ -1,49 +1,39 @@
-import { createContext, useState, useEffect } from 'react';
-import { getNotasRequest, createNotaRequest, getSeccionesCursosByDocenteRequest,getBimestresRequest} from '../api/notas';
-
+import { createContext, useState } from 'react';
+import { getBimestresRequest } from '../api/bimestre';
+import { 
+  changeNotaStateProcessedRequest, 
+  createNotaRequest, updateNotaRequest,
+  getNotaByEstudianteCursoBimestrePeriodoRequest,
+  getNotaByEstudianteCursoBimestreSeccionTipoNotaRequest,
+  changeNotaStateNullRequest
+} from '../api/notas';
+import { 
+  createSolicitudNotaRequest, 
+  getSolicitudNotaRequest,
+  deleteSolicitudNotaRequest
+} from '../api/solicitud-nota';
+import { 
+  getEstudianteCursoPeriodoByIdRequest,
+  getEstudianteCursoPeriodoByEstudiantePeriodoRequest,
+  getPeriodosByEstudianteRequest
+ } from '../api/estudiante-curso-periodo'
+import { getSeccionesCursosByDocenteRequest } from '../api/seccion-curso-docente';
 
 export const NotasContext = createContext();
 
 export const NotasProvider = ({ children }) => {
-  const [notas, setNotas] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [seccionCursoDocente, setSeccionCursoDocente] = useState([]);
-  const [bimestres, setBimestres] = useState([]); // JUAN
   
-
   const getBimestres = async () => {
-    setLoading(true);
-    setError(null);
     try {
       const { data } = await getBimestresRequest();
-      console.log("Bimestres recibidos:", data);
-      setBimestres(data);
+      return data
     } catch (error) {
       console.log(error)
       setError(error)
-    } finally {
-      setLoading(false);
     }
   };
 
-
-  
-  const getNotas = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data } = await getNotasRequest();
-      setNotas(data);
-    } catch (error) {
-      console.log(error)
-      setError(error)
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // JUAN
   const getSeccionesCursosByDocente = async (docenteId) => {
     try {
       const { data } = await getSeccionesCursosByDocenteRequest(docenteId);
@@ -51,38 +41,155 @@ export const NotasProvider = ({ children }) => {
     } catch (error) {
       console.log(error)
       setError(error)
-    }
+    }
   };
 
   const createNota = async (nota) => {
     try {
       const { data } = await createNotaRequest(nota);
-      setNotas([...notas, data]);
+      return data
     } catch (error) {
       console.log(error)
       setError(error)
-    } finally {
-      setLoading(false);
     }
   };
+
+  const updateNota = async (id, nota) => {
+    try {
+      const { data } = await updateNotaRequest(id, nota)
+      return data
+    } catch (error) {
+      console.log(error)
+      setError(error)
+    }
+  }
+
+  const getNotasByEstudianteCursoBimestreSeccionTipoNota = async (
+    estudianteId, cursoId, bimestreId, seccionId, tipoNota
+  ) => {
+    try {
+      const { data } = await getNotaByEstudianteCursoBimestreSeccionTipoNotaRequest(
+        estudianteId, cursoId, bimestreId, seccionId, tipoNota
+      );
+      return data
+    } catch (error) {
+      console.log(error)
+      setError(error)
+    }
+  }
+
+  const createSolicitudNota = async (dataSolicitudNota) => {
+    try {
+      const { data } = await createSolicitudNotaRequest(dataSolicitudNota);
+      return data
+    } catch (error) {
+      console.log(error)
+      throw error; 
+    }
+  }
+
+  const changeNotaStateNull = async (notaId) => {
+    try {
+      const { data } = await changeNotaStateNullRequest(notaId);
+      return data
+    } catch (error) {
+      console.log(error)
+      throw error; 
+    }
+  }
+
+  const changeNotaStateProcessed = async (notaId) => {
+    try {
+      const { data } = await changeNotaStateProcessedRequest(notaId);
+      return data
+    } catch (error) {
+      console.log(error)
+      throw error; 
+    }
+  }
+
+  const deleteSolicitudNota = async (notaId) => {
+    try {
+      const { data } = await deleteSolicitudNotaRequest(notaId);
+      return data
+    } catch (error) {
+      console.log(error)
+      throw error;
+    }
+  }
+
+  const getNotaByEstudianteCursoBimestrePeriodo = async (estudianteId, cursoId, bimestreId, periodoId) => {
+    try {
+      const { data } = await getNotaByEstudianteCursoBimestrePeriodoRequest(estudianteId, cursoId, bimestreId, periodoId);
+      return data
+    } catch (error) {
+      console.log(error)
+      throw error;
+    }
+  }
+
+  const getSolicitudNota = async (docenteId, estudianteId, cursoId, seccionId, bimestreId, tipoNota) => {
+    try {
+      const { data } = await getSolicitudNotaRequest(docenteId, estudianteId, cursoId, seccionId, bimestreId, tipoNota);
+      console.log(data)
+      return data
+    } catch (error) {
+      console.log(error)
+      throw error; 
+    }
+  }
+
+  const getEstudianteCursoPeriodoById = async (id) => {
+    try {
+      const { data } = await getEstudianteCursoPeriodoByIdRequest(id);
+      return data
+    } catch (error) {
+      console.log(error)
+      throw error
+    }
+  }
+
+  const getEstudianteCursoPeriodoByEstudiantePeriodo = async (estudianteId, periodoId) => {
+    try {
+      const { data } = await getEstudianteCursoPeriodoByEstudiantePeriodoRequest(estudianteId, periodoId);
+      return data
+    } catch (error) {
+      console.log(error)
+      throw error; 
+    }
+  }
+
+  const getPeriodosByEstudiante = async (estudianteId) => {
+    try {
+      const { data } = await getPeriodosByEstudianteRequest(estudianteId);
+      return data
+    } catch (error) {
+      console.log(error)
+      throw error; 
+    }
+  }
 
   return (
     <NotasContext.Provider 
       value={{ 
-        notas,
-        bimestres, // JUAN
         error,
-        getNotas,
         createNota,
+        updateNota,
         getBimestres,
-        // secciones, // juan
-        // cursos, // juan
-        loading,
+        getSolicitudNota,
+        createSolicitudNota,
+        deleteSolicitudNota,
         getSeccionesCursosByDocente,
-        seccionCursoDocente
+        getNotaByEstudianteCursoBimestrePeriodo,
+        getNotasByEstudianteCursoBimestreSeccionTipoNota,
+        changeNotaStateProcessed,
+        changeNotaStateNull, 
+        getEstudianteCursoPeriodoById,
+        getEstudianteCursoPeriodoByEstudiantePeriodo,
+        getPeriodosByEstudiante
       }}
     >
       {children}
     </NotasContext.Provider>
-  );
-};
+  );
+}

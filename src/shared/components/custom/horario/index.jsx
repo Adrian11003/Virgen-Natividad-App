@@ -1,5 +1,6 @@
 import { View, Text } from 'react-native';
 import { useTheme } from '../../../../core/context/themeContext';                           
+import isMediumScreen from '../../../constants/screen-width/md';
 
 export const Horario = ({ horarios, rol }) => {
   const { themeType, theme } = useTheme()
@@ -73,38 +74,86 @@ export const Horario = ({ horarios, rol }) => {
 
           {/* Filas con horarios */}
           {times.map((time, index) => (
-            <View 
-              key={time} 
-              style={{ flexDirection: 'row', borderLeftWidth: 1, borderBottomWidth: 1, 
-                backgroundColor: themeType === 'light' ? 'white' : '#292929',
-                borderColor: themeType === 'light' ? 'black' : '#3C3C3C'
-               }}
-            >
-              <Text style={{ width: '15%', padding: 8, textAlign: 'center', color: theme.colors.paperText }}>
-                {formattedTimes[index]}
-              </Text>
-              {days.map((day) => (
-                <View
-                  key={day}
+            time === '09:30:00 - 10:00:00' ? (
+              <View 
+                key={time} 
+                style={{
+                  flexDirection: 'row',
+                  borderLeftWidth: 1,
+                  borderBottomWidth: 1,
+                  backgroundColor: themeType === 'light' ? '#54BCCB' : '#3C3C3C',
+                  borderColor: themeType === 'light' ? 'black' : '#3C3C3C',
+                  alignItems: 'center',
+                }}
+              >
+                <Text 
                   style={{
-                    width: '17%',
-                    padding: 8,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderLeftWidth: 1,
-                    borderColor: themeType === 'light' ? 'black' : '#3C3C3C',
-                    backgroundColor: isSelected(day, time) 
-                    ? (themeType === 'light' ? '#ADD8E6' : '#36538B') : 'transparent'
+                    width: '15%',
+                    height: isMediumScreen ? 40 : 50,
+                    textAlign: 'center',
+                    paddingTop: 8,
+                    color: theme.colors.paperText,
+                    backgroundColor: themeType === 'light' ? 'white' : '#292929',
                   }}
                 >
-                  {isSelected(day, time) ? (
-                    <Text style={{ fontSize: 10, textAlign: 'center', color: theme.colors.paperText }} numberOfLines={2}>
-                      {getCellInfo(day, time)}
-                    </Text>
-                  ) : null}
+                  {formattedTimes[index]} 
+                </Text>
+                <View
+                  style={{
+                    width: '85%',
+                    borderStartWidth: 1,
+                    borderColor: themeType === 'light' ? 'black' : '#3C3C3C',
+                    backgroundColor: themeType === 'light' ? '#292929' : '#1F1F1F',
+                  }}
+                >
+                  <Text 
+                    style={{
+                      width: '100%',
+                      textAlign: 'center',
+                      height: isMediumScreen ? 40 : 50,
+                      paddingTop: isMediumScreen ? 11 : 15,
+                      color: theme.colors.paperText,
+                      backgroundColor: themeType === 'light' ? '#54BCCB' : '#555555',
+                    }}
+                  >
+                    Receso
+                  </Text>
                 </View>
-              ))}
-            </View>
+              </View>
+            ) : (
+              <View 
+                key={time} 
+                style={{ flexDirection: 'row', borderLeftWidth: 1, borderBottomWidth: 1, 
+                  backgroundColor: themeType === 'light' ? 'white' : '#292929',
+                  borderColor: themeType === 'light' ? 'black' : '#3C3C3C'
+                }}
+              >
+                <Text style={{ width: '15%', padding: 8, textAlign: 'center', color: theme.colors.paperText }}>
+                  {formattedTimes[index]}
+                </Text>
+                {days.map((day) => (
+                  <View
+                    key={day}
+                    style={{
+                      width: '17%',
+                      padding: 8,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderLeftWidth: 1,
+                      borderColor: themeType === 'light' ? 'black' : '#3C3C3C',
+                      backgroundColor: isSelected(day, time) 
+                      ? (themeType === 'light' ? '#ADD8E6' : '#36538B') : 'transparent'
+                    }}
+                  >
+                    {isSelected(day, time) ? (
+                      <Text style={{ fontSize: 10, textAlign: 'center', color: theme.colors.paperText }} numberOfLines={2}>
+                        {getCellInfo(day, time)}
+                      </Text>
+                    ) : null}
+                  </View>
+                ))}
+              </View>
+            )
           ))}
         </View>
       </View>

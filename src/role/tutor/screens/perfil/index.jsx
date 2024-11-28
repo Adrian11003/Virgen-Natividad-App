@@ -1,8 +1,8 @@
-import React, { useContext, useEffect} from 'react';
+import { useContext } from 'react';
 import { View, ScrollView } from 'react-native';
 import { AuthContext } from '../../../../core/context/authContext';
 import { useTheme } from '../../../../core/context/themeContext';
-import ProfileCard from '../../../../shared/components/card/ProfileCard';
+import { ProfileCard } from '../../../../shared/components/custom/card';
 
 const Perfil = () => {
   const { user } = useContext(AuthContext);

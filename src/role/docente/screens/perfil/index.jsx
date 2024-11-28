@@ -1,18 +1,16 @@
-import React, { useContext, useEffect} from 'react';
+import { useContext } from 'react';
 import { View, ScrollView } from 'react-native';
 import { AuthContext } from '../../../../core/context/authContext';
 import { useTheme } from '../../../../core/context/themeContext';
-import ProfileCard from '../../../../shared/components/card/ProfileCard';
+import { ProfileCard } from '../../../../shared/components/custom/card/index';
 
-const Perfil = () => {
+export const Perfil = () => {
   const { user } = useContext(AuthContext);
   const { theme, isDarkTheme } = useTheme();
 
-
-
   const fila1 = [
     { label: 'Número de Documento', value: user.perfil.numero_documento },
-    {label: 'Correo Electrónico', value : user.email}
+    { label: 'Correo Electrónico', value : user.email }
   ];
 
   const fila2 = [
@@ -36,5 +34,3 @@ const Perfil = () => {
     </ScrollView>
   );
 };
-
-export default Perfil;
