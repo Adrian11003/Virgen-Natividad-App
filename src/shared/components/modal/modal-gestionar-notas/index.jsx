@@ -10,7 +10,7 @@ import { CustomSnackbar } from '../../../components/custom/snackbar/index';
 import { letraANumero } from '../../../constants/custom/item-tipo-letra';
 import isMediumScreen from '../../../constants/screen-width/md';
 
-export const ModalNuevaNota = ({ modalVisible, setModalVisible, seccion, curso, estudiante, onNotaGuardada }) => {
+export const ModalGestionarNota = ({ modalVisible, setModalVisible, seccion, curso, estudiante, onNotaGuardada }) => {
   const { 
     createNota, updateNota, getBimestres, changeNotaStateProcessed,
     createSolicitudNota, deleteSolicitudNota, getSolicitudNota,
@@ -453,5 +453,5 @@ export const ModalNuevaNota = ({ modalVisible, setModalVisible, seccion, curso, 
         </View>
       </View>
     </Modal>
-  );
+  );
 };
