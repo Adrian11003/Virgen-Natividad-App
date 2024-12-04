@@ -4,11 +4,9 @@ import { AuthContext } from '../../../../core/context/authContext';
 import { useTheme } from '../../../../core/context/themeContext';
 import { ProfileCard } from '../../../../shared/components/custom/card';
 
-const Perfil = () => {
+export const Perfil = () => {
   const { user } = useContext(AuthContext);
   const { theme, isDarkTheme } = useTheme();
-
-
 
   const fila1 = [
     { label: 'Grado', value: user.perfil.grado.nombre },
@@ -39,5 +37,3 @@ const Perfil = () => {
     </ScrollView>
   );
 };
-
-export default Perfil;
