@@ -12,6 +12,7 @@ import { PeriodoContext } from '../../../../core/context/periodoContext';
 import { ordenarPorMeses } from '../../../../shared/utils/sort-by-months';
 import { formatearFecha } from '../../../../shared/utils/format-date';
 import { formatSoles } from '../../../../shared/utils/format-sol';
+import { useNavigation } from '@react-navigation/native';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
 
 export const Pago1 = () => {
@@ -19,6 +20,7 @@ export const Pago1 = () => {
   const { fetchPeriodoByAnio } = useContext(PeriodoContext);
   const { theme } = useTheme();
   const { user } = useContext(AuthContext);
+  const navigation = useNavigation();
 
   const fieldTipoPago = 'nombre';
   const fieldPension = 'displayField';
@@ -131,6 +133,12 @@ export const Pago1 = () => {
     }
   };
 
+  const handleNavigate = () => {
+    navigation.navigate('Pago2', {
+      pago: pagosSeleccionados,
+    });
+  };
+
   if (loading) {
     return <ProgressBar indeterminate />;
   }
@@ -141,10 +149,10 @@ export const Pago1 = () => {
         flex: 1,
         maxWidth: isMediumScreen ? 1300 : 'auto',
         marginTop: isMediumScreen ? 30 : 15,
-        marginHorizontal: isMediumScreen ? 'auto' : 20,
+        marginHorizontal: isMediumScreen ? 'auto' : 0,
       }}
     >
-      <View style={{ marginHorizontal: 20, flex: 1 }}>
+      <View style={{ marginHorizontal: 20, flex: 1, zIndex: 21 }}>
         <Text
           style={{
             fontSize: 20,
@@ -160,8 +168,8 @@ export const Pago1 = () => {
           style={{
             flexDirection: isMediumScreen ? 'row' : 'column',
             marginBottom: 20,
-            zIndex: 20,
             gap: 15,
+            zIndex: 20
           }}
         >
           <View style={{ zIndex: 19, width: isMediumScreen ? '20%' : '100%' }}>
@@ -195,7 +203,7 @@ export const Pago1 = () => {
           )}
         </View>
 
-        <View style={{ height: isMediumScreen ? 630 : 350 }}>
+        <View style={{ height: isMediumScreen ? 630 : 450, zIndex: 19 }}>
           <ScrollView vertical={true}>
             <ScrollView horizontal={true}>
               <DataTable style={{ marginTop: 20, width: isMediumScreen ? 1300 : 900 }}>
@@ -266,7 +274,7 @@ export const Pago1 = () => {
               mode="contained"
               style={{ width: 150 }}
               buttonColor={theme.colors.primary}
-              onPress={() => agregarAsistencia()}
+              onPress={() => handleNavigate()}
             >
               Continuar
             </Button>
