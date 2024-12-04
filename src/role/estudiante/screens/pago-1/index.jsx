@@ -1,20 +1,20 @@
 import { useEffect, useState, useContext } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { ProgressBar, DataTable, IconButton } from 'react-native-paper';
-import { useTheme } from '../../../../../core/context/themeContext';
+import { useTheme } from '../../../../core/context/themeContext';
 import { Button } from 'react-native-paper';
-import { AuthContext } from '../../../../../core/context/authContext';
-import { CustomSelector } from '../../../../../shared/components/custom/selector';
-import { CustomSnackbar } from '../../../../../shared/components/custom/snackbar';
-import { PagosContext } from '../../../../../core/context/pagosContext';
-import { itemTipoPago } from '../../../../../shared/constants/custom/item-tipo-pago';
-import { PeriodoContext } from '../../../../../core/context/periodoContext';
-import { ordenarPorMeses } from '../../../../../shared/utils/sort-by-months';
-import { formatearFecha } from '../../../../../shared/utils/format-date';
-import { formatSoles } from '../../../../../shared/utils/format-sol';
-import isMediumScreen from '../../../../../shared/constants/screen-width/md';
+import { AuthContext } from '../../../../core/context/authContext';
+import { CustomSelector } from '../../../../shared/components/custom/selector';
+import { CustomSnackbar } from '../../../../shared/components/custom/snackbar';
+import { PagosContext } from '../../../../core/context/pagosContext';
+import { itemTipoPago } from '../../../../shared/constants/custom/item-tipo-pago';
+import { PeriodoContext } from '../../../../core/context/periodoContext';
+import { ordenarPorMeses } from '../../../../shared/utils/sort-by-months';
+import { formatearFecha } from '../../../../shared/utils/format-date';
+import { formatSoles } from '../../../../shared/utils/format-sol';
+import isMediumScreen from '../../../../shared/constants/screen-width/md';
 
-export const PagoPantalla1 = () => {
+export const Pago1 = () => {
   const { getPensionesByPeriodoEstudiante } = useContext(PagosContext);
   const { fetchPeriodoByAnio } = useContext(PeriodoContext);
   const { theme } = useTheme();
@@ -139,10 +139,9 @@ export const PagoPantalla1 = () => {
     <View
       style={{
         flex: 1,
-        width: isMediumScreen ? 1300 : 'auto',
-        maxWidth: 'auto',
+        maxWidth: isMediumScreen ? 1300 : 'auto',
         marginTop: isMediumScreen ? 30 : 15,
-        marginHorizontal: 'auto',
+        marginHorizontal: isMediumScreen ? 'auto' : 20,
       }}
     >
       <View style={{ marginHorizontal: 20, flex: 1 }}>
