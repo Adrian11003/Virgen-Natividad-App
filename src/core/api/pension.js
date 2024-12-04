@@ -1,4 +1,4 @@
 import axios from './axios'
 
-export const getPensionesByEstudiantePeriodoRequest = (estudianteId, periodoId) =>
-  axios.get(`/pension/${estudianteId}/${periodoId}`)
+export const getPensionesByPeriodoEstudianteRequest = (periodoId, estudianteId) =>
+  axios.get(`/pension/${periodoId}/${estudianteId}`)
