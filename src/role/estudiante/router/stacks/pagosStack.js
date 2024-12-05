@@ -1,6 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import { Pago1 } from "../../screens/pago-1/index";
-import { Pago2 } from '../../screens/pago-2/index';
+import { Platform } from 'react-native';
+import { Pago2 } from "../../screens/pago-2/index";
 
 const Stack = createStackNavigator();
 

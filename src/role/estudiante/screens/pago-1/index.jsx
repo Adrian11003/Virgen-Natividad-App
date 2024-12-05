@@ -136,6 +136,7 @@ export const Pago1 = () => {
   const handleNavigate = () => {
     navigation.navigate('Pago2', {
       pago: pagosSeleccionados,
+      tipoPago: tipoPago,
     });
   };
 
