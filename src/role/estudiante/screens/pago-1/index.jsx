@@ -92,7 +92,7 @@ export const Pago1 = () => {
           estudiante_id: user.perfil._id,
           tipo: 'Virtual',
           tipoMa: 'Nuevo',
-          fecha: new Date(),
+          fecha: new Date().toISOString(),
         };
         setPagosSeleccionados((prev) => [
           ...prev,
@@ -136,7 +136,7 @@ export const Pago1 = () => {
   const handleNavigate = () => {
     navigation.navigate('Pago2', {
       pago: pagosSeleccionados,
-      tipoPago: tipoPago,
+      tipoPagoAnterior: tipoPago,
     });
   };
 

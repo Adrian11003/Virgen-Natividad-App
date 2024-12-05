@@ -1,19 +1,21 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { StripeProvider, CardField } from '@stripe/stripe-react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../../core/context/themeContext';
 import { PagosContext } from '../../../../core/context/pagosContext';
 import { CustomRadio } from '../../../../shared/components/custom/radio-button/index';
 import { useStripe } from '@stripe/stripe-react-native';
+import { CustomSnackbar } from '../../../../shared/components/custom/snackbar/index';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
 
 export const Pago2 = () => {
   const navigation = useNavigation();
   const stripe = useStripe();
+  const { pago, tipoPagoAnterior } = useRoute().params;
   const { theme } = useTheme();
-  const { createPaymentIntent } = useContext(PagosContext);
+  const { createPaymentIntent, updatePensionPay, createMatricula } = useContext(PagosContext);
 
   const [tipoPago, setTipoPago] = useState('boleta');
   const [nombre, setNombre] = useState('');
@@ -23,10 +25,47 @@ export const Pago2 = () => {
   const [direccion, setDireccion] = useState('');
   const [loading, setLoading] = useState(false);
   const [cardDetails, setCardDetails] = useState({});
+  const [snackbarVisible, setSnackbarVisible] = useState(false); 
+  const [snackbarMessage, setSnackbarMessage] = useState(''); 
+
+  useEffect(() => {
+    console.log(pago, tipoPagoAnterior)
+  },[])
 
   const handlePayment = async () => {
-    if (!cardDetails?.complete || !nombre || !documento || !numero || !correo || !direccion) {
-      console.log('Debe completar los detalles de la tarjeta');
+    if(!nombre) {
+      setSnackbarMessage('El nombre del titular es requerido.');
+      setSnackbarVisible(true);
+      return
+    }
+
+    if(!documento) {
+      setSnackbarMessage('El nro. de documento del titular es requerido.');
+      setSnackbarVisible(true);
+      return
+    }
+
+    if(!numero) {
+      setSnackbarMessage('El número del titular es requerido.');
+      setSnackbarVisible(true);
+      return
+    }
+
+    if(!correo) {
+      setSnackbarMessage('El correo del titular es requerido.');
+      setSnackbarVisible(true);
+      return
+    }
+
+    if(!direccion) {
+      setSnackbarMessage('La dirección del titular es requerida.');
+      setSnackbarVisible(true);
+      return
+    }
+
+    if (!cardDetails?.complete) {
+      setSnackbarMessage('Los datos de la tarjeta son requeridos.');
+      setSnackbarVisible(true);
       return;
     }
 
@@ -56,21 +95,35 @@ export const Pago2 = () => {
       return;
     }
 
+    const montoPension = 150;
+    const montoTotal = pago.length * montoPension * 3.33;
+
     const paymentData = {
       nombre_completo: nombre,
-      monto: 1000,
+      monto: tipoPagoAnterior === 'Pension' ? montoTotal : 1000,
       divisa: 'PEN',
       paymentMethodId: paymentMethod.id,
       metadata: {
         direccion,
         tipoDocumento: tipoPago === 'boleta' ? 'Dni' : 'Ruc',
         nroDocumento: documento,
+        tipoServicio: tipoPagoAnterior === 'Pension' ? 'Pension' : 'Matricula',
       },
     };
 
     createPaymentIntent(paymentData)
-      .then((data) => {
-        console.log(data)
+      .then(async (data) => {
+        console.log(data);
+        if (tipoPagoAnterior === 'Pension') {
+          await Promise.all(pago.map(async (pension) => {
+            await updatePensionPay(pension._id)
+              .then((data) => {
+                
+              })
+          }));
+        } else {
+          console.log(pago);
+        }
       })
       .catch((error) => {
         console.log(error.error.message)
@@ -362,6 +415,11 @@ export const Pago2 = () => {
 
           </View>
         </View>
+        <CustomSnackbar
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          message={snackbarMessage}
+        />
       </ScrollView>
     </StripeProvider>
   );
