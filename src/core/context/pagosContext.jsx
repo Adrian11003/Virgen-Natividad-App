@@ -2,6 +2,7 @@ import { createContext } from 'react';
 import { createPagoRequest } from '../api/pagos';
 import { getMatriculaByEstudianteIdRequest } from '../api/matricula';
 import { getPensionesByPeriodoEstudianteRequest } from '../api/pension';
+import { createPaymentIntentRequest } from '../api/payment'
 import { createMatriculaRequest } from '../api/matricula';
 
 export const PagosContext = createContext();
@@ -47,13 +48,24 @@ export const PagosProvider = ({ children }) => {
     }
   }
 
+  const createPaymentIntent = async (paymentData) => {
+    try {
+      const { data } = await createPaymentIntentRequest(paymentData);
+      return data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
   return (
     <PagosContext.Provider 
       value={{ 
         createPago,
         createMatricula,
         getMatriculaByEstudianteId,
-        getPensionesByPeriodoEstudiante
+        getPensionesByPeriodoEstudiante,
+        createPaymentIntent
       }}
     >
       {children}
