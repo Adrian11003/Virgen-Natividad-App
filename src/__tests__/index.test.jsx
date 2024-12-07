@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import { GestionarNotas } from '../shared/components/gestionar-notas'; // Ajusta la ruta según corresponda
+import { GestionarNotas } from '../role/docente/screens/gestionar-notas';
 
 // Mocks básicos
 jest.mock('@react-navigation/native', () => ({
