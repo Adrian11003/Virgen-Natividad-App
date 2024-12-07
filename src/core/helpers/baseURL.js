@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 
 export const baseUrl = Platform.select({
   ios: 'https://vnback-production.up.railway.app',
-  android: 'http://10.0.2.2:3000',
+  android: 'https://github.com/urp-moviles-2024-2/vn_back',
   web: 'https://vnback-production.up.railway.app'
 });
 
