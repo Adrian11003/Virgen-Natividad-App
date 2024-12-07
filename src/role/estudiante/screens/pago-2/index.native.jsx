@@ -1,19 +1,22 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { StripeProvider, CardField } from '@stripe/stripe-react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../../core/context/themeContext';
 import { PagosContext } from '../../../../core/context/pagosContext';
 import { CustomRadio } from '../../../../shared/components/custom/radio-button/index';
 import { useStripe } from '@stripe/stripe-react-native';
+import { CustomSnackbar } from '../../../../shared/components/custom/snackbar/index';
+import { sendEmailPdf } from '../../../../core/api/gmail';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
 
 export const Pago2 = () => {
   const navigation = useNavigation();
   const stripe = useStripe();
-  const { theme } = useTheme();
-  const { createPaymentIntent } = useContext(PagosContext);
+  const { pago, tipoPagoAnterior } = useRoute().params;
+  const { theme, themeType } = useTheme();
+  const { createPaymentIntent, updatePensionPay, createMatricula } = useContext(PagosContext);
 
   const [tipoPago, setTipoPago] = useState('boleta');
   const [nombre, setNombre] = useState('');
@@ -23,10 +26,47 @@ export const Pago2 = () => {
   const [direccion, setDireccion] = useState('');
   const [loading, setLoading] = useState(false);
   const [cardDetails, setCardDetails] = useState({});
+  const [snackbarVisible, setSnackbarVisible] = useState(false); 
+  const [snackbarMessage, setSnackbarMessage] = useState(''); 
+
+  useEffect(() => {
+    console.log(pago, tipoPagoAnterior)
+  },[])
 
   const handlePayment = async () => {
-    if (!cardDetails?.complete || !nombre || !documento || !numero || !correo || !direccion) {
-      console.log('Debe completar los detalles de la tarjeta');
+    if(!nombre) {
+      setSnackbarMessage('El nombre del titular es requerido.');
+      setSnackbarVisible(true);
+      return
+    }
+
+    if(!documento) {
+      setSnackbarMessage('El nro. de documento del titular es requerido.');
+      setSnackbarVisible(true);
+      return
+    }
+
+    if(!numero) {
+      setSnackbarMessage('El número del titular es requerido.');
+      setSnackbarVisible(true);
+      return
+    }
+
+    if(!correo) {
+      setSnackbarMessage('El correo del titular es requerido.');
+      setSnackbarVisible(true);
+      return
+    }
+
+    if(!direccion) {
+      setSnackbarMessage('La dirección del titular es requerida.');
+      setSnackbarVisible(true);
+      return
+    }
+
+    if (!cardDetails?.complete) {
+      setSnackbarMessage('Los datos de la tarjeta son requeridos.');
+      setSnackbarVisible(true);
       return;
     }
 
@@ -56,22 +96,59 @@ export const Pago2 = () => {
       return;
     }
 
+    const montoPension = 150;
+    const montoTotal = pago.length * montoPension * 3.33;
+
     const paymentData = {
       nombre_completo: nombre,
-      monto: 1000,
+      monto: tipoPagoAnterior === 'Pension' ? montoTotal : 1000,
       divisa: 'PEN',
       paymentMethodId: paymentMethod.id,
       metadata: {
         direccion,
         tipoDocumento: tipoPago === 'boleta' ? 'Dni' : 'Ruc',
         nroDocumento: documento,
+        tipoServicio: tipoPagoAnterior === 'Pension' ? 'Pension' : 'Matricula',
       },
     };
 
     createPaymentIntent(paymentData)
-      .then((data) => {
-        console.log(data)
-
+      .then(async (data) => {
+        console.log(data);
+        if (tipoPagoAnterior === 'Pension') {
+          await Promise.all(pago.map(async (pension) => {
+            await updatePensionPay(pension._id)
+              .then((data) => {
+                // enviarCorreoConBoleta(data.stripeOperationId)
+              })
+          }));
+        } else {
+          const pagoData = pago[0]; 
+          const matriculaData = {
+            monto: pago[0].monto,
+            metodo_pago: pago[0].metodo_pago,
+            n_operacion: pago[0].n_operacion,
+            periodo_id: pago[0].tipoMa,
+            estudiante_id: pago[0].estudiante_id,
+            tipo: pago[0].tipo,
+            tipoMa: pago[0].tipoMa,
+            fecha: new Date()
+          };
+          createMatricula(matriculaData)
+            .then((data) => {
+              console.log(data)
+            })
+            .catch((error) => {
+              console.log(error)
+              throw error
+            })
+        }
+      })
+      .catch((error) => {
+        console.log(error.error.message)
+      })
+      .finally(() => {
+        setLoading(false);
         setTipoPago('boleta');
         setNombre('');
         setDocumento('');
@@ -82,13 +159,25 @@ export const Pago2 = () => {
 
         navigation.navigate('Pago1');
       })
-      .catch((error) => {
-        console.log(error.error.message)
-      })
-      .finally(() => {
-        setLoading(false);
-      })
   };
+
+  // const enviarCorreoConBoleta = (operationId) => {
+  //   const correoData = {
+  //     to: correo,
+  //     subject: 'Comprobante de Pago - Virgen de la Natividad',
+  //     dni: documento
+  //   };
+
+  //   sendEmailPdf(operationId, correoData)
+  //     .then((data) => {
+  //       console.log(data);
+  //       setSnackbarVisible(true);
+  //       setSnackbarMessage('Se le ha enviado la boleta a su correo adjuntado en el pago.');
+  //     })
+  //     .catch((error) => {
+  //       console.log(error)
+  //     })
+  // }
 
   const volver = () => {
     navigation.navigate('Pago1');
@@ -302,7 +391,11 @@ export const Pago2 = () => {
                   borderRadius: 3,
                   borderWidth: 1,
                   borderColor: '#666666',
-                  backgroundColor: '#FFFBFF',
+                  backgroundColor: themeType === 'light' ? '#FFFBFF' : '#1B1B1F',
+                }}
+                cardStyle={{
+                  textColor: themeType === 'light' ? '#000' : '#DFDEE2',
+                  iconColor: themeType === 'light' ? '#000' : '#DFDEE2'
                 }}
                 onCardChange={(details) => setCardDetails(details)}
               />
@@ -372,6 +465,11 @@ export const Pago2 = () => {
 
           </View>
         </View>
+        <CustomSnackbar
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          message={snackbarMessage}
+        />
       </ScrollView>
     </StripeProvider>
   );

@@ -1,7 +1,7 @@
 import { createContext } from 'react';
 import { createPagoRequest } from '../api/pagos';
 import { getMatriculaByEstudianteIdRequest } from '../api/matricula';
-import { getPensionesByPeriodoEstudianteRequest } from '../api/pension';
+import { getPensionesByPeriodoEstudianteRequest, updatePensionPayRequest } from '../api/pension';
 import { createPaymentIntentRequest } from '../api/payment'
 import { createMatriculaRequest } from '../api/matricula';
 
@@ -48,6 +48,16 @@ export const PagosProvider = ({ children }) => {
     }
   }
 
+  const updatePensionPay = async (pensionId) => {
+    try {
+      const { data } = await updatePensionPayRequest(pensionId);
+      return data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
   const createPaymentIntent = async (paymentData) => {
     try {
       const { data } = await createPaymentIntentRequest(paymentData);
@@ -65,6 +75,7 @@ export const PagosProvider = ({ children }) => {
         createMatricula,
         getMatriculaByEstudianteId,
         getPensionesByPeriodoEstudiante,
+        updatePensionPay,
         createPaymentIntent
       }}
     >
