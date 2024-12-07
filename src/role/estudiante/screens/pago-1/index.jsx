@@ -36,6 +36,15 @@ export const Pago1 = () => {
   const [pagosSeleccionados, setPagosSeleccionados] = useState([]);
 
   const totalPagar = pagosSeleccionados.reduce((total, pago) => total + pago.monto, 0);
+  
+  const resetValues = () => {
+    setPagos([]);
+    setPagosConCampos([]);
+    setPagosSeleccionados([]);
+    setTipoPago('');
+    setSelectedTipoPago(null);
+    setSelectedPension(null);
+  };
 
   useEffect(() => {
     if (pagos.length > 0) {
@@ -134,6 +143,7 @@ export const Pago1 = () => {
   };
 
   const handleNavigate = () => {
+    resetValues();
     navigation.navigate('Pago2', {
       pago: pagosSeleccionados,
       tipoPago: tipoPago,

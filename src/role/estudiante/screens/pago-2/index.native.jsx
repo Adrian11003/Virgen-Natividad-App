@@ -71,6 +71,16 @@ export const Pago2 = () => {
     createPaymentIntent(paymentData)
       .then((data) => {
         console.log(data)
+
+        setTipoPago('boleta');
+        setNombre('');
+        setDocumento('');
+        setNumero('');
+        setCorreo('');
+        setDireccion('');
+        setCardDetails({});
+
+        navigation.navigate('Pago1');
       })
       .catch((error) => {
         console.log(error.error.message)
