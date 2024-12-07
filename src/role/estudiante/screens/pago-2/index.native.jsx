@@ -149,6 +149,15 @@ export const Pago2 = () => {
       })
       .finally(() => {
         setLoading(false);
+        setTipoPago('boleta');
+        setNombre('');
+        setDocumento('');
+        setNumero('');
+        setCorreo('');
+        setDireccion('');
+        setCardDetails({});
+
+        navigation.navigate('Pago1');
       })
   };
 
