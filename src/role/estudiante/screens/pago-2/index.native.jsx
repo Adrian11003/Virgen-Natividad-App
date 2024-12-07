@@ -123,7 +123,6 @@ export const Pago2 = () => {
               })
           }));
         } else {
-          const pagoData = pago[0]; 
           const matriculaData = {
             monto: pago[0].monto,
             metodo_pago: pago[0].metodo_pago,
@@ -157,7 +156,9 @@ export const Pago2 = () => {
         setDireccion('');
         setCardDetails({});
 
-        navigation.navigate('Pago1');
+        navigation.navigate('Pago1', {
+          resetSelectedTipoPago: true,
+        });
       })
   };
 
@@ -283,6 +284,7 @@ export const Pago2 = () => {
                   onChangeText={text => setNombre(text)}
                   style={{
                     marginBottom: 10,
+                    height: 50
                   }}
                   right={
                     <TextInput.Icon
@@ -308,6 +310,7 @@ export const Pago2 = () => {
                   onChangeText={text => setDocumento(text)}
                   style={{
                     marginBottom: 10,
+                    height: 50
                   }}
                   right={
                     <TextInput.Icon
@@ -333,6 +336,7 @@ export const Pago2 = () => {
                   onChangeText={text => setNumero(text)}
                   style={{
                     marginBottom: 10,
+                    height: 50
                   }}
                   right={
                     <TextInput.Icon
@@ -358,6 +362,7 @@ export const Pago2 = () => {
                   onChangeText={text => setCorreo(text)}
                   style={{
                     marginBottom: 10,
+                    height: 50
                   }}
                   right={
                     <TextInput.Icon
@@ -419,7 +424,8 @@ export const Pago2 = () => {
                 style={{
                   marginBottom: 10,
                   marginBottom: 30,
-                  width: '100%'
+                  width: '100%',
+                  height: 50
                 }}
                 right={
                   <TextInput.Icon
