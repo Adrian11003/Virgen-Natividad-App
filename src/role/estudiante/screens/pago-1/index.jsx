@@ -58,6 +58,21 @@ export const Pago1 = () => {
     }
   }, [pagos]);
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      const { resetSelectedTipoPago } = navigation.getState().routes.find(
+        (route) => route.name === 'Pago1'
+      ).params || {};
+  
+      if (resetSelectedTipoPago) {
+        setSelectedTipoPago(null);
+        navigation.setParams({ resetSelectedTipoPago: false });
+      }
+    });
+  
+    return unsubscribe;
+  }, [navigation]);
+
   const handleTipoPagoSelect = async (item) => {
     setLoading(true);
     setSelectedTipoPago(item);
