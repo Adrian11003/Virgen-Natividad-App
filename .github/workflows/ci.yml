@@ -33,7 +33,7 @@ jobs:
         with:
           args: |
             -Dsonar.projectKey=virgen_natividad_app
-            -Dsonar.projectName=Virgen Natividad App
+            -Dsonar.projectName="Virgen Natividad App"
             -Dsonar.projectVersion=1.0
             -Dsonar.sources=src
             -Dsonar.language=js
