@@ -12,7 +12,7 @@ jest.mock('@react-navigation/native', () => ({
   }),
 }));
 
-jest.mock('../../../../core/context/estudiantesContext', () => ({
+jest.mock('../core/context/estudiantesContext', () => ({
   EstudiantesContext: {
     Consumer: ({ children }) => children({
       getEstudiantesBySeccion: jest.fn().mockResolvedValue([
