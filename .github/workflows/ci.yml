@@ -1,4 +1,4 @@
-name: CI/CD Virgen-Natividad-App
+name: CI/CD VirgenNatividadApp
 
 on:
   push:
@@ -33,7 +33,7 @@ jobs:
         with:
           args: |
             -Dsonar.projectKey=virgen_natividad_app
-            -Dsonar.projectName="Virgen Natividad App"
+            -Dsonar.projectName=VirgenNatividadApp
             -Dsonar.projectVersion=1.0
             -Dsonar.sources=src
             -Dsonar.language=js
@@ -91,5 +91,5 @@ jobs:
           -d '{
                 "token": "'"${{ secrets.WHATSAPP_TOKEN }}"'",
                 "to": "whatsapp:+51989160593",
-                "body": "La compilación de Android para Virgen-Natividad-App fue exitosa y está lista para revisión en Expo."
+                "body": "La compilación de Android para VirgenNatividadApp fue exitosa y está lista para revisión en Expo."
               }'
