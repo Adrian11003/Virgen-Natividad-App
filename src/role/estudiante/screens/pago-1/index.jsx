@@ -91,7 +91,7 @@ export const Pago1 = () => {
           periodo_id: periodo._id,
           estudiante_id: user.perfil._id,
           tipo: 'Virtual',
-          tipoMa: 'Nuevo',
+          tipoMa: 'Regular',
           fecha: new Date().toISOString(),
         };
         setPagosSeleccionados((prev) => [
@@ -134,6 +134,12 @@ export const Pago1 = () => {
   };
 
   const handleNavigate = () => {
+    if(pagosSeleccionados.length === 0) {
+      setSnackbarMessage('Debe seleccionar al menos un pago para continuar.');
+      setSnackbarVisible(true);
+      return;
+    }
+    
     navigation.navigate('Pago2', {
       pago: pagosSeleccionados,
       tipoPagoAnterior: tipoPago,

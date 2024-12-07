@@ -8,13 +8,14 @@ import { PagosContext } from '../../../../core/context/pagosContext';
 import { CustomRadio } from '../../../../shared/components/custom/radio-button/index';
 import { useStripe } from '@stripe/stripe-react-native';
 import { CustomSnackbar } from '../../../../shared/components/custom/snackbar/index';
+import { sendEmailPdf } from '../../../../core/api/gmail';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
 
 export const Pago2 = () => {
   const navigation = useNavigation();
   const stripe = useStripe();
   const { pago, tipoPagoAnterior } = useRoute().params;
-  const { theme } = useTheme();
+  const { theme, themeType } = useTheme();
   const { createPaymentIntent, updatePensionPay, createMatricula } = useContext(PagosContext);
 
   const [tipoPago, setTipoPago] = useState('boleta');
@@ -118,11 +119,29 @@ export const Pago2 = () => {
           await Promise.all(pago.map(async (pension) => {
             await updatePensionPay(pension._id)
               .then((data) => {
-                
+                // enviarCorreoConBoleta(data.stripeOperationId)
               })
           }));
         } else {
-          console.log(pago);
+          const pagoData = pago[0]; 
+          const matriculaData = {
+            monto: pago[0].monto,
+            metodo_pago: pago[0].metodo_pago,
+            n_operacion: pago[0].n_operacion,
+            periodo_id: pago[0].tipoMa,
+            estudiante_id: pago[0].estudiante_id,
+            tipo: pago[0].tipo,
+            tipoMa: pago[0].tipoMa,
+            fecha: new Date()
+          };
+          createMatricula(matriculaData)
+            .then((data) => {
+              console.log(data)
+            })
+            .catch((error) => {
+              console.log(error)
+              throw error
+            })
         }
       })
       .catch((error) => {
@@ -132,6 +151,24 @@ export const Pago2 = () => {
         setLoading(false);
       })
   };
+
+  // const enviarCorreoConBoleta = (operationId) => {
+  //   const correoData = {
+  //     to: correo,
+  //     subject: 'Comprobante de Pago - Virgen de la Natividad',
+  //     dni: documento
+  //   };
+
+  //   sendEmailPdf(operationId, correoData)
+  //     .then((data) => {
+  //       console.log(data);
+  //       setSnackbarVisible(true);
+  //       setSnackbarMessage('Se le ha enviado la boleta a su correo adjuntado en el pago.');
+  //     })
+  //     .catch((error) => {
+  //       console.log(error)
+  //     })
+  // }
 
   const volver = () => {
     navigation.navigate('Pago1');
@@ -345,7 +382,11 @@ export const Pago2 = () => {
                   borderRadius: 3,
                   borderWidth: 1,
                   borderColor: '#666666',
-                  backgroundColor: '#FFFBFF',
+                  backgroundColor: themeType === 'light' ? '#FFFBFF' : '#1B1B1F',
+                }}
+                cardStyle={{
+                  textColor: themeType === 'light' ? '#000' : '#DFDEE2',
+                  iconColor: themeType === 'light' ? '#000' : '#DFDEE2'
                 }}
                 onCardChange={(details) => setCardDetails(details)}
               />

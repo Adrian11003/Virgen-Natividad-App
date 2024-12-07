@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../../core/context/themeContext';
@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Elements, CardElement } from "@stripe/react-stripe-js";
 import { loadStripe } from '@stripe/stripe-js';
 import isMediumScreen from '../../../../shared/constants/screen-width/md';
+import { PagosContext } from '../../../../core/context/pagosContext';
 
 const stripePromise = loadStripe(process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
@@ -15,6 +16,7 @@ export const Pago2 = () => {
   const navigation = useNavigation();
   const { theme } = useTheme();
   const { pago, tipoPagoAnterior } = useRoute().params;
+  const { createMatricula } = useContext(PagosContext);
 
   useEffect(() => {
     console.log(pago, tipoPagoAnterior)
@@ -26,9 +28,28 @@ export const Pago2 = () => {
   const [numero, setNumero] = useState('');
   const [correo, setCorreo] = useState('');
   const [direccion, setDireccion] = useState('');
+  const [snackbarVisible, setSnackbarVisible] = useState(false); 
+  const [snackbarMessage, setSnackbarMessage] = useState(''); 
 
   const handleSubmit = () => {
-    console.log('Datos enviados:', formData);
+    const matriculaData = {
+      monto: pago[0].monto,
+      metodo_pago: pago[0].metodo_pago,
+      n_operacion: pago[0].n_operacion,
+      periodo_id: "66df8cba83bfeeca8776048f",
+      estudiante_id: pago[0].estudiante_id,
+      tipo: pago[0].tipo,
+      tipoMa: pago[0].tipoMa,
+      fecha: new Date()
+    };
+    createMatricula(matriculaData)
+      .then((data) => {
+        console.log(data)
+      })
+      .catch((error) => {
+        console.log(error)
+        throw error
+      })
   };
 
   const volver = () => {
@@ -235,10 +256,10 @@ export const Pago2 = () => {
                   options={{
                     style: {
                       base: {
-                        fontSize: '16px',  // Tamaño de texto
-                        color: '#32325d',  // Color de texto
-                        fontWeight: '500',  // Peso de la fuente
-                        padding: '10px', // Padding para el contenido de la tarjeta
+                        fontSize: '16px', 
+                        color: '#32325d', 
+                        fontWeight: '500', 
+                        padding: '10px', 
                       },
                     },
                   }}
