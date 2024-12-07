@@ -2,7 +2,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { GestionarComunicados } from '../../screens/gestionar-comunicados/index';
 import { AsistenciaStack } from '../stacks/asistenciaStack';
 import { Home } from '../../screens/home/index';
-import  Perfil  from '../../screens/perfil/index';
+import { Perfil } from '../../screens/perfil/index';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import CustomDrawer from '../../../../shared/components/custom/drawer/index';
 

@@ -1,13 +1,11 @@
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { Asistencia } from '../screens/asistencia/index';
-import { Comunicados } from '../screens/comunicados/index';
-import { Home } from '../screens/home/index';
-import { Notas } from '../screens/notas/index';
-import { Pagos } from '../screens/pagos/index';
-import Perfil from '../screens/perfil';
-import Horario from '../screens/horario';
+import { Asistencia } from '../../screens/asistencia/index';
+import { Home } from '../../screens/home/index';
+import { Notas } from '../../screens/notas';
+import { PagosStack } from '../../router/stacks/pagosStack';
+import { Perfil } from '../../screens/perfil';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import CustomDrawer from '../../../shared/components/custom/drawer';
+import CustomDrawer from '../../../../shared/components/custom/drawer/index';
 
 const Drawer = createDrawerNavigator();
 
@@ -37,13 +35,6 @@ export const EstudianteDrawer = () => {
         }} 
       />
       <Drawer.Screen 
-        name="Comunicados" 
-        component={Comunicados} 
-        options={{
-          drawerIcon: () => <Ionicons name="chatbubbles-outline" size={22} color="white" />,
-        }} 
-      />
-      <Drawer.Screen 
         name="Notas" 
         component={Notas} 
         options={{
@@ -52,7 +43,7 @@ export const EstudianteDrawer = () => {
       />
       <Drawer.Screen 
         name="Pagos" 
-        component={Pagos} 
+        component={PagosStack} 
         options={{
           drawerIcon: () => <Ionicons name="cash-outline" size={22} color="white" />,
         }} 
@@ -62,13 +53,6 @@ export const EstudianteDrawer = () => {
         component={Perfil} 
         options={{
           drawerIcon: () => <Ionicons name="person-circle-outline" size={22} color="white" />,
-        }} 
-      />
-      <Drawer.Screen 
-        name="Horario" 
-        component={Horario} 
-        options={{
-          drawerIcon: () => <Ionicons name="calendar-clear-outline" size={22} color="white" />,
         }} 
       />
     </Drawer.Navigator>

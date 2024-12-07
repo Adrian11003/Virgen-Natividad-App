@@ -5,7 +5,7 @@ import { useTheme } from '../../../../core/context/themeContext';
 import { ProfileCard } from '../../../../shared/components/custom/card/index';
 import { ApoderadosContext } from '../../../../core/context/apoderadosContext';
 
-const Perfil = () => {
+export const Perfil = () => {
   const { getApoderado, apoderadosByEstudiante } = useContext(ApoderadosContext);
   const { user } = useContext(AuthContext);
   const { theme, isDarkTheme } = useTheme();
@@ -59,5 +59,3 @@ const Perfil = () => {
     </ScrollView>
   );
 };
-
-export default Perfil;

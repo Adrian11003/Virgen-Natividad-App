@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import { useTheme } from '../../../../core/context/themeContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -11,36 +11,40 @@ export const CustomSelector = ({
   placeholder = 'Selecciona una opción', 
   mobileWidth, 
   isModal,
-  field ,
-  modalwidth
+  field,
+  modalwidth,
+  isPagoComponent = false, // Nuevo prop
+  pagosSeleccionados // Mantener el prop de pagosSeleccionados
 }) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const { theme, themeType } = useTheme();
 
-  useEffect(() => {
-    console.log(selectedValue)
-  }, []);
-
   const handleSelect = (item) => {
     onChange(item);
     setIsSelectorOpen(false);
-    console.log(item);
-  }
+  };
 
-  const renderItem = ({ item, index }) => (
-    <TouchableOpacity
-      onPress={() => { handleSelect(item)}}
-      style={{
-        padding: 15,
-        borderBottomWidth: index === opciones.length - 1 ? 0 : 1,
-        borderColor: themeType === 'light' ? '#DDD' : '#555',
-        backgroundColor: themeType === 'light' ? '#fff' : '#333'
-      }}
-    >
-      <Text style={{ color: theme.colors.paperText }}>{item[field]}</Text>
-    </TouchableOpacity>
-  );
-  
+  const renderItem = ({ item, index }) => {
+    // Verificamos si estamos en el componente de pagos
+    const isDisabled = isPagoComponent && !item.disabled && index !== 0;
+    
+    return (
+      <TouchableOpacity
+        onPress={() => handleSelect(item)}
+        style={{
+          padding: 15,
+          borderBottomWidth: index === opciones.length - 1 ? 0 : 1,
+          borderColor: themeType === 'light' ? '#DDD' : '#555',
+          backgroundColor: themeType === 'light' ? '#fff' : '#333',
+          opacity: isDisabled ? 0.5 : 1, // Deshabilitar si es el componente de pagos y no es la primera opción
+        }}
+        disabled={isDisabled} // Solo habilitar la primera opción
+      >
+        <Text style={{ color: theme.colors.paperText }}>{item[field]}</Text>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <View style={{ position: 'relative', zIndex: 1, width: isMediumScreen ? mobileWidth : (isModal ? modalwidth : '100%') }}>
       <TouchableOpacity
@@ -63,25 +67,25 @@ export const CustomSelector = ({
 
       {isSelectorOpen && (
         <View
-        style={{
-          position: 'absolute',
-          top: 60,
-          width: '100%',
-          backgroundColor: themeType === 'light' ? '#FFF' : '#222', 
-          borderWidth: 1,
-          borderColor: themeType === 'light' ? '#C0C0C0' : '#555', 
-          borderRadius: 10,
-          maxHeight: 200,
-          zIndex: 10,
-          overflow: 'hidden',
-        }}
-      >
-        <FlatList
-          data={opciones}
-          keyExtractor={(item) => item._id}
-          renderItem={renderItem}
-        />
-      </View>
+          style={{
+            position: 'absolute',
+            top: 60,
+            width: '100%',
+            backgroundColor: themeType === 'light' ? '#FFF' : '#222', 
+            borderWidth: 1,
+            borderColor: themeType === 'light' ? '#C0C0C0' : '#555', 
+            borderRadius: 10,
+            maxHeight: 200,
+            zIndex: 10,
+            overflow: 'hidden',
+          }}
+        >
+          <FlatList
+            data={opciones}
+            keyExtractor={(item) => item._id}
+            renderItem={renderItem}
+          />
+        </View>
       )}
     </View>
   );

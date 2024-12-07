@@ -176,20 +176,20 @@ export const GestionarNotas = () => {
         curso={curso._id}
         onNotaGuardada={handleNotaGuardada}
       />
-       <Pressable
-            style={{
-              backgroundColor: theme.colors.loginButton,
-              width: '25%',
-              paddingVertical: 12,
-              paddingHorizontal: 10,
-              borderRadius: 25,
-              marginLeft: 15
-            }}
-            onPress={() => navigation.navigate('SeleccionarCursoSeccion')} 
-         > 
-         <Text style={{ color: theme.colors.onPrimary, fontSize: 15, textAlign: 'center' }}>
+      <Pressable
+        style={{
+          backgroundColor: theme.colors.loginButton,
+          width: '25%',
+          paddingVertical: 12,
+          paddingHorizontal: 10,
+          borderRadius: 25,
+          marginLeft: 15
+        }}
+        onPress={() => navigation.navigate('SeleccionarCursoSeccion')} 
+      > 
+      <Text style={{ color: theme.colors.onPrimary, fontSize: 15, textAlign: 'center' }}>
          Volver
-       </Text>
+      </Text>
      </Pressable>
     </View>
   );
