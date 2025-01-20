@@ -25,5 +25,3 @@ describe('Banner Component', () => {
     expect(mockOnPress).toHaveBeenCalled();
   });
 });
-
-

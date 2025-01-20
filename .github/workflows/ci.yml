@@ -1,0 +1,95 @@
+name: CI/CD VirgenNatividadApp
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install Expo CLI
+        run: npm install -g expo-cli
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Run SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@v2
+        with:
+          args: |
+            -Dsonar.projectKey=virgen_natividad_app
+            -Dsonar.projectName=VirgenNatividadApp
+            -Dsonar.projectVersion=1.0
+            -Dsonar.sources=src
+            -Dsonar.language=js
+            -Dsonar.sourceEncoding=UTF-8
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+  build-android:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: npm
+
+      # Configura EAS
+      - name: Configure EAS
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EAS_TOKEN }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Create a new version of the app
+        run: eas update --auto --non-interactive
+
+      - name: Build Android with EAS
+        env:
+          EAS_TOKEN: ${{ secrets.EAS_TOKEN }}
+        run: eas build -p android --profile preview --non-interactive
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: build-android
+
+    steps:
+      - name: Send WhatsApp notification
+        env:
+          WHATSAPP_API_URL: ${{ secrets.WHATSAPP_API_URL }}
+          WHATSAPP_INSTANCE_ID: ${{ secrets.WHATSAPP_INSTANCE_ID }}
+          WHATSAPP_TOKEN: ${{ secrets.WHATSAPP_TOKEN }}
+        run: |
+          curl -X POST "${{ secrets.WHATSAPP_API_URL }}/messages/chat" \
+          -H "Content-Type: application/json" \
+          -d '{
+                "token": "'"${{ secrets.WHATSAPP_TOKEN }}"'",
+                "to": "whatsapp:+51989160593",
+                "body": "La compilación de Android para VirgenNatividadApp fue exitosa y está lista para revisión en Expo."
+              }'
